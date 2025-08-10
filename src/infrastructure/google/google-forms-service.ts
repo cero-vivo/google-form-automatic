@@ -55,13 +55,14 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       console.log('🚀 Creando formulario base:', formData.title);
       console.log('⚙️ Configuraciones recibidas:', formData.settings);
 
-      // 1. Crear el formulario básico (SOLO título según la API)
+      // 1. Crear el formulario básico (título y documentTitle)
       const createResponse = await this.formsAPI.forms.create({
         auth,
         requestBody: {
           info: {
-            title: formData.title
-            // NO incluir description aquí - solo title está permitido
+            title: formData.title,
+            documentTitle: formData.title
+            // NO incluir description aquí - solo title y documentTitle están permitidos en create
           }
         }
       });
@@ -126,6 +127,8 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
                 info: {
                   title: title,
                   description: description
+                  // NOTA: documentTitle no se puede modificar con batchUpdate, solo en create
+                  // Para cambiar documentTitle después de crear, usar Google Drive API
                 },
                 updateMask: 'title,description'
               }

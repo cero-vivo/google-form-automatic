@@ -16,7 +16,16 @@ import {
   Settings,
   HelpCircle,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Mail,
+  X,
+  Search,
+  Edit,
+  Trash2,
+  Check,
+  MoreVertical,
+  Upload,
+  FileUp
 } from 'lucide-react';
 import Link from 'next/link';
 import { Question } from '@/domain/entities/question';
@@ -24,7 +33,9 @@ import { useAuthContext } from '@/containers/useAuth';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
 import { FormCreatedModal } from '@/components/organisms/FormCreatedModal';
 import FormInstructions from '@/components/organisms/FormInstructions';
+import EmailManagerModal from '@/components/organisms/EmailManagerModal';
 import { useRouter } from 'next/navigation';
+import * as XLSX from 'xlsx';
 
 export default function DashboardPage() {
   const [loadedQuestions, setLoadedQuestions] = useState<Question[]>([]);
@@ -36,6 +47,16 @@ export default function DashboardPage() {
   const [formSettings, setFormSettings] = useState({
     collectEmails: false
   });
+  
+  // Lista de emails para notificaciones
+  const [notificationEmails, setNotificationEmails] = useState<string[]>([]);
+  const [emailInput, setEmailInput] = useState('');
+  
+  // Estados para gestión avanzada de emails
+  const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showEmailManager, setShowEmailManager] = useState(false);
+  const [isUploadingEmails, setIsUploadingEmails] = useState(false);
   
   const router = useRouter();
   
@@ -86,7 +107,8 @@ export default function DashboardPage() {
       title: formTitle || 'Formulario sin título',
       description: formDescription,
       questions: loadedQuestions,
-      settings: formSettings
+      settings: formSettings,
+      shareEmails: notificationEmails.length > 0 ? notificationEmails : undefined
     });
 
     if (result) {
@@ -109,6 +131,226 @@ export default function DashboardPage() {
       'phone': 'Teléfono'
     };
     return typeMap[type] || type;
+  };
+
+  const removeEmail = (emailToRemove: string) => {
+    setNotificationEmails(prev => prev.filter(email => email !== emailToRemove));
+  };
+
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const extractEmailsFromText = (text: string): string[] => {
+    // Separar por múltiples delimitadores comunes
+    const separators = /[,;\s\n\t]+/;
+    const potentialEmails = text.split(separators).map(email => email.trim()).filter(email => email.length > 0);
+    
+    // Filtrar solo emails válidos
+    return potentialEmails.filter(email => isValidEmail(email));
+  };
+
+  const addEmailsFromInput = (inputText: string) => {
+    const emailsInText = extractEmailsFromText(inputText);
+    
+    if (emailsInText.length > 0) {
+      // Agregar solo emails que no estén ya en la lista
+      const newEmails = emailsInText.filter(email => !notificationEmails.includes(email));
+      if (newEmails.length > 0) {
+        setNotificationEmails(prev => [...prev, ...newEmails]);
+      }
+      
+      // Limpiar el input después de procesar emails válidos
+      setEmailInput('');
+    }
+  };
+
+  const handleEmailInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmailInput(value);
+    
+    // Detectar si el usuario terminó de escribir un email (espacio, coma, Enter, etc.)
+    const lastChar = value.slice(-1);
+    if ([',', ';', ' ', '\n', '\t'].includes(lastChar)) {
+      addEmailsFromInput(value);
+    }
+  };
+
+  const handleEmailKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addEmailsFromInput(emailInput);
+    } else if (e.key === 'Backspace' && emailInput === '' && notificationEmails.length > 0) {
+      // Si está vacío y presiona backspace, remover el último email
+      removeEmail(notificationEmails[notificationEmails.length - 1]);
+    }
+  };
+
+  const handleEmailPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData('text');
+    const currentText = emailInput + pastedText;
+    
+    // Procesar todos los emails del texto pegado
+    addEmailsFromInput(currentText);
+  };
+
+  const handleEmailBlur = () => {
+    // Al perder el foco, procesar cualquier email que quede en el input
+    if (emailInput.trim()) {
+      addEmailsFromInput(emailInput);
+    }
+  };
+
+  // Funciones de gestión avanzada
+  const filteredEmails = notificationEmails.filter(email => 
+    email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const toggleEmailSelection = (email: string) => {
+    setSelectedEmails(prev => 
+      prev.includes(email) 
+        ? prev.filter(e => e !== email)
+        : [...prev, email]
+    );
+  };
+
+  const selectAllFilteredEmails = () => {
+    setSelectedEmails(filteredEmails);
+  };
+
+  const clearSelection = () => {
+    setSelectedEmails([]);
+  };
+
+  const deleteSelectedEmails = () => {
+    setNotificationEmails(prev => prev.filter(email => !selectedEmails.includes(email)));
+    setSelectedEmails([]);
+  };
+
+  const deleteSingleEmail = (emailToDelete: string) => {
+    setNotificationEmails(prev => prev.filter(email => email !== emailToDelete));
+    setSelectedEmails(prev => prev.filter(email => email !== emailToDelete));
+  };
+
+  const deleteAllEmails = () => {
+    setNotificationEmails([]);
+    setSelectedEmails([]);
+    setSearchTerm('');
+  };
+
+  const editEmail = (oldEmail: string, newEmail: string) => {
+    if (isValidEmail(newEmail) && !notificationEmails.includes(newEmail)) {
+      setNotificationEmails(prev => 
+        prev.map(email => email === oldEmail ? newEmail : email)
+      );
+    }
+  };
+
+  // Funciones para importar emails desde archivo
+  const processEmailFile = (file: File) => {
+    setIsUploadingEmails(true);
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = e.target?.result;
+        let emailsFromFile: string[] = [];
+
+        if (file.name.endsWith('.csv')) {
+          // Procesar CSV
+          emailsFromFile = processCSVEmails(data as string);
+        } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+          // Procesar Excel
+          emailsFromFile = processExcelEmails(data);
+        }
+
+        // Filtrar emails válidos y únicos
+        const validEmails = emailsFromFile.filter(email => 
+          email && isValidEmail(email) && !notificationEmails.includes(email)
+        );
+
+        if (validEmails.length > 0) {
+          setNotificationEmails(prev => [...prev, ...validEmails]);
+          console.log(`✅ ${validEmails.length} emails importados exitosamente`);
+        } else {
+          console.warn('⚠️ No se encontraron emails válidos en el archivo');
+        }
+
+      } catch (error) {
+        console.error('❌ Error procesando archivo de emails:', error);
+      } finally {
+        setIsUploadingEmails(false);
+      }
+    };
+
+    if (file.name.endsWith('.csv')) {
+      reader.readAsText(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
+  };
+
+  const processCSVEmails = (csvText: string): string[] => {
+    const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
+    const emails: string[] = [];
+
+    for (const line of lines) {
+      // Dividir por comas y procesar cada campo
+      const fields = line.split(',').map(field => field.trim().replace(/"/g, ''));
+      
+      // Buscar emails en todos los campos de la línea
+      for (const field of fields) {
+        if (isValidEmail(field)) {
+          emails.push(field);
+        }
+      }
+    }
+
+    return [...new Set(emails)]; // Remover duplicados
+  };
+
+  const processExcelEmails = (arrayBuffer: any): string[] => {
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+    const emails: string[] = [];
+
+    // Procesar todas las hojas
+    workbook.SheetNames.forEach(sheetName => {
+      const sheet = workbook.Sheets[sheetName];
+      const sheetData: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+      // Procesar todas las celdas buscando emails
+      sheetData.forEach(row => {
+        row.forEach(cell => {
+          if (cell && typeof cell === 'string' && isValidEmail(cell.trim())) {
+            emails.push(cell.trim());
+          }
+        });
+      });
+    });
+
+    return [...new Set(emails)]; // Remover duplicados
+  };
+
+  const handleEmailFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+      const validExtensions = ['.csv', '.xls', '.xlsx'];
+      
+      const hasValidType = validTypes.includes(file.type) || 
+                          validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+
+      if (hasValidType) {
+        processEmailFile(file);
+      } else {
+        alert('Por favor selecciona un archivo CSV o Excel (.csv, .xls, .xlsx)');
+      }
+    }
+    
+    // Limpiar el input para permitir subir el mismo archivo otra vez
+    event.target.value = '';
   };
 
 
@@ -259,9 +501,15 @@ export default function DashboardPage() {
                       setLoadedQuestions([]);
                       setFormTitle('');
                       setFormDescription('');
-                                  setFormSettings({
-              collectEmails: false
-            });
+                      setFormSettings({
+                        collectEmails: false
+                      });
+                      setNotificationEmails([]);
+                      setEmailInput('');
+                      setSelectedEmails([]);
+                      setSearchTerm('');
+                      setShowEmailManager(false);
+                      setIsUploadingEmails(false);
                     }}
                   >
                     Subir otro archivo
@@ -344,6 +592,114 @@ export default function DashboardPage() {
                           Recopilar direcciones de correo electrónico
                         </label>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Email Notifications */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold">Envío Automático</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <label htmlFor="notification-emails" className="text-sm font-medium block mb-2">
+                          Enviar formulario por email (opcional)
+                        </label>
+                        <div className="space-y-3">
+                          <Input
+                            id="notification-emails"
+                            type="email"
+                            value={emailInput}
+                            onChange={handleEmailInputChange}
+                            onKeyPress={handleEmailKeyPress}
+                            onPaste={handleEmailPaste}
+                            onBlur={handleEmailBlur}
+                            placeholder="Escribe o pega emails separados por comas, espacios o Enter..."
+                            className="w-full"
+                          />
+                          
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-px bg-border"></div>
+                            <span className="text-xs text-muted-foreground px-2">o</span>
+                            <div className="flex-1 h-px bg-border"></div>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <input
+                              type="file"
+                              id="email-file-upload"
+                              accept=".csv,.xlsx,.xls"
+                              onChange={handleEmailFileUpload}
+                              className="hidden"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => document.getElementById('email-file-upload')?.click()}
+                              disabled={isUploadingEmails}
+                              className="flex items-center gap-2 flex-1"
+                            >
+                              {isUploadingEmails ? (
+                                <>
+                                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                                  Procesando...
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="h-4 w-4" />
+                                  Subir archivo de emails
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                          
+                          <p className="text-xs text-muted-foreground">
+                            Sube un archivo CSV o Excel con emails. Se procesarán automáticamente y se convertirán en tags.
+                            <br />
+                            <strong>Formatos soportados:</strong> .csv, .xlsx, .xls
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {notificationEmails.length > 0 && (
+                        <div className="space-y-2">
+                          <div className="flex flex-wrap gap-1.5 p-2 border rounded-md bg-muted/30 min-h-[2.5rem]">
+                            {notificationEmails.slice(0, 5).map((email, index) => (
+                              <span 
+                                key={index} 
+                                className="inline-flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-md text-sm font-medium"
+                              >
+                                <Mail className="h-3 w-3" />
+                                {email}
+                                <button
+                                  onClick={() => removeEmail(email)}
+                                  className="ml-1 hover:bg-white/20 rounded-sm p-0.5 transition-colors"
+                                  aria-label={`Remover ${email}`}
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </span>
+                            ))}
+                            {notificationEmails.length > 5 && (
+                              <span className="inline-flex items-center gap-1 bg-muted text-muted-foreground px-2 py-1 rounded-md text-sm">
+                                +{notificationEmails.length - 5} más
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <p className="text-xs text-muted-foreground">
+                              💡 Presiona Backspace para remover el último email
+                            </p>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setShowEmailManager(true)}
+                              className="flex items-center gap-2"
+                            >
+                              <Edit className="h-3 w-3" />
+                              Gestionar ({notificationEmails.length})
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -470,11 +826,37 @@ export default function DashboardPage() {
             setLoadedQuestions([]);
             setFormTitle('');
             setFormDescription('');
-                                  setFormSettings({
-                        collectEmails: false
-                      });
+            setFormSettings({
+              collectEmails: false
+            });
+            setNotificationEmails([]);
+            setEmailInput('');
+            setSelectedEmails([]);
+            setSearchTerm('');
+            setShowEmailManager(false);
+            setIsUploadingEmails(false);
           }}
           onClearError={clearError}
+        />
+      )}
+
+      {/* Email Manager Modal */}
+      {showEmailManager && (
+        <EmailManagerModal
+          emails={notificationEmails}
+          selectedEmails={selectedEmails}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onToggleSelection={toggleEmailSelection}
+          onSelectAll={selectAllFilteredEmails}
+          onClearSelection={clearSelection}
+          onDeleteSelected={deleteSelectedEmails}
+          onDeleteSingle={deleteSingleEmail}
+          onDeleteAll={deleteAllEmails}
+          onEditEmail={editEmail}
+          onImportEmails={processEmailFile}
+          isUploading={isUploadingEmails}
+          onClose={() => setShowEmailManager(false)}
         />
       )}
     </div>
