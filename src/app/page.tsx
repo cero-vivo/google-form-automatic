@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, FileText, Upload, Zap, CheckCircle, Star, Users } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/containers/useAuth";
+import FormInstructions from "@/components/organisms/FormInstructions";
 
 export default function HomePage() {
   const { user, loading } = useAuthContext();
@@ -280,6 +281,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Documentation Section */}
+      <section id="docs" className="py-20 px-4 bg-slate-50 dark:bg-slate-900">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Documentación
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Todo lo que necesitas saber para crear formularios profesionales desde Excel y CSV
+            </p>
+          </div>
+          
+          <FormInstructions />
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 px-4 bg-slate-900 text-white">
         <div className="container mx-auto text-center">
@@ -304,7 +321,7 @@ export default function HomePage() {
             <Link href="/support" className="hover:text-white transition-colors">
               Soporte
             </Link>
-            <Link href="/docs" className="hover:text-white transition-colors">
+            <Link href="#docs" className="hover:text-white transition-colors">
               Documentación
             </Link>
           </div>
