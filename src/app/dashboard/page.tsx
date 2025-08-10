@@ -32,6 +32,12 @@ export default function DashboardPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formDescription, setFormDescription] = useState('');
+  
+  // Configuraciones avanzadas del formulario
+  const [formSettings, setFormSettings] = useState({
+    collectEmails: false
+  });
+  
   const router = useRouter();
   
   const { user, signOut, loading: authLoading } = useAuthContext();
@@ -80,7 +86,8 @@ export default function DashboardPage() {
     const result = await createGoogleForm({
       title: formTitle || 'Formulario sin título',
       description: formDescription,
-      questions: loadedQuestions
+      questions: loadedQuestions,
+      settings: formSettings
     });
 
     if (result) {
@@ -414,6 +421,9 @@ export default function DashboardPage() {
                       setLoadedQuestions([]);
                       setFormTitle('');
                       setFormDescription('');
+                                  setFormSettings({
+              collectEmails: false
+            });
                     }}
                   >
                     Subir otro archivo
@@ -449,31 +459,67 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle className="text-lg">Configuración del Formulario</CardTitle>
                   <CardDescription>
-                    Personaliza el título y descripción de tu formulario
+                    Personaliza el título, descripción y configuraciones avanzadas
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label htmlFor="form-title" className="text-sm font-medium block mb-2">
-                      Título del formulario *
-                    </label>
-                    <Input
-                      id="form-title"
-                      value={formTitle}
-                      onChange={(e) => setFormTitle(e.target.value)}
-                      placeholder="Ej: Encuesta de satisfacción"
-                    />
+                <CardContent className="space-y-6">
+                  {/* Basic Info */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold">Información Básica</h4>
+                    <div>
+                      <label htmlFor="form-title" className="text-sm font-medium block mb-2">
+                        Título del formulario *
+                      </label>
+                      <Input
+                        id="form-title"
+                        value={formTitle}
+                        onChange={(e) => setFormTitle(e.target.value)}
+                        placeholder="Ej: Encuesta de satisfacción"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="form-description" className="text-sm font-medium block mb-2">
+                        Descripción (opcional)
+                      </label>
+                      <Input
+                        id="form-description"
+                        value={formDescription}
+                        onChange={(e) => setFormDescription(e.target.value)}
+                        placeholder="Ej: Tu opinión es importante para nosotros"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label htmlFor="form-description" className="text-sm font-medium block mb-2">
-                      Descripción (opcional)
-                    </label>
-                    <Input
-                      id="form-description"
-                      value={formDescription}
-                      onChange={(e) => setFormDescription(e.target.value)}
-                      placeholder="Ej: Tu opinión es importante para nosotros"
-                    />
+
+                                    {/* Email Collection Setting */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold">Configuración de Privacidad</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="collect-emails"
+                          checked={formSettings.collectEmails}
+                          onChange={(e) => setFormSettings(prev => ({ ...prev, collectEmails: e.target.checked }))}
+                          className="rounded border-gray-300"
+                        />
+                        <label htmlFor="collect-emails" className="text-sm">
+                          Recopilar direcciones de correo electrónico
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Info Notice */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <h4 className="text-sm font-semibold mb-2 flex items-center">
+                      ℹ️ Configuraciones Adicionales
+                    </h4>
+                    <div className="space-y-2 text-xs">
+                      <p>
+                        Para configuraciones adicionales como limitar respuestas por persona, mensaje de confirmación personalizado, 
+                        y otras opciones avanzadas, puedes ajustarlas manualmente en el editor de Google Forms después de crear el formulario.
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -586,6 +632,9 @@ export default function DashboardPage() {
             setLoadedQuestions([]);
             setFormTitle('');
             setFormDescription('');
+                                  setFormSettings({
+                        collectEmails: false
+                      });
           }}
           onClearError={clearError}
         />

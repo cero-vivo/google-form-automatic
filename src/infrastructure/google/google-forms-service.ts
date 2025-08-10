@@ -3,10 +3,15 @@ import { OAuth2Client } from 'google-auth-library';
 import { Question, QuestionEntity } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
 
+export interface GoogleFormSettings {
+  collectEmails?: boolean;
+}
+
 export interface GoogleFormData {
   title: string;
   description?: string;
   questions: Question[];
+  settings?: GoogleFormSettings;
 }
 
 export interface CreatedFormResult {
@@ -48,6 +53,7 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       const auth = this.getAuthClient(accessToken);
       
       console.log('🚀 Creando formulario base:', formData.title);
+      console.log('⚙️ Configuraciones recibidas:', formData.settings);
 
       // 1. Crear el formulario básico (SOLO título según la API)
       const createResponse = await this.formsAPI.forms.create({
@@ -79,7 +85,13 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
         await this.addQuestionsToForm(form.formId, formData.questions, accessToken);
       }
 
-      // 4. Obtener URLs del formulario
+      // 4. Aplicar configuraciones del formulario si están especificadas
+      if (formData.settings) {
+        console.log('⚙️ Aplicando configuraciones del formulario...');
+        await this.applyFormSettings(form.formId, formData.settings, accessToken);
+      }
+
+      // 5. Obtener URLs del formulario
       const formUrl = `https://docs.google.com/forms/d/${form.formId}/viewform`;
       const editUrl = `https://docs.google.com/forms/d/${form.formId}/edit`;
 
@@ -390,6 +402,60 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
     } catch (error: any) {
       console.error('❌ Error compartiendo formulario:', error);
       throw this.handleGoogleAPIError(error);
+    }
+  }
+
+  private async applyFormSettings(formId: string, settings: GoogleFormSettings, accessToken: string): Promise<void> {
+    const auth = this.getAuthClient(accessToken);
+    
+    try {
+      console.log('🔧 Aplicando configuraciones:', settings);
+      const requests: any[] = [];
+
+      const settingsUpdates: any = {};
+      
+      // Aplicar configuraciones de la colección de emails
+      if (settings.collectEmails !== undefined) {
+        const emailCollectionType = settings.collectEmails ? 'RESPONDER_INPUT' : 'DO_NOT_COLLECT';
+        settingsUpdates.emailCollectionType = emailCollectionType;
+        console.log('📧 Configurando recolección de emails:', emailCollectionType);
+      }
+
+      // Solo enviar updateSettings si hay configuraciones que aplicar
+      if (Object.keys(settingsUpdates).length > 0) {
+        const updateMask = [];
+        if (settingsUpdates.emailCollectionType) updateMask.push('emailCollectionType');
+        
+        console.log('🔐 Aplicando configuraciones de settings:', settingsUpdates);
+        requests.push({
+          updateSettings: {
+            settings: settingsUpdates,
+            updateMask: updateMask.join(',')
+          }
+        });
+      }
+
+      // Ejecutar todas las actualizaciones si hay requests
+      if (requests.length > 0) {
+        console.log('📤 Enviando requests:', JSON.stringify(requests, null, 2));
+        
+        await this.formsAPI.forms.batchUpdate({
+          auth,
+          formId,
+          requestBody: {
+            requests
+          }
+        });
+
+        console.log('✅ Configuraciones disponibles del formulario aplicadas exitosamente');
+      } else {
+        console.log('ℹ️ No hay configuraciones disponibles para aplicar');
+      }
+
+    } catch (error) {
+      console.error('❌ Error aplicando configuraciones del formulario:', error);
+      // No lanzar error para no interrumpir la creación del formulario
+      console.warn('⚠️ Algunas configuraciones no pudieron aplicarse, pero el formulario se creó correctamente');
     }
   }
 

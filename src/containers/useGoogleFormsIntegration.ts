@@ -8,11 +8,16 @@ import {
 } from '@/infrastructure/google/google-forms-service';
 import { useAuthContext } from './useAuth';
 
+export interface FormSettings {
+  collectEmails?: boolean;
+}
+
 export interface FormCreationOptions {
   title: string;
   description?: string;
   questions: Question[];
   shareEmails?: string[];
+  settings?: FormSettings;
 }
 
 export interface UseGoogleFormsIntegrationReturn {
@@ -113,7 +118,8 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
       const formData: GoogleFormData = {
         title: options.title,
         description: options.description,
-        questions: options.questions
+        questions: options.questions,
+        settings: options.settings
       };
 
       console.log('🚀 Iniciando creación de formulario:', formData);
