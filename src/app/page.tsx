@@ -95,11 +95,6 @@ export default function HomePage() {
                 Subir Archivo
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="#demo">
-                Ver Demo
-              </Link>
-            </Button>
           </div>
 
           {/* Stats */}
