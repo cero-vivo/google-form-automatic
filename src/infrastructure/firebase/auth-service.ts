@@ -1,12 +1,8 @@
 import { 
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
-  sendPasswordResetEmail,
   updateProfile,
-  updatePassword as firebaseUpdatePassword,
   deleteUser,
   User as FirebaseUser,
   UserCredential,
@@ -17,13 +13,9 @@ import { auth, db, COLLECTIONS } from './config';
 import { UserEntity } from '@/domain/entities/user';
 
 export interface AuthService {
-  signInWithEmail(email: string, password: string): Promise<FirebaseUser>;
-  signUpWithEmail(email: string, password: string, displayName: string): Promise<FirebaseUser>;
   signInWithGoogle(): Promise<FirebaseUser>;
   signOut(): Promise<void>;
-  resetPassword(email: string): Promise<void>;
   updateUserProfile(displayName?: string, photoURL?: string): Promise<void>;
-  updateUserPassword(currentPassword: string, newPassword: string): Promise<void>;
   deleteUserAccount(): Promise<void>;
   getCurrentUser(): FirebaseUser | null;
   onAuthStateChanged(callback: (user: FirebaseUser | null) => void): () => void;
@@ -55,56 +47,6 @@ class FirebaseAuthService implements AuthService {
   private validateFirebaseSetup() {
     if (!this.auth.app.options.apiKey || this.auth.app.options.apiKey === 'demo-api-key') {
       console.warn('⚠️ Firebase no está configurado correctamente. Verifica las variables de entorno.');
-    }
-  }
-
-  async signInWithEmail(email: string, password: string): Promise<FirebaseUser> {
-    try {
-      const userCredential: UserCredential = await signInWithEmailAndPassword(
-        this.auth, 
-        email, 
-        password
-      );
-      
-      const user = userCredential.user;
-      
-      // Actualizar último login
-      await this.updateUserDocument(user.uid, {
-        lastLoginAt: new Date(),
-        updatedAt: new Date()
-      });
-
-      console.log('✅ Firebase sign in successful:', user.email);
-      return user;
-    } catch (error: any) {
-      console.error('❌ Firebase sign in error:', error);
-      throw this.handleAuthError(error);
-    }
-  }
-
-  async signUpWithEmail(email: string, password: string, displayName: string): Promise<FirebaseUser> {
-    try {
-      const userCredential: UserCredential = await createUserWithEmailAndPassword(
-        this.auth,
-        email,
-        password
-      );
-      
-      const user = userCredential.user;
-
-      // Actualizar perfil con displayName
-      await updateProfile(user, {
-        displayName: displayName
-      });
-
-      // Crear documento de usuario en Firestore
-      await this.createUserDocument(user, displayName);
-
-      console.log('✅ Firebase sign up successful:', user.email);
-      return user;
-    } catch (error: any) {
-      console.error('❌ Firebase sign up error:', error);
-      throw this.handleAuthError(error);
     }
   }
 
@@ -161,16 +103,6 @@ class FirebaseAuthService implements AuthService {
     }
   }
 
-  async resetPassword(email: string): Promise<void> {
-    try {
-      await sendPasswordResetEmail(this.auth, email);
-      console.log('✅ Password reset email sent');
-    } catch (error: any) {
-      console.error('❌ Password reset error:', error);
-      throw this.handleAuthError(error);
-    }
-  }
-
   async updateUserProfile(displayName?: string, photoURL?: string): Promise<void> {
     const user = this.getCurrentUser();
     if (!user) {
@@ -194,26 +126,6 @@ class FirebaseAuthService implements AuthService {
     } catch (error: any) {
       console.error('❌ Profile update error:', error);
       throw new Error('Error al actualizar perfil');
-    }
-  }
-
-  async updateUserPassword(currentPassword: string, newPassword: string): Promise<void> {
-    const user = this.getCurrentUser();
-    if (!user || !user.email) {
-      throw new Error('No hay usuario autenticado');
-    }
-
-    try {
-      // Re-autenticar usuario con contraseña actual
-      await signInWithEmailAndPassword(this.auth, user.email, currentPassword);
-      
-      // Actualizar contraseña
-      await firebaseUpdatePassword(user, newPassword);
-
-      console.log('✅ Password updated successfully');
-    } catch (error: any) {
-      console.error('❌ Password update error:', error);
-      throw this.handleAuthError(error);
     }
   }
 

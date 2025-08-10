@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,12 +23,14 @@ import { Question } from '@/domain/entities/question';
 import { useAuthContext } from '@/containers/useAuth';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
 import { FormCreatedModal } from '@/components/organisms/FormCreatedModal';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
   const [loadedQuestions, setLoadedQuestions] = useState<Question[]>([]);
   const [showPreview, setShowPreview] = useState(false);
   const [formTitle, setFormTitle] = useState('');
   const [formDescription, setFormDescription] = useState('');
+  const router = useRouter();
   
   const { user, signOut, loading: authLoading } = useAuthContext();
 
@@ -42,6 +44,13 @@ export default function DashboardPage() {
     clearError,
     clearCreatedForm
   } = useGoogleFormsIntegration();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, authLoading, router]);
 
   const handleQuestionsLoaded = (questions: Question[]) => {
     setLoadedQuestions(questions);
@@ -57,6 +66,7 @@ export default function DashboardPage() {
   const handleCreateForm = async () => {
     if (!user) {
       console.error('No hay usuario autenticado');
+      router.push('/auth/login');
       return;
     }
 
@@ -93,6 +103,30 @@ export default function DashboardPage() {
     return typeMap[type] || type;
   };
 
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated (this will trigger the useEffect)
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground mb-4">Redirigiendo a inicio de sesión...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Header */}
@@ -126,48 +160,57 @@ export default function DashboardPage() {
               Configuración
             </Button>
             
-            {user ? (
-              <>
-                <div className="flex items-center space-x-2">
-                  {user.photoURL && (
-                    <img 
-                      src={user.photoURL} 
-                      alt={user.displayName}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  )}
-                  <div className="hidden sm:block">
-                    <p className="text-sm font-medium">{user.displayName}</p>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => signOut()}
-                  disabled={authLoading}
-                >
-                  Cerrar Sesión
-                </Button>
-                <Button asChild>
-                  <Link href="/create">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nuevo Formulario
-                  </Link>
-                </Button>
-              </>
-            ) : (
-              <Button asChild>
-                <Link href="/auth/login">
-                  Iniciar Sesión
-                </Link>
-              </Button>
-            )}
+            <div className="flex items-center space-x-2">
+              {user.photoURL && (
+                <img 
+                  src={user.photoURL} 
+                  alt={user.displayName}
+                  className="w-8 h-8 rounded-full"
+                />
+              )}
+              <div className="hidden sm:block">
+                <p className="text-sm font-medium">{user.displayName}</p>
+                <p className="text-xs text-muted-foreground">{user.email}</p>
+              </div>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={async () => {
+                await signOut();
+                router.push('/');
+              }}
+              disabled={authLoading}
+            >
+              Cerrar Sesión
+            </Button>
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Authentication-required notice for Google Forms */}
+        {googleFormsError && googleFormsError.includes('sesión con Google ha expirado') && (
+          <Alert className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Sesión expirada:</strong> Tu sesión con Google ha expirado. Para crear formularios, cierra sesión y vuelve a iniciar sesión con Google.
+              <div className="mt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    signOut();
+                    router.push('/auth/login');
+                  }}
+                >
+                  Renovar sesión
+                </Button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {!showPreview ? (
           <>
             {/* Stats Cards */}

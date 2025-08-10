@@ -93,7 +93,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
 
   const createGoogleForm = useCallback(async (options: FormCreationOptions): Promise<CreatedFormResult | null> => {
     if (!user) {
-      setError('Debes estar autenticado para crear formularios');
+      setError('Debes iniciar sesión con Google para crear formularios. La autenticación con Google es necesaria para acceder a Google Forms.');
       return null;
     }
 
@@ -104,10 +104,9 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
       // Verificar permisos
       let accessToken = getAccessToken();
       if (!accessToken) {
-        accessToken = await requestGooglePermissions();
-        if (!accessToken) {
-          throw new Error('No se pudieron obtener los permisos necesarios');
-        }
+        // Si no hay token, el usuario necesita autenticarse
+        setError('Tu sesión con Google ha expirado o no tienes los permisos necesarios. Por favor, cierra sesión y vuelve a iniciar sesión con Google para crear formularios.');
+        return null;
       }
 
       // Preparar datos del formulario
@@ -133,6 +132,12 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
 
       if (!response.ok) {
         const errorData = await response.json();
+        
+        // Manejar errores específicos de autenticación desde la API
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Tu sesión con Google ha expirado. Por favor, cierra sesión y vuelve a iniciar sesión con Google para renovar los permisos.');
+        }
+        
         throw new Error(errorData.error || 'Error al crear formulario');
       }
 
@@ -157,8 +162,11 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
       // Manejar errores específicos de autenticación
       if (errorMessage.includes('Token de acceso inválido') || 
           errorMessage.includes('Token expirado') ||
-          errorMessage.includes('insufficient authentication scopes')) {
-        setError('Tu sesión con Google ha expirado. Por favor, cierra sesión y vuelve a iniciar sesión para renovar los permisos.');
+          errorMessage.includes('insufficient authentication scopes') ||
+          errorMessage.includes('sesión con Google ha expirado')) {
+        setError('Tu sesión con Google ha expirado. Por favor, cierra sesión y vuelve a iniciar sesión con Google para renovar los permisos.');
+      } else if (errorMessage.includes('403') || errorMessage.includes('Forbidden')) {
+        setError('No tienes permisos para crear formularios en Google. Asegúrate de haber iniciado sesión con la cuenta correcta.');
       } else {
         setError(errorMessage);
       }
@@ -168,7 +176,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     } finally {
       setIsCreating(false);
     }
-  }, [user, getAccessToken, requestGooglePermissions]);
+  }, [user, getAccessToken]);
 
   const updateGoogleForm = useCallback(async (formId: string, options: FormCreationOptions): Promise<void> => {
     if (!user) {

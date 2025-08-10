@@ -25,15 +25,11 @@ export interface UseAuthReturn {
   isAuthenticated: boolean;
   
   // Acciones de autenticación
-  signInWithEmail: (email: string, password: string) => Promise<void>;
-  signUpWithEmail: (email: string, password: string, displayName: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
   
   // Acciones de usuario
   updateProfile: (data: Partial<User>) => Promise<void>;
-  updatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   deleteAccount: () => Promise<void>;
   
   // Utilidades
@@ -110,36 +106,6 @@ export const useAuth = (): UseAuthReturn => {
     return unsubscribe;
   }, [convertFirebaseUser, loadUserEntity]);
 
-  const signInWithEmail = useCallback(async (email: string, password: string) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      await firebaseAuthService.signInWithEmail(email, password);
-      // El estado se actualiza automáticamente por onAuthStateChanged
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión';
-      setError(errorMessage);
-      setLoading(false);
-      throw err;
-    }
-  }, []);
-
-  const signUpWithEmail = useCallback(async (email: string, password: string, displayName: string) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      await firebaseAuthService.signUpWithEmail(email, password, displayName);
-      // El estado se actualiza automáticamente por onAuthStateChanged
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al crear la cuenta';
-      setError(errorMessage);
-      setLoading(false);
-      throw err;
-    }
-  }, []);
-
   const signInWithGoogle = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -169,21 +135,6 @@ export const useAuth = (): UseAuthReturn => {
     }
   }, []);
 
-  const resetPassword = useCallback(async (email: string) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      await firebaseAuthService.resetPassword(email);
-      setLoading(false);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al enviar email de recuperación';
-      setError(errorMessage);
-      setLoading(false);
-      throw err;
-    }
-  }, []);
-
   const updateProfile = useCallback(async (data: Partial<User>) => {
     if (!user) {
       throw new Error('No hay usuario autenticado');
@@ -198,25 +149,6 @@ export const useAuth = (): UseAuthReturn => {
       setLoading(false);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al actualizar perfil';
-      setError(errorMessage);
-      setLoading(false);
-      throw err;
-    }
-  }, [user]);
-
-  const updatePassword = useCallback(async (currentPassword: string, newPassword: string) => {
-    if (!user) {
-      throw new Error('No hay usuario autenticado');
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      await firebaseAuthService.updateUserPassword(currentPassword, newPassword);
-      setLoading(false);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al cambiar contraseña';
       setError(errorMessage);
       setLoading(false);
       throw err;
@@ -275,15 +207,11 @@ export const useAuth = (): UseAuthReturn => {
     isAuthenticated,
     
     // Acciones de autenticación
-    signInWithEmail,
-    signUpWithEmail,
     signInWithGoogle,
     signOut,
-    resetPassword,
     
     // Acciones de usuario
     updateProfile,
-    updatePassword,
     deleteAccount,
     
     // Utilidades

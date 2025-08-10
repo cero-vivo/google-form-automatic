@@ -1,10 +1,15 @@
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, FileText, Upload, Zap, CheckCircle, Star, Users } from "lucide-react";
 import Link from "next/link";
+import { useAuthContext } from "@/containers/useAuth";
 
 export default function HomePage() {
+  const { user, loading } = useAuthContext();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Header */}
@@ -32,15 +37,35 @@ export default function HomePage() {
           </nav>
 
           <div className="flex items-center space-x-3">
-            <Button variant="ghost" asChild>
-              <Link href="/auth/login">Iniciar Sesión</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/auth/register">
-                Comenzar Gratis
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            {loading ? (
+              <div className="w-8 h-8 animate-pulse bg-gray-200 rounded-full"></div>
+            ) : user ? (
+              <Button variant="ghost" asChild className="flex items-center space-x-2 p-2">
+                <Link href="/dashboard">
+                  {user.photoURL ? (
+                    <img 
+                      src={user.photoURL} 
+                      alt={user.displayName}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-medium">
+                        {user.displayName?.charAt(0) || user.email?.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                  <span className="hidden sm:inline text-sm font-medium">{user.displayName}</span>
+                </Link>
+              </Button>
+            ) : (
+              <Button asChild>
+                <Link href="/auth/login">
+                  Iniciar con Google
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </header>
