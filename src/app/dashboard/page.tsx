@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import FileUploadCard from '@/components/molecules/FileUploadCard';
 import { 
   Plus, 
@@ -12,21 +14,66 @@ import {
   Users, 
   ArrowLeft,
   Settings,
-  HelpCircle
+  HelpCircle,
+  AlertCircle,
+  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import { Question } from '@/domain/entities/question';
 import { useAuthContext } from '@/containers/useAuth';
+import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
+import { FormCreatedModal } from '@/components/organisms/FormCreatedModal';
 
 export default function DashboardPage() {
   const [loadedQuestions, setLoadedQuestions] = useState<Question[]>([]);
   const [showPreview, setShowPreview] = useState(false);
+  const [formTitle, setFormTitle] = useState('');
+  const [formDescription, setFormDescription] = useState('');
   
   const { user, signOut, loading: authLoading } = useAuthContext();
+
+  const {
+    createGoogleForm,
+    shareGoogleForm,
+    isCreating,
+    isSharing,
+    error: googleFormsError,
+    createdForm,
+    clearError,
+    clearCreatedForm
+  } = useGoogleFormsIntegration();
 
   const handleQuestionsLoaded = (questions: Question[]) => {
     setLoadedQuestions(questions);
     setShowPreview(true);
+    
+    // Generar título sugerido basado en las preguntas
+    if (questions.length > 0) {
+      const suggestedTitle = `Formulario - ${questions.length} preguntas`;
+      setFormTitle(suggestedTitle);
+    }
+  };
+
+  const handleCreateForm = async () => {
+    if (!user) {
+      console.error('No hay usuario autenticado');
+      return;
+    }
+
+    if (loadedQuestions.length === 0) {
+      console.error('No hay preguntas para crear el formulario');
+      return;
+    }
+
+    const result = await createGoogleForm({
+      title: formTitle || 'Formulario sin título',
+      description: formDescription,
+      questions: loadedQuestions
+    });
+
+    if (result) {
+      console.log('✅ Formulario creado exitosamente:', result);
+    }
   };
 
   const formatQuestionType = (type: string): string => {
@@ -243,15 +290,71 @@ export default function DashboardPage() {
                     onClick={() => {
                       setShowPreview(false);
                       setLoadedQuestions([]);
+                      setFormTitle('');
+                      setFormDescription('');
                     }}
                   >
                     Subir otro archivo
                   </Button>
-                  <Button>
-                    Crear Google Form
+                  <Button 
+                    onClick={handleCreateForm}
+                    disabled={isCreating || !formTitle.trim()}
+                  >
+                    {isCreating ? (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2 animate-spin" />
+                        Creando...
+                      </>
+                    ) : (
+                      'Crear Google Form'
+                    )}
                   </Button>
                 </div>
               </div>
+
+              {/* Error Alert */}
+              {googleFormsError && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    {googleFormsError}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Form Configuration */}
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="text-lg">Configuración del Formulario</CardTitle>
+                  <CardDescription>
+                    Personaliza el título y descripción de tu formulario
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label htmlFor="form-title" className="text-sm font-medium block mb-2">
+                      Título del formulario *
+                    </label>
+                    <Input
+                      id="form-title"
+                      value={formTitle}
+                      onChange={(e) => setFormTitle(e.target.value)}
+                      placeholder="Ej: Encuesta de satisfacción"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="form-description" className="text-sm font-medium block mb-2">
+                      Descripción (opcional)
+                    </label>
+                    <Input
+                      id="form-description"
+                      value={formDescription}
+                      onChange={(e) => setFormDescription(e.target.value)}
+                      placeholder="Ej: Tu opinión es importante para nosotros"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Questions Preview */}
@@ -328,14 +431,43 @@ export default function DashboardPage() {
                 <Button variant="outline" size="lg">
                   Guardar como borrador
                 </Button>
-                <Button size="lg">
-                  Crear Google Form
+                <Button 
+                  size="lg"
+                  onClick={handleCreateForm}
+                  disabled={isCreating || !formTitle.trim()}
+                >
+                  {isCreating ? (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2 animate-spin" />
+                      Creando...
+                    </>
+                  ) : (
+                    'Crear Google Form'
+                  )}
                 </Button>
               </div>
             </div>
           </>
         )}
       </div>
+
+      {/* Form Created Modal */}
+      {(createdForm || googleFormsError) && (
+        <FormCreatedModal
+          createdForm={createdForm}
+          error={googleFormsError}
+          onClose={() => {
+            clearCreatedForm();
+            clearError();
+            // Reset estado para crear otro formulario
+            setShowPreview(false);
+            setLoadedQuestions([]);
+            setFormTitle('');
+            setFormDescription('');
+          }}
+          onClearError={clearError}
+        />
+      )}
     </div>
   );
 } 
