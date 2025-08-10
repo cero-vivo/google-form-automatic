@@ -40,8 +40,12 @@ class FirebaseAuthService implements AuthService {
     // Configurar Google Provider
     this.googleProvider.addScope('email');
     this.googleProvider.addScope('profile');
+    // Agregar scopes específicos para Google Forms API
+    this.googleProvider.addScope('https://www.googleapis.com/auth/forms');
+    this.googleProvider.addScope('https://www.googleapis.com/auth/drive');
     this.googleProvider.setCustomParameters({
-      prompt: 'select_account'
+      prompt: 'select_account',
+      access_type: 'offline'
     });
 
     // Verificar configuración básica
@@ -113,18 +117,30 @@ class FirebaseAuthService implements AuthService {
       
       const user = userCredential.user;
       
+      // Obtener el token de acceso de Google
+      const credential = GoogleAuthProvider.credentialFromResult(userCredential);
+      const accessToken = credential?.accessToken;
+      
       // Verificar si es usuario nuevo o existente
       const userDoc = await getDoc(doc(db, COLLECTIONS.USERS, user.uid));
       
       if (!userDoc.exists()) {
         // Usuario nuevo - crear documento
-        await this.createUserDocument(user, user.displayName || 'Usuario');
+        await this.createUserDocument(user, user.displayName || 'Usuario', accessToken);
       } else {
-        // Usuario existente - actualizar último login
-        await this.updateUserDocument(user.uid, {
+        // Usuario existente - actualizar último login y tokens
+        const updates: any = {
           lastLoginAt: new Date(),
           updatedAt: new Date()
-        });
+        };
+        
+        if (accessToken) {
+          updates.googleAccessToken = accessToken;
+          // Los tokens de OAuth suelen expirar en 1 hora
+          updates.googleTokenExpiry = new Date(Date.now() + 3600 * 1000);
+        }
+        
+        await this.updateUserDocument(user.uid, updates);
       }
 
       console.log('✅ Google sign in successful:', user.email);
@@ -230,7 +246,7 @@ class FirebaseAuthService implements AuthService {
   }
 
   // Métodos privados
-  private async createUserDocument(user: FirebaseUser, displayName: string): Promise<void> {
+  private async createUserDocument(user: FirebaseUser, displayName: string, accessToken?: string): Promise<void> {
     const userEntity = new UserEntity(
       user.uid,
       user.email || '',
@@ -238,6 +254,15 @@ class FirebaseAuthService implements AuthService {
       user.emailVerified,
       user.photoURL || undefined
     );
+
+    // Si tenemos accessToken, agregarlo a la entidad
+    if (accessToken) {
+      userEntity.updateGoogleTokens(
+        accessToken,
+        undefined, // No tenemos refresh token desde Firebase Auth
+        new Date(Date.now() + 3600 * 1000) // Expira en 1 hora
+      );
+    }
 
     // Usar toSafeJSON() para evitar datos sensibles y crear datos seguros para Firestore
     const userData = userEntity.toSafeJSON();
@@ -256,6 +281,11 @@ class FirebaseAuthService implements AuthService {
       plan: userData.plan,
       ...(userData.subscriptionId && { subscriptionId: userData.subscriptionId }),
       ...(userData.subscriptionExpiry && { subscriptionExpiry: userData.subscriptionExpiry }),
+      // Agregar tokens de Google si están disponibles
+      ...(accessToken && { 
+        googleAccessToken: accessToken,
+        googleTokenExpiry: new Date(Date.now() + 3600 * 1000)
+      }),
       createdAt: new Date(),
       updatedAt: new Date(),
       lastLoginAt: new Date()

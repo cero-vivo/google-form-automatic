@@ -1,0 +1,56 @@
+Pregunta,Tipo,Requerida,Opción 1,Opción 2,Opción 3,Opción 4,Opción 5,Opción 6,Opción 7,Opción 8,Opción 9,Opción 10
+Cuestionario para Identificar la Identidad de Nuestra Marca,Encabezado de Sección,No
+"Bienvenidos al cuestionario para definir y fortalecer la identidad de nuestra marca. A través de estas preguntas buscaremos comprender quiénes somos, qué representamos y cómo queremos que nos perciban nuestros clientes. Responde con sinceridad y detalle; no hay respuestas correctas o incorrectas, solo tu visión y experiencia.",Descripción,No
+Sección 1: Propósito y Misión,Encabezado de Sección,No
+¿Por qué existimos? ¿Cuál es el motor que impulsa nuestra marca?,Descripción,No
+¿Cuál es el propósito principal de nuestra marca? ¿Qué problema o necesidad busca resolver?,Respuesta larga,Sí
+¿Cómo describirías la misión de nuestra marca en una frase clara y directa?,Respuesta larga,Sí
+¿Quiénes somos como marca?,Respuesta corta,Sí
+¿Qué nos diferencia de otras marcas similares en el mercado?,Respuesta larga,Sí
+Sección 2: Visión y Proyección a Futuro,Encabezado de Sección,No
+¿Dónde queremos estar? ¿Cómo visualizamos nuestro crecimiento?,Descripción,No
+¿Cuál es la visión de nuestra marca para los próximos 5 años?,Respuesta larga,Sí
+¿Qué impacto queremos lograr en nuestro sector o comunidad a largo plazo?,Respuesta larga,Sí
+Si nuestra marca pudiera alcanzar cualquier meta ¿cuál sería?,Respuesta corta,Sí
+Sección 3: Valores y Principios Rectores,Encabezado de Sección,No
+¿Qué nos guía en todas nuestras decisiones?,Descripción,No
+Selecciona los valores que consideras más importantes para nuestra marca,Selección múltiple,Sí,Innovación,Honestidad,Sostenibilidad,Calidad,Cercanía,Transparencia,Excelencia,Responsabilidad,Creatividad,Confianza
+¿Puedes compartir una experiencia o situación que refleje cómo vivimos estos valores?,Respuesta larga,Sí
+¿Qué principios no estamos dispuestos a comprometer bajo ninguna circunstancia?,Respuesta larga,Sí
+Sección 4: Personalidad y Tono de Voz,Encabezado de Sección,No
+¿Cómo hablamos y nos mostramos al mundo?,Descripción,No
+Si nuestra marca fuera una persona ¿cómo la describirías en tres palabras?,Respuesta corta,Sí
+Si nuestra marca fuera un personaje en una película ¿qué tipo de personaje sería y por qué?,Respuesta larga,Sí
+¿Qué emociones queremos provocar en quienes interactúan con nuestra marca?,Respuesta larga,Sí
+¿Qué tono de voz usamos o queremos usar?,Opción múltiple,Sí,Formal,Cercano,Divertido,Serio,Inspirador,Técnico,Conversacional,Profesional
+Sección 5: Audiencia y Cliente Ideal,Encabezado de Sección,No
+¿A quién nos dirigimos?,Descripción,No
+Describe a nuestro cliente ideal: ¿quién es qué le gusta qué necesita?,Respuesta larga,Sí
+¿Qué problemas o deseos específicos tiene nuestro cliente ideal que nosotros podemos resolver?,Respuesta larga,Sí
+¿Cómo se enteran nuestros clientes de nuestra marca?,Respuesta corta,Sí
+Sección 6: Propuesta de Valor y Diferenciadores,Encabezado de Sección,No
+¿Qué ofrecemos que nadie más ofrece igual?,Descripción,No
+¿Cuál es nuestra propuesta de valor principal?,Respuesta larga,Sí
+¿Qué nos hace diferentes o mejores frente a la competencia?,Respuesta larga,Sí
+¿Por qué nuestros clientes deberían elegirnos a nosotros?,Respuesta corta,Sí
+Sección 7: Percepción Actual vs Deseada,Encabezado de Sección,No
+¿Cómo nos ven hoy y cómo queremos que nos vean?,Descripción,No
+¿Cómo crees que nos perciben actualmente nuestros clientes y el mercado?,Respuesta larga,Sí
+¿Cómo te gustaría que nos percibieran en el futuro?,Respuesta larga,Sí
+¿Hay alguna discrepancia entre la percepción actual y la deseada? ¿Cuál es?,Respuesta larga,Sí
+Sección 8: Competencia y Posicionamiento,Encabezado de Sección,No
+¿Quiénes son nuestros competidores y cómo nos posicionamos?,Descripción,No
+¿Quiénes son nuestros principales competidores?,Respuesta larga,Sí
+¿Qué hacen bien y qué no hacen bien nuestros competidores?,Respuesta larga,Sí
+¿Cómo queremos posicionarnos en comparación con ellos?,Respuesta larga,Sí
+Sección 9: Elementos Visuales y Sensoriales,Encabezado de Sección,No
+¿Qué imagen proyectamos a través de colores formas y estilo?,Descripción,No
+¿Qué colores o estilos visuales sientes que representan mejor nuestra marca?,Respuesta corta,Sí
+¿Qué tipo de imágenes símbolos o iconografía asocias con nuestra marca?,Respuesta larga,Sí
+¿Qué sensaciones o atmósferas queremos transmitir con nuestra identidad visual?,Respuesta larga,Sí
+¿Hay alguna inspiración visual o referencias que deberíamos considerar?,Respuesta larga,Sí
+Sección 10: Síntesis y Reflexión Final,Encabezado de Sección,No
+Recopilamos todo lo aprendido,Descripción,No
+Si tuvieras que resumir la esencia de nuestra marca en una frase ¿cuál sería?,Respuesta larga,Sí
+¿Qué descubriste de nuestra marca durante este ejercicio?,Respuesta larga,Sí
+¿Qué aspecto crees que debemos priorizar para fortalecer nuestra identidad de marca?,Respuesta larga,Sí

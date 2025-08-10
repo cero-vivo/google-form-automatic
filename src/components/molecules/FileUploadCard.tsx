@@ -1,296 +1,258 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Upload, 
-  FileText, 
-  AlertCircle, 
-  CheckCircle, 
-  Loader2,
-  X,
-  RefreshCw,
-  Download
-} from 'lucide-react';
+import { Upload, FileText, CheckCircle, AlertCircle, FileSpreadsheet } from 'lucide-react';
 import { useFileUpload } from '@/containers/useFileUpload';
+import { QuestionType } from '@/domain/types';
+import { Question } from '@/domain/entities/question';
 
 export interface FileUploadCardProps {
-  onQuestionsLoaded?: (questions: any[]) => void;
+  onQuestionsLoaded?: (questions: Question[]) => void;
   className?: string;
-  disabled?: boolean;
 }
 
-export const FileUploadCard: React.FC<FileUploadCardProps> = ({
+const FileUploadCard: React.FC<FileUploadCardProps> = ({ 
   onQuestionsLoaded,
-  className = '',
-  disabled = false
+  className = ""
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const {
-    file,
-    questions,
-    loading,
-    progress,
-    error,
-    validation,
-    handleFileSelect,
-    handleFileDrop,
-    clearFile,
+  const { 
+    loading, 
+    progress, 
+    error, 
+    questions, 
+    handleFileSelect: uploadFile, 
     clearError,
-    retryParsing
+    clearFile
   } = useFileUpload();
 
   // Notificar cuando se cargan las preguntas
-  React.useEffect(() => {
+  useEffect(() => {
     if (questions.length > 0 && onQuestionsLoaded) {
       onQuestionsLoaded(questions);
     }
   }, [questions, onQuestionsLoaded]);
 
-  const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      await handleFileSelect(selectedFile);
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      uploadFile(file);
     }
   };
 
-  const handleDropZoneClick = () => {
-    if (!disabled && !loading) {
-      fileInputRef.current?.click();
-    }
+  const getQuestionTypeLabel = (type: QuestionType): string => {
+    const labels = {
+      [QuestionType.SHORT_TEXT]: 'Texto Corto',
+      [QuestionType.LONG_TEXT]: 'Texto Largo',
+      [QuestionType.MULTIPLE_CHOICE]: 'Opción Múltiple',
+      [QuestionType.CHECKBOXES]: 'Selección Múltiple',
+      [QuestionType.DROPDOWN]: 'Lista Desplegable',
+      [QuestionType.LINEAR_SCALE]: 'Escala Linear',
+      [QuestionType.DATE]: 'Fecha',
+      [QuestionType.TIME]: 'Hora',
+      [QuestionType.EMAIL]: 'Email',
+      [QuestionType.NUMBER]: 'Número',
+      [QuestionType.PHONE]: 'Teléfono'
+    };
+    return labels[type] || type;
   };
 
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
-  const handleDragEnter = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
-  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
-  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    if (!disabled && !loading) {
-      await handleFileDrop(event);
-    }
-  };
-
-  const getFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const downloadSampleFile = () => {
-    // Crear un archivo CSV de ejemplo
-    const sampleData = `Pregunta,Tipo,Opciones,Requerido,Descripción
-¿Cuál es tu nombre?,texto_corto,,true,Ingresa tu nombre completo
-¿Tu edad?,numero,,true,Edad en años
-¿Color favorito?,opcion_multiple,"Rojo,Verde,Azul,Amarillo",false,Selecciona tu color preferido
-¿Cómo calificarías nuestro servicio?,escala,,true,Del 1 al 10
-¿Comentarios adicionales?,texto_largo,,false,Cualquier comentario que quieras agregar`;
-
-    const blob = new Blob([sampleData], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'ejemplo-formulario.csv';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const getTypeColor = (type: QuestionType): string => {
+    const colors = {
+      [QuestionType.SHORT_TEXT]: 'bg-blue-100 text-blue-800',
+      [QuestionType.LONG_TEXT]: 'bg-purple-100 text-purple-800',
+      [QuestionType.MULTIPLE_CHOICE]: 'bg-green-100 text-green-800',
+      [QuestionType.CHECKBOXES]: 'bg-yellow-100 text-yellow-800',
+      [QuestionType.DROPDOWN]: 'bg-orange-100 text-orange-800',
+      [QuestionType.LINEAR_SCALE]: 'bg-pink-100 text-pink-800',
+      [QuestionType.DATE]: 'bg-red-100 text-red-800',
+      [QuestionType.TIME]: 'bg-red-100 text-red-800',
+      [QuestionType.EMAIL]: 'bg-indigo-100 text-indigo-800',
+      [QuestionType.NUMBER]: 'bg-gray-100 text-gray-800',
+      [QuestionType.PHONE]: 'bg-cyan-100 text-cyan-800'
+    };
+    return colors[type] || 'bg-gray-100 text-gray-800';
   };
 
   return (
-    <Card className={`w-full max-w-2xl mx-auto ${className}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Upload className="h-5 w-5" />
-          Subir Archivo Excel/CSV
-        </CardTitle>
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Formatos soportados: .xlsx, .xls, .csv (máximo 10MB)
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={downloadSampleFile}
-            className="flex items-center gap-1"
-          >
-            <Download className="h-3 w-3" />
-            Descargar ejemplo
-          </Button>
-        </div>
-      </CardHeader>
+    <div className={`space-y-6 ${className}`}>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Upload className="w-5 h-5" />
+            Subir Archivo de Preguntas
+          </CardTitle>
+          <CardDescription>
+            Sube un archivo Excel (.xlsx) o CSV (.csv) con las preguntas para tu formulario
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Formato Compatible */}
+          <Alert>
+            <FileSpreadsheet className="w-4 h-4" />
+            <AlertDescription>
+              <strong>Formato Compatible:</strong> Tu archivo debe tener las columnas:
+              <br />
+              <code className="bg-gray-100 px-1 rounded text-sm">Pregunta | Tipo | Requerida | Opción 1 | Opción 2 | ...</code>
+              <br />
+              <small className="text-gray-600">
+                Tipos soportados: Respuesta corta, Respuesta larga, Opción múltiple, Selección múltiple, etc.
+              </small>
+            </AlertDescription>
+          </Alert>
 
-      <CardContent className="space-y-4">
-        {/* Zona de Drop */}
-        <div
-          className={`
-            relative border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer
-            ${loading || disabled 
-              ? 'border-muted-foreground/25 bg-muted/50 cursor-not-allowed' 
-              : 'border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-muted/25'
-            }
-            ${file && !error ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950' : ''}
-          `}
-          onClick={handleDropZoneClick}
-          onDragOver={handleDragOver}
-          onDragEnter={handleDragEnter}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            onChange={handleFileInputChange}
-            className="hidden"
-            disabled={disabled || loading}
-          />
+          {/* Upload Area */}
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <input
+              type="file"
+              accept=".xlsx,.csv"
+              onChange={handleFileSelect}
+              disabled={loading}
+              className="hidden"
+              id="file-upload"
+            />
+            <label
+              htmlFor="file-upload"
+              className={`cursor-pointer flex flex-col items-center gap-2 ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              <FileText className="w-12 h-12 text-gray-400" />
+              <span className="text-lg font-medium">
+                {loading ? 'Procesando archivo...' : 'Haz clic para seleccionar archivo'}
+              </span>
+              <span className="text-sm text-gray-500">
+                Archivos soportados: .xlsx, .csv (máx. 10MB)
+              </span>
+            </label>
+          </div>
 
-          {loading ? (
-            <div className="space-y-4">
-              <Loader2 className="h-12 w-12 mx-auto animate-spin text-blue-500" />
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Procesando archivo...</p>
-                <Progress value={progress} className="w-full" />
-                <p className="text-xs text-muted-foreground">{progress}% completado</p>
+          {/* Progress */}
+          {loading && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Procesando archivo...</span>
+                <span>{progress}%</span>
               </div>
-            </div>
-          ) : file ? (
-            <div className="space-y-4">
-              <CheckCircle className="h-12 w-12 mx-auto text-green-500" />
-              <div className="space-y-2">
-                <p className="font-medium text-green-700 dark:text-green-300">
-                  Archivo cargado exitosamente
-                </p>
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <FileText className="h-4 w-4" />
-                  <span>{file.name}</span>
-                  <Badge variant="outline">{getFileSize(file.size)}</Badge>
-                </div>
-                {questions.length > 0 && (
-                  <Badge variant="default" className="bg-green-500">
-                    {questions.length} pregunta{questions.length !== 1 ? 's' : ''} encontrada{questions.length !== 1 ? 's' : ''}
-                  </Badge>
-                )}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  clearFile();
-                }}
-                className="flex items-center gap-1"
-              >
-                <X className="h-3 w-3" />
-                Limpiar
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <Upload className="h-12 w-12 mx-auto text-muted-foreground" />
-              <div className="space-y-2">
-                <p className="text-lg font-medium">
-                  Arrastra tu archivo aquí o haz clic para seleccionar
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Sube archivos Excel (.xlsx, .xls) o CSV con tus preguntas
-                </p>
-              </div>
+              <Progress value={progress} className="w-full" />
             </div>
           )}
-        </div>
 
-        {/* Información de validación */}
-        {validation && (
-          <div className="space-y-2">
-            {validation.warnings.length > 0 && (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  <div className="space-y-1">
-                    <p className="font-medium">Advertencias:</p>
-                    <ul className="list-disc list-inside text-sm">
-                      {validation.warnings.map((warning, index) => (
-                        <li key={index}>{warning}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
-        )}
+          {/* Error */}
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="w-4 h-4" />
+              <AlertDescription>
+                {error}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearError}
+                  className="ml-2"
+                >
+                  Intentar de nuevo
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
 
-        {/* Error */}
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <p className="font-medium">Error al procesar archivo</p>
-                  <p className="text-sm">{error}</p>
-                </div>
-                <div className="flex items-center gap-2">
+          {/* Success with Questions Preview */}
+          {questions.length > 0 && (
+            <Alert>
+              <CheckCircle className="w-4 h-4" />
+              <AlertDescription>
+                <div className="flex justify-between items-center">
+                  <span>✅ {questions.length} preguntas procesadas exitosamente</span>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={clearError}
+                    onClick={clearFile}
                   >
-                    <X className="h-3 w-3" />
+                    Limpiar
                   </Button>
-                  {file && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={retryParsing}
-                      disabled={loading}
-                    >
-                      <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
-                      Reintentar
-                    </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Questions Preview */}
+      {questions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Preview de Preguntas ({questions.length})
+            </CardTitle>
+            <CardDescription>
+              Revisa las preguntas antes de crear el formulario
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {questions.map((question, index) => (
+                <div
+                  key={question.id}
+                  className="border rounded-lg p-4 space-y-2"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-medium text-gray-500">
+                          #{index + 1}
+                        </span>
+                        <Badge className={getTypeColor(question.type)}>
+                          {getQuestionTypeLabel(question.type)}
+                        </Badge>
+                        {question.required && (
+                          <Badge variant="destructive" className="text-xs">
+                            Requerida
+                          </Badge>
+                        )}
+                      </div>
+                      <h4 className="font-medium text-gray-900">
+                        {question.title}
+                      </h4>
+                      {question.description && (
+                        <p className="text-sm text-gray-600 mt-1">
+                          {question.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Options Preview */}
+                  {question.multipleChoiceConfig?.options && (
+                    <div className="mt-3">
+                      <p className="text-xs font-medium text-gray-500 mb-2">
+                        Opciones disponibles:
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {question.multipleChoiceConfig.options.map((option, optIndex) => (
+                          <Badge
+                            key={optIndex}
+                            variant="outline"
+                            className="text-xs"
+                          >
+                            {option}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
-              </div>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Formato esperado */}
-        {!file && !loading && (
-          <div className="bg-muted/50 rounded-lg p-4">
-            <h4 className="text-sm font-medium mb-2">Formato esperado del archivo:</h4>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>• <strong>Pregunta:</strong> El texto de la pregunta</p>
-              <p>• <strong>Tipo:</strong> texto, opcion_multiple, escala, etc.</p>
-              <p>• <strong>Opciones:</strong> Para preguntas de opción múltiple (separadas por comas)</p>
-              <p>• <strong>Requerido:</strong> true/false o sí/no</p>
-              <p>• <strong>Descripción:</strong> Texto adicional (opcional)</p>
+              ))}
             </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
-}; 
+};
+
+export default FileUploadCard; 

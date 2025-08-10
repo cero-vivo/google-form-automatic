@@ -4,30 +4,74 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileUploadCard } from '@/components/molecules/FileUploadCard';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import FileUploadCard from '@/components/molecules/FileUploadCard';
 import { 
   ArrowLeft,
   FileText,
   Upload,
   Edit,
   Sparkles,
-  Plus
+  Plus,
+  AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { Question } from '@/domain/entities/question';
 import { useAuthContext } from '@/containers/useAuth';
+import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
+import { FormCreatedModal } from '@/components/organisms/FormCreatedModal';
 import { useRouter } from 'next/navigation';
 
 export default function CreatePage() {
   const [selectedMethod, setSelectedMethod] = useState<'upload' | 'blank' | 'template' | null>(null);
   const [loadedQuestions, setLoadedQuestions] = useState<Question[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const [formTitle, setFormTitle] = useState('');
+  const [formDescription, setFormDescription] = useState('');
   const { user } = useAuthContext();
   const router = useRouter();
 
+  const {
+    createGoogleForm,
+    shareGoogleForm,
+    isCreating,
+    isSharing,
+    error: googleFormsError,
+    createdForm,
+    clearError,
+    clearCreatedForm
+  } = useGoogleFormsIntegration();
+
   const handleQuestionsLoaded = (questions: Question[]) => {
     setLoadedQuestions(questions);
-    // Redirigir a editor con las preguntas
-    console.log('Preguntas cargadas:', questions);
+    setShowPreview(true);
+    
+    // Generar título sugerido basado en las preguntas
+    if (questions.length > 0) {
+      setFormTitle(`Formulario - ${new Date().toLocaleDateString()}`);
+    }
+  };
+
+  const handleCreateGoogleForm = async () => {
+    if (loadedQuestions.length === 0) {
+      return;
+    }
+
+    const result = await createGoogleForm({
+      title: formTitle || 'Mi Formulario',
+      description: formDescription,
+      questions: loadedQuestions
+    });
+
+    if (result) {
+      console.log('✅ Formulario creado en Google:', result);
+    }
+  };
+
+  const handleShareForm = async (emails: string[]) => {
+    if (createdForm) {
+      await shareGoogleForm(createdForm.formId, emails);
+    }
   };
 
   const creationMethods = [
@@ -198,28 +242,208 @@ export default function CreatePage() {
           </>
         ) : selectedMethod === 'upload' ? (
           <>
-            {/* File Upload Section */}
-            <div className="max-w-4xl mx-auto">
-              <div className="mb-8">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setSelectedMethod(null)}
-                  className="mb-4"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Cambiar método
-                </Button>
-                <h2 className="text-2xl font-bold mb-2">Subir Archivo Excel/CSV</h2>
-                <p className="text-muted-foreground">
-                  Sube tu archivo con las preguntas y nosotros nos encargamos del resto
-                </p>
-              </div>
+            {!showPreview ? (
+              <>
+                {/* File Upload Section */}
+                <div className="max-w-4xl mx-auto">
+                  <div className="mb-8">
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => setSelectedMethod(null)}
+                      className="mb-4"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Cambiar método
+                    </Button>
+                    <h2 className="text-2xl font-bold mb-2">Subir Archivo Excel/CSV</h2>
+                    <p className="text-muted-foreground">
+                      Sube tu archivo con las preguntas y nosotros nos encargamos del resto
+                    </p>
+                  </div>
 
-              <FileUploadCard 
-                onQuestionsLoaded={handleQuestionsLoaded}
-                className="mb-8"
-              />
-            </div>
+                  <FileUploadCard 
+                    onQuestionsLoaded={handleQuestionsLoaded}
+                    className="mb-8"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Preview and Form Creation Section */}
+                <div className="max-w-4xl mx-auto">
+                  <div className="mb-8">
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => {
+                        setShowPreview(false);
+                        setLoadedQuestions([]);
+                        setFormTitle('');
+                        setFormDescription('');
+                      }}
+                      className="mb-4"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Subir otro archivo
+                    </Button>
+                    <h2 className="text-2xl font-bold mb-2">Configurar Formulario</h2>
+                    <p className="text-muted-foreground">
+                      Revisa las preguntas y personaliza tu formulario antes de crearlo en Google Forms
+                    </p>
+                  </div>
+
+                  {/* Form Configuration */}
+                  <Card className="mb-6">
+                    <CardHeader>
+                      <CardTitle>Información del Formulario</CardTitle>
+                      <CardDescription>
+                        Personaliza el título y descripción de tu formulario
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <label htmlFor="title" className="text-sm font-medium mb-2 block">
+                          Título del formulario
+                        </label>
+                        <input
+                          id="title"
+                          type="text"
+                          value={formTitle}
+                          onChange={(e) => setFormTitle(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Ej: Encuesta de Satisfacción del Cliente"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="description" className="text-sm font-medium mb-2 block">
+                          Descripción (opcional)
+                        </label>
+                        <textarea
+                          id="description"
+                          value={formDescription}
+                          onChange={(e) => setFormDescription(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          rows={3}
+                          placeholder="Describe el propósito de este formulario..."
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Questions Preview */}
+                  <Card className="mb-6">
+                    <CardHeader>
+                      <CardTitle>Vista Previa de Preguntas ({loadedQuestions.length})</CardTitle>
+                      <CardDescription>
+                        Estas preguntas se crearán en tu formulario de Google
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {loadedQuestions.slice(0, 5).map((question, index) => (
+                          <div key={question.id} className="border-l-4 border-blue-500 pl-4 py-2">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h4 className="font-medium">
+                                  {index + 1}. {question.title}
+                                  {question.required && <span className="text-red-500 ml-1">*</span>}
+                                </h4>
+                                {question.description && (
+                                  <p className="text-sm text-muted-foreground mt-1">
+                                    {question.description}
+                                  </p>
+                                )}
+                                <Badge variant="outline" className="mt-2">
+                                  {question.type.replace('_', ' ')}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {loadedQuestions.length > 5 && (
+                          <div className="text-center text-muted-foreground text-sm">
+                            ... y {loadedQuestions.length - 5} preguntas más
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Error Display */}
+                  {googleFormsError && (
+                    <Alert variant="destructive" className="mb-6">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        {googleFormsError}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={clearError}
+                          className="ml-2"
+                        >
+                          Cerrar
+                        </Button>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {/* Create Form Actions */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Crear Formulario en Google</CardTitle>
+                      <CardDescription>
+                        Tu formulario se creará automáticamente en Google Forms y podrás editarlo desde allí
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <Button
+                          onClick={handleCreateGoogleForm}
+                          disabled={isCreating || loadedQuestions.length === 0 || !formTitle.trim()}
+                          className="flex-1"
+                          size="lg"
+                        >
+                          {isCreating ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Creando en Google Forms...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="h-4 w-4 mr-2" />
+                              Crear Formulario de Google
+                            </>
+                          )}
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setShowPreview(false);
+                            setLoadedQuestions([]);
+                          }}
+                          className="sm:w-auto"
+                        >
+                          Cancelar
+                        </Button>
+                      </div>
+
+                      {loadedQuestions.length === 0 && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Primero debes cargar algunas preguntas
+                        </p>
+                      )}
+                      
+                      {!formTitle.trim() && loadedQuestions.length > 0 && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Ingresa un título para el formulario
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </>
+            )}
           </>
         ) : selectedMethod === 'blank' ? (
           <>
@@ -281,6 +505,25 @@ export default function CreatePage() {
           </>
         )}
       </div>
+
+      {/* Form Created Modal */}
+      {(createdForm || googleFormsError) && (
+        <FormCreatedModal
+          createdForm={createdForm}
+          error={googleFormsError}
+          onClose={() => {
+            clearCreatedForm();
+            clearError();
+            // Reset estado para crear otro formulario
+            setShowPreview(false);
+            setLoadedQuestions([]);
+            setFormTitle('');
+            setFormDescription('');
+            setSelectedMethod(null);
+          }}
+          onClearError={clearError}
+        />
+      )}
     </div>
   );
 } 

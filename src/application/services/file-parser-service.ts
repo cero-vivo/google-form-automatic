@@ -237,6 +237,11 @@ export class FileParserServiceImpl implements FileParserService {
       }
     });
 
+    // Detectar formato específico de Google Forms
+    if (this.isGoogleFormsFormat(headers)) {
+      return this.parseGoogleFormsRow(row, rowNumber);
+    }
+
     // Validar que tenga pregunta
     const questionText = rowData.question?.toString().trim();
     if (!questionText) {
@@ -280,6 +285,113 @@ export class FileParserServiceImpl implements FileParserService {
     }
 
     return question;
+  }
+
+  private isGoogleFormsFormat(headers: string[]): boolean {
+    // Detectar si el formato es compatible con tu CSV específico
+    const headerLower = headers.map(h => h.toLowerCase().trim());
+    return headerLower.includes('pregunta') && 
+           headerLower.includes('tipo') && 
+           headerLower.includes('requerida');
+  }
+
+  private parseGoogleFormsRow(row: any[], rowNumber: number): Question | null {
+    const [pregunta, tipo, requerida, ...opciones] = row;
+
+    // Saltar filas que son headers de sección o descripciones
+    const tipoLower = (tipo || '').toLowerCase().trim();
+    if (tipoLower.includes('encabezado') || 
+        tipoLower.includes('descripción') || 
+        tipoLower.includes('section') ||
+        !pregunta || !pregunta.toString().trim()) {
+      console.log(`⏭️ Saltando fila ${rowNumber}: tipo "${tipo}"`);
+      return null;
+    }
+
+    try {
+      const questionId = `q_${Date.now()}_${rowNumber}`;
+      const isRequired = (requerida || '').toString().toLowerCase().trim() === 'sí' || 
+                        (requerida || '').toString().toLowerCase().trim() === 'si' ||
+                        (requerida || '').toString().toLowerCase().trim() === 'yes';
+
+      // Mapear tipos de Google Forms a nuestros tipos
+      const questionType = this.mapGoogleFormsType(tipoLower);
+      
+      // Filtrar opciones válidas (solo para tipos que las necesitan)
+      const validOptions = opciones
+        .filter(opt => opt && opt.toString().trim().length > 0)
+        .map(opt => opt.toString().trim());
+
+      const question: Question = {
+        id: questionId,
+        type: questionType,
+        title: pregunta.toString().trim(),
+        description: undefined,
+        required: isRequired,
+        order: rowNumber,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Agregar configuración específica según el tipo
+      if ((questionType === QuestionType.MULTIPLE_CHOICE || 
+           questionType === QuestionType.CHECKBOXES || 
+           questionType === QuestionType.DROPDOWN) && 
+          validOptions.length > 0) {
+        question.multipleChoiceConfig = {
+          options: validOptions,
+          allowOther: false
+        };
+      }
+
+      console.log(`✓ Pregunta parseada: "${question.title}" (${question.type}) - Requerida: ${question.required}`);
+      return question;
+
+    } catch (error) {
+      console.error(`Error parseando fila ${rowNumber}:`, error);
+      return null;
+    }
+  }
+
+  private mapGoogleFormsType(tipo: string): QuestionType {
+    tipo = tipo.toLowerCase().trim();
+    
+    if (tipo.includes('respuesta corta') || tipo.includes('short')) {
+      return QuestionType.SHORT_TEXT;
+    }
+    if (tipo.includes('respuesta larga') || tipo.includes('long') || tipo.includes('paragraph')) {
+      return QuestionType.LONG_TEXT;
+    }
+    if (tipo.includes('selección múltiple') || tipo.includes('checkbox') || tipo.includes('múltiple')) {
+      return QuestionType.CHECKBOXES;
+    }
+    if (tipo.includes('opción múltiple') || tipo.includes('radio') || tipo.includes('choice')) {
+      return QuestionType.MULTIPLE_CHOICE;
+    }
+    if (tipo.includes('dropdown') || tipo.includes('lista') || tipo.includes('desplegable')) {
+      return QuestionType.DROPDOWN;
+    }
+    if (tipo.includes('escala') || tipo.includes('scale')) {
+      return QuestionType.LINEAR_SCALE;
+    }
+    if (tipo.includes('fecha') || tipo.includes('date')) {
+      return QuestionType.DATE;
+    }
+    if (tipo.includes('hora') || tipo.includes('time')) {
+      return QuestionType.TIME;
+    }
+    if (tipo.includes('email') || tipo.includes('correo')) {
+      return QuestionType.EMAIL;
+    }
+    if (tipo.includes('número') || tipo.includes('number')) {
+      return QuestionType.NUMBER;
+    }
+    if (tipo.includes('teléfono') || tipo.includes('phone')) {
+      return QuestionType.PHONE;
+    }
+
+    // Por defecto, usar texto corto
+    return QuestionType.SHORT_TEXT;
   }
 
   private parseQuestionType(typeText?: string): QuestionType {
