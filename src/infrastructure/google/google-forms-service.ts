@@ -22,12 +22,24 @@ export interface CreatedFormResult {
   questionCount: number;
 }
 
+export interface UserForm {
+  id: string;
+  title: string;
+  description?: string;
+  googleFormUrl: string;
+  editUrl: string;
+  responseCount?: number;
+  createdAt: Date;
+  modifiedAt: Date;
+}
+
 export interface GoogleFormsService {
   createForm(formData: GoogleFormData, accessToken: string): Promise<CreatedFormResult>;
   updateForm(formId: string, formData: GoogleFormData, accessToken: string): Promise<void>;
   deleteForm(formId: string, accessToken: string): Promise<void>;
   getFormResponses(formId: string, accessToken: string): Promise<any[]>;
   shareForm(formId: string, emails: string[], accessToken: string): Promise<void>;
+  getUserForms(accessToken: string): Promise<UserForm[]>;
 }
 
 class GoogleFormsServiceImpl implements GoogleFormsService {
@@ -491,6 +503,87 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
     }
 
     return new Error(error.message || 'Error desconocido de Google API');
+  }
+
+  async getUserForms(accessToken: string): Promise<UserForm[]> {
+    try {
+      const auth = this.getAuthClient(accessToken);
+      
+      console.log('📋 Obteniendo formularios del usuario...');
+
+      // Buscar archivos de tipo Google Forms en Google Drive
+      const driveResponse = await this.driveAPI.files.list({
+        auth,
+        q: "mimeType='application/vnd.google-apps.form' and trashed=false",
+        fields: 'files(id,name,description,createdTime,modifiedTime,webViewLink)',
+        orderBy: 'modifiedTime desc'
+      });
+
+      const files = driveResponse.data.files || [];
+      console.log(`✅ ${files.length} formularios encontrados`);
+
+      const userForms: UserForm[] = [];
+
+      // Para cada formulario, obtener información adicional
+      for (const file of files) {
+        if (file.id && file.name) {
+          try {
+            // Obtener información del formulario desde Forms API
+            const formResponse = await this.formsAPI.forms.get({
+              auth,
+              formId: file.id
+            });
+
+            const form = formResponse.data;
+            const responseCount = await this.getFormResponseCount(file.id, accessToken);
+
+            const userForm: UserForm = {
+              id: file.id,
+              title: form.info?.title || file.name,
+              description: form.info?.description || file.description || undefined,
+              googleFormUrl: `https://docs.google.com/forms/d/${file.id}/viewform`,
+              editUrl: `https://docs.google.com/forms/d/${file.id}/edit`,
+              responseCount,
+              createdAt: file.createdTime ? new Date(file.createdTime) : new Date(),
+              modifiedAt: file.modifiedTime ? new Date(file.modifiedTime) : new Date()
+            };
+
+            userForms.push(userForm);
+          } catch (formError) {
+            console.warn(`⚠️ Error obteniendo detalles del formulario ${file.id}:`, formError);
+            // Agregar formulario con información básica si no se pueden obtener los detalles
+            const userForm: UserForm = {
+              id: file.id,
+              title: file.name,
+              description: file.description || undefined,
+              googleFormUrl: `https://docs.google.com/forms/d/${file.id}/viewform`,
+              editUrl: `https://docs.google.com/forms/d/${file.id}/edit`,
+              responseCount: 0,
+              createdAt: file.createdTime ? new Date(file.createdTime) : new Date(),
+              modifiedAt: file.modifiedTime ? new Date(file.modifiedTime) : new Date()
+            };
+            userForms.push(userForm);
+          }
+        }
+      }
+
+      console.log(`✅ ${userForms.length} formularios procesados exitosamente`);
+      return userForms;
+
+    } catch (error: any) {
+      console.error('❌ Error obteniendo formularios del usuario:', error);
+      throw this.handleGoogleAPIError(error);
+    }
+  }
+
+  private async getFormResponseCount(formId: string, accessToken: string): Promise<number> {
+    try {
+      const responses = await this.getFormResponses(formId, accessToken);
+      return responses.length;
+    } catch (error) {
+      console.warn(`⚠️ Error obteniendo conteo de respuestas para ${formId}:`, error);
+      return 0;
+    }
   }
 }
 

@@ -4,7 +4,8 @@ import { useState, useCallback } from 'react';
 import { Question } from '@/domain/entities/question';
 import { 
   GoogleFormData, 
-  CreatedFormResult 
+  CreatedFormResult,
+  UserForm
 } from '@/infrastructure/google/google-forms-service';
 import { useAuthContext } from './useAuth';
 
@@ -27,9 +28,11 @@ export interface UseGoogleFormsIntegrationReturn {
   isDeleting: boolean;
   isLoadingResponses: boolean;
   isSharing: boolean;
+  isLoadingForms: boolean;
   error: string | null;
   createdForm: CreatedFormResult | null;
   formResponses: any[];
+  userForms: UserForm[];
   
   // Acciones
   createGoogleForm: (options: FormCreationOptions) => Promise<CreatedFormResult | null>;
@@ -37,6 +40,7 @@ export interface UseGoogleFormsIntegrationReturn {
   deleteGoogleForm: (formId: string) => Promise<void>;
   getFormResponses: (formId: string) => Promise<any[]>;
   shareGoogleForm: (formId: string, emails: string[]) => Promise<void>;
+  getUserForms: () => Promise<UserForm[]>;
   clearError: () => void;
   clearCreatedForm: () => void;
   
@@ -51,9 +55,11 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoadingResponses, setIsLoadingResponses] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [isLoadingForms, setIsLoadingForms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createdForm, setCreatedForm] = useState<CreatedFormResult | null>(null);
   const [formResponses, setFormResponses] = useState<any[]>([]);
+  const [userForms, setUserForms] = useState<UserForm[]>([]);
 
   const { user, userEntity } = useAuthContext();
 
@@ -311,6 +317,56 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     }
   }, [user, getAccessToken]);
 
+  const getUserForms = useCallback(async (): Promise<UserForm[]> => {
+    if (!user) {
+      setError('Debes estar autenticado para obtener formularios');
+      return [];
+    }
+
+    setIsLoadingForms(true);
+    setError(null);
+
+    try {
+      const accessToken = getAccessToken();
+      if (!accessToken) {
+        throw new Error('Token de acceso no disponible. Por favor, vuelve a iniciar sesión con Google.');
+      }
+
+      console.log('🔍 Obteniendo formularios del usuario...');
+      
+      const response = await fetch('/api/google-forms/list', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accessToken
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Error HTTP: ${response.status}`);
+      }
+
+      const result = await response.json();
+      const forms = result.data || [];
+      
+      setUserForms(forms);
+      console.log(`✅ ${forms.length} formularios cargados exitosamente`);
+      
+      return forms;
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al obtener formularios';
+      setError(errorMessage);
+      console.error('❌ Error obteniendo formularios:', err);
+      return [];
+    } finally {
+      setIsLoadingForms(false);
+    }
+  }, [user, getAccessToken]);
+
   // Helper para guardar en base de datos
   const saveFormToDatabase = useCallback(async (formResult: CreatedFormResult, options: FormCreationOptions): Promise<void> => {
     try {
@@ -348,9 +404,11 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     isDeleting,
     isLoadingResponses,
     isSharing,
+    isLoadingForms,
     error,
     createdForm,
     formResponses,
+    userForms,
     
     // Acciones
     createGoogleForm,
@@ -358,6 +416,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     deleteGoogleForm,
     getFormResponses,
     shareGoogleForm,
+    getUserForms,
     clearError,
     clearCreatedForm,
     

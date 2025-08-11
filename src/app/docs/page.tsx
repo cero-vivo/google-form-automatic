@@ -42,7 +42,7 @@ export default function DocsPage() {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">
-            Documentación de FormGenerator
+            Documentación de FastForm
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Aprende a crear formularios profesionales en Google Forms desde archivos Excel y CSV de manera sencilla y eficiente.
@@ -62,7 +62,7 @@ export default function DocsPage() {
               <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border">
                 <h4 className="font-semibold mb-2">¿Qué tipos de preguntas puedo crear?</h4>
                 <p className="text-muted-foreground text-sm">
-                  FormGenerator soporta todos los tipos principales de preguntas de Google Forms: respuestas cortas y largas, 
+                  FastForm soporta todos los tipos principales de preguntas de Google Forms: respuestas cortas y largas, 
                   opción múltiple, casillas de verificación, listas desplegables, escalas lineales, fechas, horas, emails, 
                   números y teléfonos.
                 </p>
@@ -71,7 +71,7 @@ export default function DocsPage() {
               <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border">
                 <h4 className="font-semibold mb-2">¿Hay límite en el número de preguntas?</h4>
                 <p className="text-muted-foreground text-sm">
-                  No hay límite específico en FormGenerator, aunque Google Forms tiene sus propias limitaciones. 
+                  No hay límite específico en FastForm, aunque Google Forms tiene sus propias limitaciones. 
                   Recomendamos mantener formularios de menos de 100 preguntas para una mejor experiencia del usuario.
                 </p>
               </div>
@@ -79,7 +79,7 @@ export default function DocsPage() {
               <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border">
                 <h4 className="font-semibold mb-2">¿Necesito conocimientos técnicos?</h4>
                 <p className="text-muted-foreground text-sm">
-                  No, FormGenerator está diseñado para ser usado por cualquier persona. Solo necesitas saber organizar 
+                  No, FastForm está diseñado para ser usado por cualquier persona. Solo necesitas saber organizar 
                   datos en Excel o CSV, lo cual es muy similar a crear una tabla básica.
                 </p>
               </div>
@@ -88,7 +88,7 @@ export default function DocsPage() {
                 <h4 className="font-semibold mb-2">¿Los formularios creados son míos?</h4>
                 <p className="text-muted-foreground text-sm">
                   Sí, completamente. Los formularios se crean directamente en tu cuenta de Google Drive y tú mantienes 
-                  el control total sobre ellos. FormGenerator solo actúa como facilitador del proceso de creación.
+                  el control total sobre ellos. FastForm solo actúa como facilitador del proceso de creación.
                 </p>
               </div>
 
@@ -103,7 +103,7 @@ export default function DocsPage() {
               <div className="bg-white dark:bg-slate-800 p-6 rounded-lg border">
                 <h4 className="font-semibold mb-2">¿Qué pasa si mi archivo no se procesa correctamente?</h4>
                 <p className="text-muted-foreground text-sm">
-                  FormGenerator validará tu archivo y te mostrará una vista previa antes de crear el formulario. 
+                  FastForm validará tu archivo y te mostrará una vista previa antes de crear el formulario. 
                   Si hay errores, recibirás mensajes específicos sobre qué ajustar. También puedes descargar nuestro 
                   archivo de ejemplo como plantilla.
                 </p>

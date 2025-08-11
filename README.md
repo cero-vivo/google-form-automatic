@@ -1,4 +1,4 @@
-# 🚀 FormGenerator - Generador de Google Forms desde Excel
+# 🚀 FastForm - Generador de Google Forms desde Excel
 
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-15.4-black?style=for-the-badge&logo=next.js" alt="Next.js" />
@@ -34,7 +34,7 @@
 
 ## 🎯 Descripción del Proyecto
 
-**FormGenerator** es una aplicación web moderna que permite convertir automáticamente archivos Excel y CSV en formularios de Google Forms. Diseñada para equipos, educadores y profesionales que necesitan crear formularios de manera eficiente y escalable.
+**FastForm** es una aplicación web moderna que permite convertir automáticamente archivos Excel y CSV en formularios de Google Forms. Diseñada para equipos, educadores y profesionales que necesitan crear formularios de manera eficiente y escalable.
 
 ### 🎬 Demo y Screenshots
 
@@ -170,8 +170,8 @@ export const FileUploadCard = () => {
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/google-form-saas.git
-cd google-form-saas
+git clone https://github.com/tu-usuario/fast-form.git
+cd fast-form
 
 # 2. Instalar dependencias
 npm install --legacy-peer-deps
@@ -187,7 +187,7 @@ npm run dev
 ### 📁 Estructura del Proyecto
 
 ```
-google-form-saas/
+fast-form/
 ├── src/
 │   ├── app/                    # Páginas App Router
 │   ├── components/             # Componentes UI (Atomic Design)
@@ -761,8 +761,8 @@ export default function handler(req, res) {
 #### 1. Fork y Clone
 ```bash
 # Fork el repositorio en GitHub
-git clone https://github.com/tu-usuario/google-form-saas.git
-cd google-form-saas
+git clone https://github.com/tu-usuario/fast-form.git
+cd fast-form
 ```
 
 #### 2. Crear Branch de Feature
@@ -932,7 +932,7 @@ Si aplica, agregar screenshots.
 
 ### 👥 Equipo de Desarrollo
 - **[Tu Nombre](https://github.com/tu-usuario)** - Lead Developer & Architect
-- **[Colaboradores](https://github.com/tu-usuario/google-form-saas/contributors)** - Contributors
+- **[Colaboradores](https://github.com/tu-usuario/fast-form/contributors)** - Contributors
 
 ### 🙏 Agradecimientos
 - **[shadcn](https://ui.shadcn.com)** - Por la increíble biblioteca de componentes
@@ -950,8 +950,8 @@ Este proyecto está licenciado bajo la **MIT License** - ver el archivo [LICENSE
   <h3>⭐ Si este proyecto te ayudó, ¡deja una estrella!</h3>
   <p>Hecho con ❤️ y ☕ para la comunidad</p>
   
-  <img src="https://img.shields.io/github/stars/tu-usuario/google-form-saas?style=social" alt="GitHub stars" />
-  <img src="https://img.shields.io/github/forks/tu-usuario/google-form-saas?style=social" alt="GitHub forks" />
-  <img src="https://img.shields.io/github/issues/tu-usuario/google-form-saas" alt="GitHub issues" />
+  <img src="https://img.shields.io/github/stars/tu-usuario/fast-form?style=social" alt="GitHub stars" />
+<img src="https://img.shields.io/github/forks/tu-usuario/fast-form?style=social" alt="GitHub forks" />
+<img src="https://img.shields.io/github/issues/tu-usuario/fast-form" alt="GitHub issues" />
 </div>
 # google-form-automatic

@@ -21,7 +21,7 @@ export default function HomePage() {
               <FileText className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              FormGenerator
+              FastForm
             </span>
           </div>
           
@@ -75,18 +75,18 @@ export default function HomePage() {
       <section className="py-20 px-4">
         <div className="container mx-auto text-center">
           <Badge variant="outline" className="mb-6">
-            🚀 Transforma Excel en Google Forms en segundos
+            🚀 Convierte CSV y Excel a Google Forms en segundos
           </Badge>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-            Crea Google Forms
+            Convertir CSV a Google Forms
             <br />
-            desde archivos Excel
+            desde Excel automáticamente
           </h1>
           
           <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
-            Sube tu archivo Excel o CSV y convierte automáticamente tus preguntas 
-            en formularios profesionales de Google Forms. Sin código, sin complicaciones.
+            Sube tu archivo CSV o Excel y convierte automáticamente tus datos 
+            en formularios profesionales de Google Forms. Herramienta gratuita para convertir CSV a Google Forms y Excel a Google Forms sin código.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -121,7 +121,7 @@ export default function HomePage() {
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              ¿Por qué elegir FormGenerator?
+              ¿Por qué elegir FastForm?
             </h2>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
               La forma más rápida y sencilla de crear formularios profesionales 
@@ -135,10 +135,10 @@ export default function HomePage() {
                 <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Upload className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <CardTitle>Carga Inteligente</CardTitle>
+                <CardTitle>Importar CSV y Excel</CardTitle>
                 <CardDescription>
-                  Detecta automáticamente tipos de preguntas desde Excel/CSV. 
-                  Soporte para múltiple opción, texto, escalas y más.
+                  Convierte archivos CSV y Excel a Google Forms automáticamente. 
+                  Soporte para convertir CSV a Google Forms con múltiples tipos de preguntas.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -161,10 +161,10 @@ export default function HomePage() {
                 <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <FileText className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                 </div>
-                <CardTitle>Integración con Google</CardTitle>
+                <CardTitle>Exportar a Google Forms</CardTitle>
                 <CardDescription>
-                  Publica directamente en Google Forms con un clic. 
-                  Mantén toda la funcionalidad nativa de Google.
+                  Convierte Excel a Google Forms y CSV a Google Forms con un clic. 
+                  Mantén toda la funcionalidad nativa de Google Forms.
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -250,7 +250,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Publica en Google</h3>
               <p className="text-slate-600 dark:text-slate-300">
-                Con un clic, tu formulario estará listo y publicado en Google Forms.
+                Exporta directamente a Google Forms. Convierte CSV a Google Forms y Excel a Google Forms instantáneamente.
               </p>
             </div>
           </div>
@@ -297,6 +297,74 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* SEO Content Section */}
+      <section className="py-16 px-4 bg-slate-50 dark:bg-slate-800">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">
+              La Mejor Herramienta para Convertir CSV a Google Forms
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-300">
+              Descubre por qué FastForm es la opción preferida para convertir archivos CSV y Excel a Google Forms
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            <div>
+              <h3 className="text-xl font-semibold mb-4">¿Cómo convertir CSV a Google Forms?</h3>
+              <p className="text-slate-600 dark:text-slate-300 mb-4">
+                Convertir CSV a Google Forms nunca fue tan fácil. Con FastForm, simplemente subas tu archivo CSV y nuestra herramienta automáticamente 
+                genera un formulario de Google Forms profesional. Ideal para encuestas, formularios de contacto y recolección de datos.
+              </p>
+              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2">
+                <li>Importar CSV a Google Forms en segundos</li>
+                <li>Detección automática de tipos de preguntas</li>
+                <li>Soporte para múltiples opciones desde CSV</li>
+                <li>Validaciones automáticas de datos</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="text-xl font-semibold mb-4">¿Cómo convertir Excel a Google Forms?</h3>
+              <p className="text-slate-600 dark:text-slate-300 mb-4">
+                Convierte archivos Excel (.xlsx, .xls) a Google Forms automáticamente. FastForm lee tu archivo Excel y crea formularios 
+                de Google Forms manteniendo la estructura y tipos de datos originales.
+              </p>
+              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2">
+                <li>Importar Excel a Google Forms directamente</li>
+                <li>Preserva formato de preguntas complejas</li>
+                <li>Soporte para escalas y opciones múltiples</li>
+                <li>Exportación inmediata a Google Forms</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-700 p-8 rounded-lg shadow-sm">
+            <h3 className="text-xl font-semibold mb-4">Ventajas de usar FastForm para convertir archivos a Google Forms</h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <h4 className="font-semibold text-blue-600 mb-2">Gratuito y Sin Límites</h4>
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  Convierte CSV a Google Forms y Excel a Google Forms gratis, sin restricciones ni registros complicados.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-green-600 mb-2">Rápido y Automático</h4>
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  Importa datos y crea formularios en Google Forms en menos de 30 segundos.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-purple-600 mb-2">Sin Conocimientos Técnicos</h4>
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  No necesitas saber programación para convertir tus archivos CSV y Excel a Google Forms.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-12 px-4 bg-slate-900 text-white">
         <div className="container mx-auto text-center">
@@ -304,7 +372,7 @@ export default function HomePage() {
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <FileText className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold">FormGenerator</span>
+            <span className="text-xl font-bold">FastForm</span>
           </div>
           
           <p className="text-slate-400 mb-6">
@@ -327,7 +395,7 @@ export default function HomePage() {
           </div>
           
           <div className="mt-8 pt-8 border-t border-slate-800 text-sm text-slate-400">
-            © 2024 FormGenerator. Todos los derechos reservados.
+            © 2024 FastForm. Todos los derechos reservados.
           </div>
         </div>
       </footer>
