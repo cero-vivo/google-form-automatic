@@ -166,7 +166,7 @@ export default function DashboardPage() {
               <Logo className="w-8 h-8" />
               <div>
                 <h1 className="text-xl font-bold text-primary">Dashboard</h1>
-                <p className="text-sm text-muted">Crea y gestiona tus formularios</p>
+                <p className="text-sm text-muted-foreground">Crea y gestiona tus formularios</p>
               </div>
             </div>
           </div>

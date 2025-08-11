@@ -25,16 +25,16 @@ export default function HomePage() {
     }
     if (user) {
       return (
-        <Button variant="ghost" asChild className="flex items-center space-x-2 p-2 hover:bg-white/10">
+        <Button variant="ghost" asChild className="flex items-center space-x-2 p-2">
           <Link href="/dashboard">
             {user.photoURL ? (
-              <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full ring-2 ring-velocity" />
+              <Image src={user.photoURL} alt={user.displayName || 'Usuario'} width={32} height={32} className="w-8 h-8 rounded-full ring-2 ring-[#22A565]" />
             ) : (
               <div className="w-8 h-8 bg-velocity rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-medium">{user.displayName?.charAt(0) || user.email?.charAt(0)}</span>
               </div>
             )}
-            <span className="hidden sm:inline text-sm font-medium text-primary">{user.displayName}</span>
+            <span className="hidden sm:inline text-sm font-medium text-excel">{user.displayName}</span>
           </Link>
         </Button>
       );
@@ -68,7 +68,7 @@ export default function HomePage() {
               Precios
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-velocity transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="#docs" className="text-primary hover:text-velocity transition-all duration-300 font-medium relative group">
+            <Link href="/docs" className="text-primary hover:text-velocity transition-all duration-300 font-medium relative group">
               Documentación
               <span className="absolute -bottom-1 left-0 w-0.5 h-0.5 bg-velocity transition-all duration-300 group-hover:w-full"></span>
             </Link>
@@ -91,7 +91,7 @@ export default function HomePage() {
             <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight text-primary">
               Crea Google Forms desde Excel en segundos
             </h1>
-            <p className="text-lg md:text-xl text-muted mb-8 max-w-xl leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl leading-relaxed">
               Sube tu archivo y obtén un formulario profesional listo para usar. Velocidad, precisión y cero complicaciones.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -154,7 +154,7 @@ export default function HomePage() {
             <h2 className="text-4xl md:text-5xl font-black mb-4 text-primary">
               Sube tu archivo y genera tu formulario ahora
             </h2>
-            <p className="text-lg text-muted mb-8 max-w-xl">
+            <p className="text-lg text-muted-foreground mb-8 max-w-xl">
               Arrastra tu Excel o CSV y en segundos tendrás un Google Form listo para publicar.
             </p>
             <ul className="space-y-3 text-primary">
@@ -175,7 +175,7 @@ export default function HomePage() {
           <h2 className="text-4xl md:text-6xl font-black mb-6 text-primary">
             ¿Listo para empezar?
           </h2>
-          <p className="text-xl mb-8 text-muted max-w-2xl mx-auto">
+          <p className="text-xl mb-8 text-muted-foreground max-w-2xl mx-auto">
             Crea tu primer formulario ahora mismo. Es gratis y toma segundos.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -202,11 +202,11 @@ export default function HomePage() {
             <span className="text-3xl font-black text-velocity">FastForm</span>
           </div>
           
-          <p className="text-muted mb-8 text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground mb-8 text-lg max-w-2xl mx-auto">
             La forma más rápida de crear Google Forms desde Excel y CSV, con precisión y sin complicaciones.
           </p>
           
-          <div className="pt-8 border-t border-primary/10 text-muted">
+          <div className="pt-8 border-t border-primary/10 text-muted-foreground">
             <p className="font-medium">© 2024 FastForm. El futuro es ahora.</p>
           </div>
         </div>
