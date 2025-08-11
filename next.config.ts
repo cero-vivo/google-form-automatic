@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'gravatar.com' },
     ],
   },
+  // Ensure proper error handling
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
 };
 
 export default nextConfig;
