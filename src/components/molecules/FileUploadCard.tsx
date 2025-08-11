@@ -64,19 +64,19 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
 
   const getTypeColor = (type: QuestionType): string => {
     const colors = {
-      [QuestionType.SHORT_TEXT]: 'bg-blue-100 text-blue-800',
-      [QuestionType.LONG_TEXT]: 'bg-purple-100 text-purple-800',
-      [QuestionType.MULTIPLE_CHOICE]: 'bg-green-100 text-green-800',
-      [QuestionType.CHECKBOXES]: 'bg-yellow-100 text-yellow-800',
-      [QuestionType.DROPDOWN]: 'bg-orange-100 text-orange-800',
-      [QuestionType.LINEAR_SCALE]: 'bg-pink-100 text-pink-800',
-      [QuestionType.DATE]: 'bg-red-100 text-red-800',
-      [QuestionType.TIME]: 'bg-red-100 text-red-800',
-      [QuestionType.EMAIL]: 'bg-indigo-100 text-indigo-800',
-      [QuestionType.NUMBER]: 'bg-gray-100 text-gray-800',
-      [QuestionType.PHONE]: 'bg-cyan-100 text-cyan-800'
+      [QuestionType.SHORT_TEXT]: 'bg-blue-50 text-blue-700',
+      [QuestionType.LONG_TEXT]: 'bg-purple-50 text-purple-700',
+      [QuestionType.MULTIPLE_CHOICE]: 'bg-green-50 text-green-700',
+      [QuestionType.CHECKBOXES]: 'bg-yellow-50 text-yellow-700',
+      [QuestionType.DROPDOWN]: 'bg-orange-50 text-orange-700',
+      [QuestionType.LINEAR_SCALE]: 'bg-pink-50 text-pink-700',
+      [QuestionType.DATE]: 'bg-red-50 text-red-700',
+      [QuestionType.TIME]: 'bg-red-50 text-red-700',
+      [QuestionType.EMAIL]: 'bg-indigo-50 text-indigo-700',
+      [QuestionType.NUMBER]: 'bg-gray-50 text-gray-700',
+      [QuestionType.PHONE]: 'bg-cyan-50 text-cyan-700'
     };
-    return colors[type] || 'bg-gray-100 text-gray-800';
+    return colors[type] || 'bg-gray-50 text-gray-700';
   };
 
   const generateExampleExcel = () => {
@@ -125,27 +125,27 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Upload className="w-5 h-5" />
+            <Upload className="w-5 h-5 text-velocity" />
             Subir Archivo de Preguntas
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-gray-700">
             Sube un archivo Excel (.xlsx) o CSV (.csv) con las preguntas para tu formulario
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Formato Compatible */}
-          <Alert>
-            <FileSpreadsheet className="w-4 h-4" />
+          <Alert className="bg-white border border-gray-200">
+            <FileSpreadsheet className="w-4 h-4 text-excel" />
             <AlertDescription className="space-y-2">
               <div>
                 <strong>Formato requerido:</strong> Tu archivo debe tener estas columnas:
               </div>
-              <code className="block bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">
+              <code className="block bg-gray-100 px-2 py-1 rounded text-sm">
                 Pregunta | Tipo | Opciones | Requerido | Descripción
               </code>
               <div className="space-y-1">
                 <div><strong>Tipos soportados:</strong></div>
-                <div className="text-xs grid grid-cols-2 gap-1">
+                <div className="text-xs grid grid-cols-2 gap-1 text-gray-700">
                   <span>• short_text (Respuesta corta)</span>
                   <span>• long_text (Respuesta larga)</span>
                   <span>• multiple_choice (Opción múltiple)</span>
@@ -163,11 +163,11 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
           </Alert>
 
           {/* Download Example Button */}
-          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+          <div className="bg-excel-light p-3 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">¿Necesitas un ejemplo?</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm font-medium text-primary">¿Necesitas un ejemplo?</p>
+                <p className="text-xs text-muted">
                   Descarga un archivo Excel con ejemplos de todos los tipos
                 </p>
               </div>
@@ -175,7 +175,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
                 variant="outline" 
                 size="sm"
                 onClick={generateExampleExcel}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 border-excel text-excel hover:bg-excel/5"
               >
                 <Download className="h-4 w-4" />
                 Descargar
@@ -184,7 +184,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
           </div>
 
           {/* Upload Area */}
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-white">
             <input
               type="file"
               accept=".xlsx,.csv"
@@ -200,10 +200,10 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
               }`}
             >
               <FileText className="w-12 h-12 text-gray-400" />
-              <span className="text-lg font-medium">
+              <span className="text-lg font-medium text-primary">
                 {loading ? 'Procesando archivo...' : 'Haz clic para seleccionar archivo'}
               </span>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-muted">
                 Archivos soportados: .xlsx, .csv (máx. 10MB)
               </span>
             </label>
@@ -212,7 +212,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
           {/* Progress */}
           {loading && (
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm text-primary">
                 <span>Procesando archivo...</span>
                 <span>{progress}%</span>
               </div>
@@ -240,11 +240,11 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
 
           {/* Success with Questions Preview */}
           {questions.length > 0 && (
-            <Alert>
-              <CheckCircle className="w-4 h-4" />
+            <Alert className="bg-white border border-gray-200">
+              <CheckCircle className="w-4 h-4 text-excel" />
               <AlertDescription>
                 <div className="flex justify-between items-center">
-                  <span>✅ {questions.length} preguntas procesadas exitosamente</span>
+                  <span className="text-primary">✅ {questions.length} preguntas procesadas exitosamente</span>
                   <Button
                     variant="outline"
                     size="sm"
@@ -264,10 +264,10 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5" />
+              <FileText className="w-5 h-5 text-primary" />
               Preview de Preguntas ({questions.length})
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-700">
               Revisa las preguntas antes de crear el formulario
             </CardDescription>
           </CardHeader>
@@ -276,12 +276,12 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
               {questions.map((question, index) => (
                 <div
                   key={question.id}
-                  className="border rounded-lg p-4 space-y-2"
+                  className="border rounded-lg p-4 space-y-2 bg-white"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium text-gray-500">
+                        <span className="text-sm font-medium text-muted">
                           #{index + 1}
                         </span>
                         <Badge className={getTypeColor(question.type)}>
@@ -293,11 +293,11 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
                           </Badge>
                         )}
                       </div>
-                      <h4 className="font-medium text-gray-900">
+                      <h4 className="font-medium text-primary">
                         {question.title}
                       </h4>
                       {question.description && (
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-muted mt-1">
                           {question.description}
                         </p>
                       )}
@@ -307,7 +307,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
                   {/* Options Preview */}
                   {question.multipleChoiceConfig?.options && (
                     <div className="mt-3">
-                      <p className="text-xs font-medium text-gray-500 mb-2">
+                      <p className="text-xs font-medium text-muted mb-2">
                         Opciones disponibles:
                       </p>
                       <div className="flex flex-wrap gap-1">

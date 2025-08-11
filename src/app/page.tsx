@@ -3,399 +3,211 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, FileText, Upload, Zap, CheckCircle, Star, Users } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
+import { ArrowRight, Upload, Zap, CheckCircle, Star, Users, FileSpreadsheet, FormInput, Clock, Target, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/containers/useAuth";
-import FormInstructions from "@/components/organisms/FormInstructions";
+import Image from "next/image";
+import FileUploadCard from "@/components/molecules/FileUploadCard";
+import React, { useEffect, useState } from "react";
 
 export default function HomePage() {
   const { user, loading } = useAuthContext();
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
+  const AuthArea = () => {
+    if (!isMounted) {
+      return <div className="w-28 h-10 bg-gray-200 rounded" />;
+    }
+    if (loading) {
+      return <div className="w-8 h-8 animate-pulse bg-gray-200 rounded-full"></div>;
+    }
+    if (user) {
+      return (
+        <Button variant="ghost" asChild className="flex items-center space-x-2 p-2 hover:bg-white/10">
+          <Link href="/dashboard">
+            {user.photoURL ? (
+              <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full ring-2 ring-velocity" />
+            ) : (
+              <div className="w-8 h-8 bg-velocity rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">{user.displayName?.charAt(0) || user.email?.charAt(0)}</span>
+              </div>
+            )}
+            <span className="hidden sm:inline text-sm font-medium text-primary">{user.displayName}</span>
+          </Link>
+        </Button>
+      );
+    }
+    return (
+      <Button className="btn-modern text-white font-semibold px-6 py-2">
+        <Link href="/auth/login" className="flex items-center">
+          Iniciar con Google
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Link>
+      </Button>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <FileText className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              FastForm
-            </span>
+    <div className="min-h-screen bg-white overflow-hidden">
+      {/* Modern Header */}
+      <header className="glass sticky top-0 z-50 border-b border-white/20">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Logo className="w-10 h-10" />
+            <span className="text-2xl font-bold text-velocity">FastForm</span>
           </div>
           
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link href="#features" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors">
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="#features" className="text-primary hover:text-velocity transition-all duration-300 font-medium relative group">
               Características
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-velocity transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/pricing" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors">
+            <Link href="/pricing" className="text-primary hover:text-velocity transition-all duration-300 font-medium relative group">
               Precios
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-velocity transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="#docs" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors">
+            <Link href="#docs" className="text-primary hover:text-velocity transition-all duration-300 font-medium relative group">
               Documentación
+              <span className="absolute -bottom-1 left-0 w-0.5 h-0.5 bg-velocity transition-all duration-300 group-hover:w-full"></span>
             </Link>
           </nav>
 
           <div className="flex items-center space-x-3">
-            {loading ? (
-              <div className="w-8 h-8 animate-pulse bg-gray-200 rounded-full"></div>
-            ) : user ? (
-              <Button variant="ghost" asChild className="flex items-center space-x-2 p-2">
-                <Link href="/dashboard">
-                  {user.photoURL ? (
-                    <img 
-                      src={user.photoURL} 
-                      alt={user.displayName}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">
-                        {user.displayName?.charAt(0) || user.email?.charAt(0)}
-                      </span>
-                    </div>
-                  )}
-                  <span className="hidden sm:inline text-sm font-medium">{user.displayName}</span>
-                </Link>
-              </Button>
-            ) : (
-              <Button asChild>
-                <Link href="/auth/login">
-                  Iniciar con Google
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            )}
+            <AuthArea />
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <Badge variant="outline" className="mb-6">
-            🚀 Convierte CSV y Excel a Google Forms en segundos
-          </Badge>
-          
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-            Convertir CSV a Google Forms
-            <br />
-            desde Excel automáticamente
-          </h1>
-          
-          <p className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
-            Sube tu archivo CSV o Excel y convierte automáticamente tus datos 
-            en formularios profesionales de Google Forms. Herramienta gratuita para convertir CSV a Google Forms y Excel a Google Forms sin código.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" asChild>
-              <Link href="/dashboard">
-                <Upload className="mr-2 h-5 w-5" />
-                Subir Archivo
-              </Link>
-            </Button>
+      {/* Hero Section - Solid colors, high conversion */}
+      <section className="relative py-24 px-6 bg-light-gray overflow-hidden">
+        <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left: Copy + CTAs + Social Proof */}
+          <div>
+            <Badge className="mb-6 bg-velocity/10 text-velocity border-velocity/30 px-4 py-2 font-semibold">
+              Convierte Excel/CSV a Google Forms
+            </Badge>
+            <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight text-primary">
+              Crea Google Forms desde Excel en segundos
+            </h1>
+            <p className="text-lg md:text-xl text-muted mb-8 max-w-xl leading-relaxed">
+              Sube tu archivo y obtén un formulario profesional listo para usar. Velocidad, precisión y cero complicaciones.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <Button size="lg" className="btn-modern text-white font-bold text-lg px-8 py-5">
+                <Link href="/dashboard" className="flex items-center">
+                  <Upload className="mr-3 h-6 w-6" />
+                  Probar Gratis
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" className="border-2 border-primary/30 text-primary hover:border-velocity hover:text-velocity hover:bg-velocity/5 text-lg px-8 py-5">
+                <Link href="#demo" className="flex items-center">
+                  <Target className="mr-3 h-5 w-5" />
+                  Ver Demo
+                </Link>
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-6 text-sm">
+              <div className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-velocity" />
+                <span className="font-semibold text-primary">4.9/5 valoración</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-forms" />
+                <span className="font-semibold text-primary">+50,000 formularios creados</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-excel" />
+                <span className="font-semibold text-primary">Gratis para empezar</span>
+              </div>
+            </div>
           </div>
 
-          {/* Stats */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-sm text-slate-600 dark:text-slate-400">
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-yellow-500" />
-              <span>4.9/5 estrellas</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-blue-500" />
-              <span>+10,000 usuarios activos</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <span>100% gratis para empezar</span>
+          {/* Right: Promotional Images Showcase */}
+          <div className="relative max-w-xl w-full mx-auto">
+            <div className="relative">
+              <Image
+                src="/images/image.png"
+                alt="Importar Excel y CSV"
+                width={680}
+                height={420}
+                className="rounded-2xl shadow-xl border border-gray-200 bg-white"
+                priority
+              />
+              <Image
+                src="/images/image1.png"
+                alt="Formulario de Google generado"
+                width={520}
+                height={320}
+                className="rounded-2xl shadow-lg border border-gray-200 bg-white absolute -bottom-8 -right-8 hidden md:block"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 px-4 bg-white dark:bg-slate-900">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              ¿Por qué elegir FastForm?
+      {/* Upload Section - Immediate conversion */}
+      <section id="upload" className="py-24 px-6 bg-white">
+        <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-start">
+          <div>
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-primary">
+              Sube tu archivo y genera tu formulario ahora
             </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              La forma más rápida y sencilla de crear formularios profesionales 
-              a partir de tus datos existentes.
+            <p className="text-lg text-muted mb-8 max-w-xl">
+              Arrastra tu Excel o CSV y en segundos tendrás un Google Form listo para publicar.
             </p>
+            <ul className="space-y-3 text-primary">
+              <li className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-excel" /> Soporta .xlsx y .csv</li>
+              <li className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-excel" /> Detección automática de tipos de preguntas</li>
+              <li className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-excel" /> Exportación directa a Google Forms</li>
+            </ul>
           </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="group hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Upload className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <CardTitle>Importar CSV y Excel</CardTitle>
-                <CardDescription>
-                  Convierte archivos CSV y Excel a Google Forms automáticamente. 
-                  Soporte para convertir CSV a Google Forms con múltiples tipos de preguntas.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="group hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Zap className="h-6 w-6 text-green-600 dark:text-green-400" />
-                </div>
-                <CardTitle>Previsualización en Tiempo Real</CardTitle>
-                <CardDescription>
-                  Ve cómo se verá tu formulario antes de publicarlo. 
-                  Edita, reordena y personaliza sobre la marcha.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="group hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <FileText className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                </div>
-                <CardTitle>Exportar a Google Forms</CardTitle>
-                <CardDescription>
-                  Convierte Excel a Google Forms y CSV a Google Forms con un clic. 
-                  Mantén toda la funcionalidad nativa de Google Forms.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="group hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <CheckCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-                </div>
-                <CardTitle>Validaciones Automáticas</CardTitle>
-                <CardDescription>
-                  Aplica validaciones inteligentes basadas en el tipo de datos. 
-                  Emails, números, longitud de texto y más.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="group hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Users className="h-6 w-6 text-red-600 dark:text-red-400" />
-                </div>
-                <CardTitle>Gestión Completa</CardTitle>
-                <CardDescription>
-                  Dashboard para gestionar todos tus formularios. 
-                  Estadísticas, respuestas y análisis en un solo lugar.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="group hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Star className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />
-                </div>
-                <CardTitle>Plantillas Premium</CardTitle>
-                <CardDescription>
-                  Biblioteca de plantillas prediseñadas para diferentes 
-                  industrias y casos de uso. Empieza rápido.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* How it Works */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Cómo funciona
-            </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300">
-              En solo 3 simples pasos
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4 mx-auto">
-                1
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Sube tu archivo</h3>
-              <p className="text-slate-600 dark:text-slate-300">
-                Arrastra tu archivo Excel o CSV con las preguntas y opciones de respuesta.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4 mx-auto">
-                2
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Previsualiza y edita</h3>
-              <p className="text-slate-600 dark:text-slate-300">
-                Revisa el formulario generado automáticamente y haz ajustes si es necesario.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4 mx-auto">
-                3
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Publica en Google</h3>
-              <p className="text-slate-600 dark:text-slate-300">
-                Exporta directamente a Google Forms. Convierte CSV a Google Forms y Excel a Google Forms instantáneamente.
-              </p>
-            </div>
+          <div>
+            <FileUploadCard className="max-w-xl w-full mx-auto" />
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+      <section className="py-20 px-6 bg-velocity-light">
         <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-4xl md:text-6xl font-black mb-6 text-primary">
             ¿Listo para empezar?
           </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Únete a miles de usuarios que ya están creando formularios más rápido.
+          <p className="text-xl mb-8 text-muted max-w-2xl mx-auto">
+            Crea tu primer formulario ahora mismo. Es gratis y toma segundos.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" asChild>
-              <Link href="/dashboard">
-                Crear mi primer formulario
+            <Button size="lg" className="bg-velocity text-white hover:opacity-90 text-lg px-10 py-5 font-bold">
+              <Link href="/dashboard" className="flex items-center">
+                <Upload className="mr-3 h-6 w-6" />
+                Comenzar Gratis
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-blue-600" asChild>
-              <Link href="/templates">
-                Ver plantillas
+            <Button size="lg" variant="outline" className="border-2 border-velocity text-velocity hover:bg-velocity hover:text-white text-lg px-10 py-5 font-bold">
+              <Link href="/docs">
+                Ver Documentación
               </Link>
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Documentation Section */}
-      <section id="docs" className="py-20 px-4 bg-slate-50 dark:bg-slate-900">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Documentación
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Todo lo que necesitas saber para crear formularios profesionales desde Excel y CSV
-            </p>
-          </div>
-          
-          <FormInstructions />
-        </div>
-      </section>
-
-      {/* SEO Content Section */}
-      <section className="py-16 px-4 bg-slate-50 dark:bg-slate-800">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">
-              La Mejor Herramienta para Convertir CSV a Google Forms
-            </h2>
-            <p className="text-lg text-slate-600 dark:text-slate-300">
-              Descubre por qué FastForm es la opción preferida para convertir archivos CSV y Excel a Google Forms
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">¿Cómo convertir CSV a Google Forms?</h3>
-              <p className="text-slate-600 dark:text-slate-300 mb-4">
-                Convertir CSV a Google Forms nunca fue tan fácil. Con FastForm, simplemente subas tu archivo CSV y nuestra herramienta automáticamente 
-                genera un formulario de Google Forms profesional. Ideal para encuestas, formularios de contacto y recolección de datos.
-              </p>
-              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2">
-                <li>Importar CSV a Google Forms en segundos</li>
-                <li>Detección automática de tipos de preguntas</li>
-                <li>Soporte para múltiples opciones desde CSV</li>
-                <li>Validaciones automáticas de datos</li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="text-xl font-semibold mb-4">¿Cómo convertir Excel a Google Forms?</h3>
-              <p className="text-slate-600 dark:text-slate-300 mb-4">
-                Convierte archivos Excel (.xlsx, .xls) a Google Forms automáticamente. FastForm lee tu archivo Excel y crea formularios 
-                de Google Forms manteniendo la estructura y tipos de datos originales.
-              </p>
-              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2">
-                <li>Importar Excel a Google Forms directamente</li>
-                <li>Preserva formato de preguntas complejas</li>
-                <li>Soporte para escalas y opciones múltiples</li>
-                <li>Exportación inmediata a Google Forms</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-700 p-8 rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold mb-4">Ventajas de usar FastForm para convertir archivos a Google Forms</h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div>
-                <h4 className="font-semibold text-blue-600 mb-2">Gratuito y Sin Límites</h4>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
-                  Convierte CSV a Google Forms y Excel a Google Forms gratis, sin restricciones ni registros complicados.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-green-600 mb-2">Rápido y Automático</h4>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
-                  Importa datos y crea formularios en Google Forms en menos de 30 segundos.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-purple-600 mb-2">Sin Conocimientos Técnicos</h4>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
-                  No necesitas saber programación para convertir tus archivos CSV y Excel a Google Forms.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 bg-slate-900 text-white">
+      <footer className="py-16 px-6 bg-primary/5 border-t border-primary/10">
         <div className="container mx-auto text-center">
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <FileText className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold">FastForm</span>
+          <div className="flex items-center justify-center space-x-3 mb-8">
+            <Logo className="w-12 h-12" />
+            <span className="text-3xl font-black text-velocity">FastForm</span>
           </div>
           
-          <p className="text-slate-400 mb-6">
-            La forma más inteligente de crear Google Forms desde Excel
+          <p className="text-muted mb-8 text-lg max-w-2xl mx-auto">
+            La forma más rápida de crear Google Forms desde Excel y CSV, con precisión y sin complicaciones.
           </p>
           
-          <div className="flex justify-center space-x-6 text-sm text-slate-400">
-            <Link href="/privacy" className="hover:text-white transition-colors">
-              Privacidad
-            </Link>
-            <Link href="/terms" className="hover:text-white transition-colors">
-              Términos
-            </Link>
-            <Link href="/support" className="hover:text-white transition-colors">
-              Soporte
-            </Link>
-            <Link href="#docs" className="hover:text-white transition-colors">
-              Documentación
-            </Link>
-          </div>
-          
-          <div className="mt-8 pt-8 border-t border-slate-800 text-sm text-slate-400">
-            © 2024 FastForm. Todos los derechos reservados.
+          <div className="pt-8 border-t border-primary/10 text-muted">
+            <p className="font-medium">© 2024 FastForm. El futuro es ahora.</p>
           </div>
         </div>
       </footer>

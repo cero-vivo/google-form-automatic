@@ -4,58 +4,42 @@
 
 @layer base {
   :root {
+    /* Modern Color System - Perfect Contrast */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 13% 18%; /* Perfect dark for readability */
+    
+    /* Card system */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 13% 18%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 13% 18%;
+    
+    /* Brand colors - vibrant and accessible */
+    --primary: 38 100% 62%; /* FLAME - Velocity */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 251 47% 48%; /* FORMS - Purple */
+    --secondary-foreground: 0 0% 100%;
+    --accent: 142 72% 29%; /* EXCEL - Green */
+    --accent-foreground: 0 0% 100%;
+    
+    /* Neutral system */
+    --muted: 210 40% 98%;
+    --muted-foreground: 220 13% 40%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Interface elements */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 38 100% 62%;
+    --radius: 1rem;
+    
+    /* Chart colors */
+    --chart-1: 38 100% 62%;
+    --chart-2: 251 47% 48%;
+    --chart-3: 142 72% 29%;
+    --chart-4: 220 13% 40%;
+    --chart-5: 220 13% 18%;
   }
 }
 
@@ -63,10 +47,148 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-poppins), 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  
+  /* Modern Brand Colors */
+  .text-velocity { color: #FFAC3B; }
+  .text-excel { color: #22A565; }
+  .text-forms { color: #6A3EBB; }
+  .text-primary { color: hsl(var(--foreground)); }
+  .text-muted { color: hsl(var(--muted-foreground)); }
+  
+  .bg-velocity { background-color: #FFAC3B; }
+  .bg-excel { background-color: #22A565; }
+  .bg-forms { background-color: #6A3EBB; }
+  
+  /* Modern Glass Effects */
+  .glass {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Hero Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 172, 59, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(255, 172, 59, 0.6); }
+  }
+  
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fade-in-scale {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out forwards;
+  }
+  
+  .animate-fade-in-scale {
+    animation: fade-in-scale 0.8s ease-out forwards;
+  }
+  
+  /* Replace gradient-based button with solid color */
+  .btn-modern {
+    @apply relative overflow-hidden transition-all duration-300 transform hover:scale-105 bg-velocity text-white;
+    box-shadow: 0 8px 32px rgba(255, 172, 59, 0.25);
+  }
+  
+  .btn-modern:hover {
+    box-shadow: 0 12px 48px rgba(255, 172, 59, 0.35);
+  }
+  
+  /* Remove shimmer gradient */
+  .btn-modern::before { content: none; }
+  
+  /* Modern Cards */
+  .card-modern {
+    @apply bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-2xl transition-all duration-500;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .card-modern:hover {
+    transform: translateY(-8px) scale(1.02);
+  }
+  
+  /* Icon Containers */
+  .icon-container {
+    @apply relative overflow-hidden transition-all duration-300;
+  }
+  
+  .icon-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(0);
+    transition: transform 0.3s ease;
+    border-radius: inherit;
+  }
+  
+  .icon-container:hover::before {
+    transform: scale(1);
+  }
+  
+  /* Remove text gradient utility by redefining as solid */
+  .text-gradient-velocity { color: #FFAC3B; -webkit-text-fill-color: initial; background: none; }
+  
+  /* Glow Effects */
+  .glow-velocity {
+    filter: drop-shadow(0 0 10px rgba(255, 172, 59, 0.3));
+  }
+  
+  .glow-excel {
+    filter: drop-shadow(0 0 10px rgba(34, 165, 101, 0.3));
+  }
+  
+  .glow-forms {
+    filter: drop-shadow(0 0 10px rgba(106, 62, 187, 0.3));
+  }
+  
+  /* Remove section radial gradients by redefining as subtle solid background */
+  .section-pattern { background-color: #F7FAFC; background-image: none; }
 }

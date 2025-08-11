@@ -8,11 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import FileUploadCard from '@/components/molecules/FileUploadCard';
 import { 
-  FileText, 
+  FileText,
   ArrowLeft,
   AlertCircle,
   Sparkles
 } from 'lucide-react';
+import { Logo } from '@/components/ui/logo';
 import Link from 'next/link';
 import { Question } from '@/domain/entities/question';
 import { useAuthContext } from '@/containers/useAuth';
@@ -32,8 +33,10 @@ export default function DashboardPage() {
     collectEmails: false
   });
   
+  // Guardar montaje para evitar desajustes de hidratación
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => setHasMounted(true), []);
 
-  
   const router = useRouter();
   
   // Estado para lista de formularios
@@ -121,7 +124,7 @@ export default function DashboardPage() {
   // Show loading while checking authentication
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Cargando...</p>
@@ -130,10 +133,15 @@ export default function DashboardPage() {
     );
   }
 
+  // Evitar render SSR/CSR distinto
+  if (!hasMounted) {
+    return <div className="min-h-screen bg-white" />;
+  }
+
   // Redirect to login if not authenticated (this will trigger the useEffect)
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-muted-foreground mb-4">Redirigiendo a inicio de sesión...</p>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -143,9 +151,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 sticky top-0 z-50">
+      <header className="border-b bg-white sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" asChild>
@@ -155,12 +163,10 @@ export default function DashboardPage() {
               </Link>
             </Button>
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
+              <Logo className="w-8 h-8" />
               <div>
-                <h1 className="text-xl font-bold">Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Crea y gestiona tus formularios</p>
+                <h1 className="text-xl font-bold text-primary">Dashboard</h1>
+                <p className="text-sm text-muted">Crea y gestiona tus formularios</p>
               </div>
             </div>
           </div>
@@ -211,14 +217,14 @@ export default function DashboardPage() {
 
       {/* Modal de formularios */}
       {showFormsList && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowFormsList(false)}>
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setShowFormsList(false)}>
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Mis Formularios</h2>
                 <button
                   onClick={() => setShowFormsList(false)}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
                 >
                   ×
                 </button>
@@ -226,13 +232,13 @@ export default function DashboardPage() {
               
                               <div className="max-h-[60vh] overflow-y-auto">
                   {isLoadingForms ? (
-                    <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                    <div className="text-center py-12 text-gray-500">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
                       <h3 className="text-lg font-medium mb-2">Cargando formularios...</h3>
                       <p className="text-sm">Obteniendo tus formularios de Google Forms</p>
                     </div>
                   ) : userForms.length === 0 ? (
-                    <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                    <div className="text-center py-12 text-gray-500">
                       <FileText className="h-16 w-16 mx-auto mb-4 opacity-50" />
                       <h3 className="text-lg font-medium mb-2">No tienes formularios creados aún</h3>
                       <p className="text-sm">Crea tu primer formulario subiendo un archivo Excel o CSV</p>
@@ -246,21 +252,21 @@ export default function DashboardPage() {
                   ) : (
                   <div className="space-y-4">
                     {userForms.map((form, index) => (
-                      <div key={index} className="p-4 border border-gray-200 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                      <div key={index} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-1">
+                            <h3 className="font-semibold text-lg text-gray-900 mb-1">
                               {form.title}
                             </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                            <p className="text-sm text-gray-600 mb-3">
                               {form.description || 'Sin descripción'}
                             </p>
-                            <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
-                                                             <span className="flex items-center gap-1">
-                                 📊 <strong>{form.responseCount || 0}</strong> respuestas
+                            <div className="flex items-center gap-6 text-sm text-gray-500">
+                              <span className="flex items-center gap-1">
+                                📊 <strong>{form.responseCount || 0}</strong> respuestas
                                </span>
                                <span className="flex items-center gap-1">
-                                 📅 Creado {form.createdAt ? new Date(form.createdAt).toLocaleDateString() : 'hace poco'}
+                                📅 Creado {form.createdAt ? new Date(form.createdAt).toLocaleDateString() : 'hace poco'}
                                </span>
                                <span className="flex items-center gap-1">
                                  ✏️ Modificado {form.modifiedAt ? new Date(form.modifiedAt).toLocaleDateString() : 'hace poco'}
@@ -283,7 +289,7 @@ export default function DashboardPage() {
                                 href={form.editUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="px-3 py-1.5 text-sm border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                                className="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                               >
                                 Editar en Google Forms
                               </a>
@@ -297,8 +303,8 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-        </div>
-      )}
+          </div>
+        )}
 
       <div className="container mx-auto px-4 py-8">
         {/* Authentication-required notice for Google Forms */}
@@ -452,7 +458,7 @@ export default function DashboardPage() {
 
 
                   {/* Info Notice */}
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                     <h4 className="text-sm font-semibold mb-2 flex items-center">
                       ℹ️ Configuraciones Adicionales
                     </h4>

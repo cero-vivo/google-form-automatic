@@ -43,9 +43,9 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 sticky top-0 z-50">
+      <header className="border-b bg-white sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" asChild>
@@ -76,7 +76,7 @@ export default function PricingPage() {
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-primary">
             Planes que escalan con tu creatividad
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
@@ -104,7 +104,7 @@ export default function PricingPage() {
             <span className={`font-medium ${isAnnual ? 'text-primary' : 'text-muted-foreground'}`}>
               Anual
             </span>
-            <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+            <Badge variant="secondary" className="bg-green-100 text-green-700">
               2 meses gratis
             </Badge>
           </div>
@@ -123,7 +123,7 @@ export default function PricingPage() {
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-1">
+                  <Badge className="bg-velocity text-white px-4 py-1">
                     <Star className="w-3 h-3 mr-1" />
                     Más Popular
                   </Badge>
@@ -133,8 +133,8 @@ export default function PricingPage() {
               <CardHeader className="text-center pb-2">
                 <div className={`mx-auto w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${
                   plan.popular 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' 
-                    : 'bg-muted text-muted-foreground'
+                  ? 'bg-velocity text-white' 
+                  : 'bg-muted text-muted-foreground'
                 }`}>
                   {getPlanIcon(plan.id)}
                 </div>
@@ -187,10 +187,10 @@ export default function PricingPage() {
                  <Button 
                    className={`w-full ${
                      plan.popular 
-                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700' 
+                       ? 'bg-velocity hover:opacity-90' 
                        : ''
-                   }`}
-                   variant={plan.ctaVariant}
+                                      }`}
+                    variant={plan.ctaVariant}
                    size="lg"
                  >
                    {plan.ctaText}
@@ -203,32 +203,32 @@ export default function PricingPage() {
 
 
         {/* Simple Comparison */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 mb-16 text-center">
+        <div className="bg-white rounded-2xl p-8 mb-16 text-center">
           <h3 className="text-2xl font-bold mb-4">Todos los planes incluyen</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
             <div className="space-y-2">
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto">
                 <FileText className="w-6 h-6 text-blue-600" />
               </div>
               <h4 className="font-semibold">Creación desde Excel/CSV</h4>
               <p className="text-sm text-muted-foreground">Sube tus archivos y convierte automáticamente</p>
             </div>
             <div className="space-y-2">
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto">
                 <Check className="w-6 h-6 text-green-600" />
               </div>
               <h4 className="font-semibold">Todos los tipos de preguntas</h4>
               <p className="text-sm text-muted-foreground">Texto, múltiple opción, escalas, fechas y más</p>
             </div>
             <div className="space-y-2">
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto">
                 <Zap className="w-6 h-6 text-purple-600" />
               </div>
               <h4 className="font-semibold">Exportación a Google Forms</h4>
               <p className="text-sm text-muted-foreground">Formularios listos en tu cuenta de Google</p>
             </div>
           </div>
-          <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <div className="mt-8 p-4 bg-blue-50 rounded-lg">
             <p className="text-sm text-muted-foreground">
               <strong>La única diferencia entre planes es la cantidad de formularios que puedes crear por mes.</strong>
               <br />
@@ -266,7 +266,7 @@ export default function PricingPage() {
         </div>
 
         {/* Final CTA */}
-        <div className="text-center mt-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-12 text-white">
+        <div className="text-center mt-16 bg-velocity-light rounded-2xl p-12">
           <h3 className="text-3xl font-bold mb-4">¿Listo para empezar?</h3>
           <p className="text-xl mb-8 opacity-90">
             Únete a miles de usuarios que ya están creando formularios más rápido

@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+});
 
 export const metadata: Metadata = {
   title: "FastForm - Convertir CSV a Google Forms | Excel a Google Forms Gratis",
@@ -69,7 +76,7 @@ export default function RootLayout({
   
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body className={`min-h-screen bg-background antialiased ${poppins.variable} font-poppins`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
