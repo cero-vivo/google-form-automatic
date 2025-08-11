@@ -33,6 +33,13 @@ export const metadata: Metadata = {
   authors: [{ name: "FastForm Team" }],
   viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.svg', type: 'image/svg+xml' }
+    ],
+    apple: '/apple-touch-icon.svg',
+  },
   openGraph: {
     title: "FastForm - Convertir CSV a Google Forms | Excel a Google Forms",
     description: "Convierte archivos CSV y Excel a Google Forms automáticamente. Herramienta gratuita y fácil de usar.",

@@ -251,7 +251,7 @@ export default function HomePage() {
           </p>
           
           <div className="pt-8 border-t border-primary/10 text-muted-foreground">
-            <p className="font-medium">© 2024 FastForm. El futuro es ahora.</p>
+            <p className="font-medium">© {new Date().getFullYear()} FastForm. El futuro es ahora.</p>
           </div>
         </div>
       </footer>
