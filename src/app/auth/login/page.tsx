@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { 
-  FileText, 
   ArrowLeft,
   AlertCircle,
   Loader2,
   Chrome,
   CheckCircle
 } from 'lucide-react';
+import { Logo } from '@/components/ui/logo';
 import Link from 'next/link';
 import { useAuthContext } from '@/containers/useAuth';
 import { useRouter } from 'next/navigation';
@@ -45,9 +45,7 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center justify-center mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <FileText className="w-7 h-7 text-white" />
-            </div>
+            <Logo className="w-12 h-12" width={48} height={48} />
           </Link>
           
           <h1 className="text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h1>

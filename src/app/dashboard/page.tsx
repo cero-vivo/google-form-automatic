@@ -544,9 +544,6 @@ export default function DashboardPage() {
             {/* Actions */}
             <div className="flex justify-center mt-8">
               <div className="flex items-center gap-4">
-                <Button variant="outline" size="lg">
-                  Guardar como borrador
-                </Button>
                 <Button 
                   size="lg"
                   onClick={handleCreateForm}

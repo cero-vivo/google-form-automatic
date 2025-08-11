@@ -102,7 +102,7 @@ export default function HomePage() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="border-2 border-primary/30 text-primary hover:border-velocity hover:text-velocity hover:bg-velocity/5 text-lg px-8 py-5">
-                <Link href="#demo" className="flex items-center">
+                <Link href="#upload" className="flex items-center">
                   <Target className="mr-3 h-5 w-5" />
                   Ver Demo
                 </Link>
@@ -110,16 +110,8 @@ export default function HomePage() {
             </div>
             <div className="flex flex-wrap gap-6 text-sm">
               <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 text-velocity" />
-                <span className="font-semibold text-primary">4.9/5 valoración</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-forms" />
-                <span className="font-semibold text-primary">+50,000 formularios creados</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-excel" />
-                <span className="font-semibold text-primary">Gratis para empezar</span>
+                <span className="font-semibold text-primary">Gratis</span>
               </div>
             </div>
           </div>
@@ -128,19 +120,12 @@ export default function HomePage() {
           <div className="relative max-w-xl w-full mx-auto">
             <div className="relative">
               <Image
-                src="/images/image.png"
+                src="/images/image1.png"
                 alt="Importar Excel y CSV"
                 width={680}
                 height={420}
                 className="rounded-2xl shadow-xl border border-gray-200 bg-white"
                 priority
-              />
-              <Image
-                src="/images/image1.png"
-                alt="Formulario de Google generado"
-                width={520}
-                height={320}
-                className="rounded-2xl shadow-lg border border-gray-200 bg-white absolute -bottom-8 -right-8 hidden md:block"
               />
             </div>
           </div>

@@ -119,7 +119,7 @@ export default function DocsPage() {
             </p>
             <div className="flex justify-center gap-4">
               <Button variant="outline" asChild>
-                <Link href="/support">
+                <Link href="mailto:luis.espinoza.nav@outlook.com?subject=Support%20FastForm">
                   Soporte Técnico
                 </Link>
               </Button>
