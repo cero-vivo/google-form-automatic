@@ -277,11 +277,6 @@ export default function PricingPage() {
                 Comenzar Gratis
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-blue-600">
-              <Link href="/contact">
-                Hablar con Ventas
-              </Link>
-            </Button>
           </div>
         </div>
       </div>

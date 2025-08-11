@@ -132,6 +132,65 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Features Section */}
+      <section id="features" className="py-24 px-6 bg-white">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-velocity/10 text-velocity border-velocity/30 px-4 py-2 font-semibold">
+              Características
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-primary">
+              Crea y ve formularios en segundos
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Convierte tus hojas de cálculo en formularios listos para usar y accede a ellos desde tu panel. Rápido, simple y confiable.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="border border-gray-200">
+              <CardContent className="p-6">
+                <div className="w-10 h-10 rounded-lg bg-velocity/10 text-velocity flex items-center justify-center mb-4">
+                  <Sparkles className="h-6 w-6" />
+                </div>
+                <h3 className="font-semibold text-primary mb-2">Crea en segundos</h3>
+                <p className="text-sm text-muted-foreground">Sube tu archivo y genera un Google Form al instante, sin pasos complicados.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-gray-200">
+              <CardContent className="p-6">
+                <div className="w-10 h-10 rounded-lg bg-velocity/10 text-velocity flex items-center justify-center mb-4">
+                  <FileSpreadsheet className="h-6 w-6" />
+                </div>
+                <h3 className="font-semibold text-primary mb-2">Excel y CSV</h3>
+                <p className="text-sm text-muted-foreground">Compatibilidad con .xlsx y .csv, con detección automática de tipos de preguntas.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-gray-200">
+              <CardContent className="p-6">
+                <div className="w-10 h-10 rounded-lg bg-velocity/10 text-velocity flex items-center justify-center mb-4">
+                  <FormInput className="h-6 w-6" />
+                </div>
+                <h3 className="font-semibold text-primary mb-2">Vista previa inteligente</h3>
+                <p className="text-sm text-muted-foreground">Revisa las preguntas detectadas antes de crear el formulario definitivo.</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-gray-200">
+              <CardContent className="p-6">
+                <div className="w-10 h-10 rounded-lg bg-velocity/10 text-velocity flex items-center justify-center mb-4">
+                  <Clock className="h-6 w-6" />
+                </div>
+                <h3 className="font-semibold text-primary mb-2">Acceso inmediato</h3>
+                <p className="text-sm text-muted-foreground">Ve y gestiona tus formularios desde el dashboard en cualquier momento.</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Upload Section - Immediate conversion */}
       <section id="upload" className="py-24 px-6 bg-white">
         <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-start">
