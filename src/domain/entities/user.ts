@@ -27,6 +27,11 @@ export interface User {
   subscriptionId?: string;
   subscriptionExpiry?: Date;
   
+  // Límites mensuales
+  formsCreatedThisMonth: number;
+  monthlyFormLimit: number;
+  lastBillingCycleReset: Date;
+  
   // Metadatos
   createdAt: Date;
   updatedAt: Date;
@@ -80,6 +85,9 @@ export class UserEntity implements User {
     public googleTokenExpiry?: Date,
     public subscriptionId?: string,
     public subscriptionExpiry?: Date,
+    public formsCreatedThisMonth: number = 0,
+    public monthlyFormLimit: number = 5,
+    public lastBillingCycleReset: Date = new Date(),
     public createdAt: Date = new Date(),
     public updatedAt: Date = new Date(),
     public lastLoginAt?: Date
@@ -233,6 +241,40 @@ export class UserEntity implements User {
     }
   }
 
+  // Métodos para límites mensuales
+  canCreateMoreFormsThisMonth(): boolean {
+    return this.monthlyFormLimit === -1 || this.formsCreatedThisMonth < this.monthlyFormLimit;
+  }
+
+  incrementMonthlyFormCount(): void {
+    this.formsCreatedThisMonth += 1;
+    this.updatedAt = new Date();
+  }
+
+  resetMonthlyFormCount(): void {
+    this.formsCreatedThisMonth = 0;
+    this.lastBillingCycleReset = new Date();
+    this.updatedAt = new Date();
+  }
+
+  updateMonthlyFormLimit(newLimit: number): void {
+    this.monthlyFormLimit = newLimit;
+    this.updatedAt = new Date();
+  }
+
+  getMonthlyFormUsage(): { used: number; limit: number; percentage: number } {
+    if (this.monthlyFormLimit === -1) {
+      return { used: this.formsCreatedThisMonth, limit: -1, percentage: 0 };
+    }
+    
+    const percentage = Math.round((this.formsCreatedThisMonth / this.monthlyFormLimit) * 100);
+    return {
+      used: this.formsCreatedThisMonth,
+      limit: this.monthlyFormLimit,
+      percentage: Math.min(percentage, 100)
+    };
+  }
+
   getMaxQuestionsPerForm(): number {
     switch (this.plan) {
       case UserPlan.FREE:
@@ -308,6 +350,9 @@ export class UserEntity implements User {
       plan: this.plan,
       subscriptionId: this.subscriptionId,
       subscriptionExpiry: this.subscriptionExpiry,
+      formsCreatedThisMonth: this.formsCreatedThisMonth,
+      monthlyFormLimit: this.monthlyFormLimit,
+      lastBillingCycleReset: this.lastBillingCycleReset,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       lastLoginAt: this.lastLoginAt
@@ -337,6 +382,9 @@ export class UserEntity implements User {
       data.googleTokenExpiry ? new Date(data.googleTokenExpiry) : undefined,
       data.subscriptionId,
       data.subscriptionExpiry ? new Date(data.subscriptionExpiry) : undefined,
+      data.formsCreatedThisMonth,
+      data.monthlyFormLimit,
+      new Date(data.lastBillingCycleReset),
       new Date(data.createdAt),
       new Date(data.updatedAt),
       data.lastLoginAt ? new Date(data.lastLoginAt) : undefined

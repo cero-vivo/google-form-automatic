@@ -20,6 +20,7 @@ import { useAuthContext } from '@/containers/useAuth';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
 import { FormCreatedModal } from '@/components/organisms/FormCreatedModal';
 import FormInstructions from '@/components/organisms/FormInstructions';
+import { SubscriptionManagement } from '@/components/organisms/SubscriptionManagement';
 import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
@@ -41,6 +42,7 @@ export default function DashboardPage() {
   
   // Estado para lista de formularios
   const [showFormsList, setShowFormsList] = useState(false);
+  const [activeTab, setActiveTab] = useState<'create' | 'subscription'>('create');
   
   const { user, signOut, loading: authLoading } = useAuthContext();
 
@@ -187,6 +189,14 @@ export default function DashboardPage() {
               {isLoadingForms ? 'Cargando...' : 'Mis formularios'}
             </Button>
             
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setActiveTab(activeTab === 'create' ? 'subscription' : 'create')}
+            >
+              {activeTab === 'create' ? 'Mi Plan' : 'Crear Formulario'}
+            </Button>
+            
             <div className="flex items-center space-x-2">
               {user.photoURL && (
                 <img 
@@ -329,26 +339,52 @@ export default function DashboardPage() {
           </Alert>
         )}
 
-        {!showPreview ? (
+        {/* Tab Navigation */}
+        <div className="flex border-b mb-6">
+          <button
+            onClick={() => setActiveTab('create')}
+            className={`px-4 py-2 font-medium transition-colors ${
+              activeTab === 'create'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Crear Formulario
+          </button>
+          <button
+            onClick={() => setActiveTab('subscription')}
+            className={`px-4 py-2 font-medium transition-colors ${
+              activeTab === 'subscription'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Mi Plan
+          </button>
+        </div>
+
+        {activeTab === 'create' ? (
           <>
-            {/* Welcome Section */}
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">¡Bienvenido a FastForm!</h2>
-              <p className="text-xl text-muted-foreground mb-6">
-                Comienza subiendo un archivo Excel o CSV para crear tu primer formulario
-              </p>
-            </div>
+            {!showPreview ? (
+              <>
+                {/* Welcome Section */}
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold mb-4">¡Bienvenido a FastForm!</h2>
+                  <p className="text-xl text-muted-foreground mb-6">
+                    Comienza subiendo un archivo Excel o CSV para crear tu primer formulario
+                  </p>
+                </div>
 
-            {/* File Upload */}
-            <FileUploadCard 
-              onQuestionsLoaded={handleQuestionsLoaded}
-              className="mb-8"
-            />
+                {/* File Upload */}
+                <FileUploadCard 
+                  onQuestionsLoaded={handleQuestionsLoaded}
+                  className="mb-8"
+                />
 
-            {/* Instructions */}
-            <FormInstructions />
-          </>
-        ) : (
+                {/* Instructions */}
+                <FormInstructions />
+              </>
+            ) : (
           <>
             {/* Preview Section */}
             <div className="mb-6">
@@ -561,6 +597,11 @@ export default function DashboardPage() {
               </div>
             </div>
           </>
+        )}
+          </>
+        ) : (
+          /* Subscription Management Tab */
+          <SubscriptionManagement userId={user?.email || ''} />
         )}
       </div>
 
