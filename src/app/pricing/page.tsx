@@ -22,6 +22,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import Link from 'next/link';
+import { useAuthContext } from '@/containers/useAuth';
 
 interface PricingPack {
   packSize: number;
@@ -35,6 +36,7 @@ export default function PricingPage() {
   const [quantity, setQuantity] = useState(1);
   const [selectedPack, setSelectedPack] = useState<PricingPack | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { user, loading: authLoading } = useAuthContext();
 
   // CONFIGURACIÓN CENTRALIZADA DE PRECIOS - CAMBIAR AQUÍ PARA ACTUALIZAR TODOS
   const PRICING_CONFIG = {
@@ -120,30 +122,61 @@ export default function PricingPage() {
 
   // Crear preferencia de Mercado Pago
   const handlePurchase = async () => {
+    // Si no está logueado, redirigir a registro
+    if (!user) {
+      window.location.href = '/auth/register';
+      return;
+    }
+
     setIsLoading(true);
     try {
+      // Validar datos antes de enviar
+      if (!quantity || quantity < 1) {
+        throw new Error('Cantidad inválida');
+      }
+
+      if (currentPrice <= 0) {
+        throw new Error('Precio inválido');
+      }
+
+      const requestBody = {
+        quantity: quantity,
+        unitPrice: Math.round(currentPrice / quantity),
+        totalPrice: currentPrice,
+        packSize: selectedPack?.packSize || null,
+        discountPercent: selectedPack?.discountPercent || 0
+      };
+
+      console.log('Enviando solicitud de compra:', requestBody);
+
       const response = await fetch('/api/mercadopago/create-preference', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          quantity: quantity,
-          unitPrice: Math.round(currentPrice / quantity),
-          totalPrice: currentPrice,
-          packSize: selectedPack?.packSize || null,
-          discountPercent: selectedPack?.discountPercent || 0
-        }),
+        body: JSON.stringify(requestBody),
       });
 
+      console.log('Respuesta recibida:', response.status, response.statusText);
+
       if (response.ok) {
-        const { initPoint } = await response.json();
-        window.location.href = initPoint;
+        const responseData = await response.json();
+        console.log('Datos de respuesta:', responseData);
+        
+        if (responseData.initPoint) {
+          window.location.href = responseData.initPoint;
+        } else {
+          throw new Error('No se recibió URL de checkout');
+        }
       } else {
-        console.error('Error al crear preferencia');
+        const errorText = await response.text();
+        console.error('Error HTTP:', response.status, errorText);
+        throw new Error(`Error del servidor: ${response.status}`);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error en handlePurchase:', error);
+      // Aquí podrías mostrar un toast o alert al usuario
+      alert(`Error al procesar la compra: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setIsLoading(false);
     }
@@ -172,11 +205,19 @@ export default function PricingPage() {
             </div>
           </div>
           
-          <Button asChild>
-            <Link href="/dashboard">
-              Ir al Dashboard
-            </Link>
-          </Button>
+          {!user ? (
+            <Button asChild variant="outline">
+              <Link href="/auth/login">
+                Iniciar Sesión
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild>
+              <Link href="/dashboard">
+                Ir al Dashboard
+              </Link>
+            </Button>
+          )}
         </div>
       </header>
 
@@ -255,10 +296,14 @@ export default function PricingPage() {
                   variant={selectedPack?.packSize === pack.packSize ? 'default' : 'outline'}
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (!user) {
+                      window.location.href = '/auth/register';
+                      return;
+                    }
                     selectPack(pack);
                   }}
                 >
-                  Seleccionar Pack
+                  {!user ? 'Empezar Gratis' : 'Seleccionar Pack'}
                 </Button>
               </CardContent>
             </Card>
@@ -362,6 +407,11 @@ export default function PricingPage() {
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                     Procesando...
                   </>
+                ) : !user ? (
+                  <>
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    Empezar Gratis
+                  </>
                 ) : (
                   <>
                     <ShoppingCart className="h-5 w-5 mr-2" />
@@ -422,16 +472,30 @@ export default function PricingPage() {
 
         {/* Final CTA */}
         <div className="text-center mt-16 bg-primary/5 rounded-2xl p-12">
-          <h3 className="text-3xl font-bold mb-4">¿Listo para empezar?</h3>
+          <h3 className="text-3xl font-bold mb-4">
+            {!user ? '¿Listo para empezar?' : '¿Listo para comprar?'}
+          </h3>
           <p className="text-xl mb-8 opacity-90">
-            Compra tus créditos y comienza a crear formularios profesionales en minutos
+            {!user 
+              ? 'Crea tu cuenta gratuita y comienza a crear formularios profesionales en minutos'
+              : 'Compra tus créditos y comienza a crear formularios profesionales en minutos'
+            }
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild>
-              <Link href="/dashboard">
-                Ir al Dashboard
-              </Link>
-            </Button>
+            {!user ? (
+              <Button size="lg" asChild className="bg-primary hover:bg-primary/90">
+                <Link href="/auth/register">
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Crear Cuenta Gratuita
+                </Link>
+              </Button>
+            ) : (
+              <Button size="lg" asChild>
+                <Link href="/dashboard">
+                  Ir al Dashboard
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>
