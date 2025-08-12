@@ -95,7 +95,8 @@ export const COLLECTIONS = {
   FORMS: 'forms',
   RESPONSES: 'responses',
   TEMPLATES: 'templates',
-  ANALYTICS: 'analytics'
+  ANALYTICS: 'analytics',
+  USER_CREDITS: 'userCredits'
 } as const;
 
 export const STORAGE_PATHS = {

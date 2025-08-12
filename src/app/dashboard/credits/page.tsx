@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useAuthContext } from '@/containers/useAuth';
 import { useRouter } from 'next/navigation';
 import CreditsManager from '@/components/organisms/CreditsManager';
+import { useCredits } from '@/containers/useCredits';
 
 // Datos mock para demostración - en producción vendrían de la base de datos
 const mockTransactions = [
@@ -52,6 +53,16 @@ const mockTransactions = [
 export default function CreditsPage() {
   const [hasMounted, setHasMounted] = useState(false);
   const { user, loading: authLoading } = useAuthContext();
+  const { 
+    credits, 
+    loading: creditsLoading, 
+    currentCredits, 
+    totalPurchased, 
+    totalUsed, 
+    usagePercentage,
+    error: creditsError,
+    clearError 
+  } = useCredits();
   const router = useRouter();
 
   // Guardar montaje para evitar desajustes de hidratación
@@ -64,13 +75,15 @@ export default function CreditsPage() {
     }
   }, [user, authLoading, router]);
 
-  // Show loading while checking authentication
-  if (authLoading) {
+  // Show loading while checking authentication or loading credits
+  if (authLoading || creditsLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Cargando...</p>
+          <p className="text-muted-foreground">
+            {creditsLoading ? 'Cargando créditos...' : 'Cargando...'}
+          </p>
         </div>
       </div>
     );
@@ -93,16 +106,8 @@ export default function CreditsPage() {
     );
   }
 
-  // Calcular estadísticas desde las transacciones
-  const totalCreditsPurchased = mockTransactions
-    .filter(t => t.type === 'purchase' && t.status === 'completed')
-    .reduce((sum, t) => sum + t.amount, 0);
-  
-  const totalCreditsUsed = mockTransactions
-    .filter(t => t.type === 'usage' && t.status === 'completed')
-    .reduce((sum, t) => sum + t.amount, 0);
-  
-  const currentCredits = totalCreditsPurchased - totalCreditsUsed;
+  // Usar datos reales de Firestore en lugar de mock
+  const transactions = credits?.history || [];
 
   return (
     <div className="min-h-screen bg-white">
@@ -145,12 +150,27 @@ export default function CreditsPage() {
 
       {/* Contenido principal */}
       <div className="container mx-auto px-4 py-8">
-        <CreditsManager
-          currentCredits={currentCredits}
-          totalCreditsPurchased={totalCreditsPurchased}
-          totalCreditsUsed={totalCreditsUsed}
-          transactions={mockTransactions}
-        />
+        {creditsError ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-red-600 text-2xl">⚠️</span>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Error al cargar créditos
+            </h3>
+            <p className="text-muted-foreground mb-4">{creditsError}</p>
+            <Button onClick={clearError} variant="outline">
+              Intentar de nuevo
+            </Button>
+          </div>
+        ) : (
+          <CreditsManager
+            currentCredits={currentCredits}
+            totalCreditsPurchased={totalPurchased}
+            totalCreditsUsed={totalUsed}
+            transactions={transactions}
+          />
+        )}
       </div>
     </div>
   );

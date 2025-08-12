@@ -3,24 +3,124 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, FileText, ArrowRight } from 'lucide-react';
+import { CheckCircle, FileText, ArrowRight, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useAuthContext } from '@/containers/useAuth';
 
 export default function CheckoutSuccessPage() {
   const [isLoading, setIsLoading] = useState(true);
+  const [processingCredits, setProcessingCredits] = useState(false);
+  const [creditsProcessed, setCreditsProcessed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const { user } = useAuthContext();
 
   useEffect(() => {
-    // Simular carga para mostrar la animación
-    const timer = setTimeout(() => setIsLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    const processPayment = async () => {
+      try {
+        // Obtener parámetros de la URL
+        const paymentId = searchParams.get('payment_id');
+        const status = searchParams.get('status');
+        const externalReference = searchParams.get('external_reference');
 
-  if (isLoading) {
+        if (!paymentId || !user) {
+          console.log('No payment_id or user found');
+          setIsLoading(false);
+          return;
+        }
+
+        // Si el pago ya fue procesado, no hacer nada
+        if (creditsProcessed) {
+          setIsLoading(false);
+          return;
+        }
+
+        setProcessingCredits(true);
+
+        // Obtener información de la compra desde localStorage o sessionStorage
+        const purchaseData = sessionStorage.getItem('fastform_purchase');
+        if (!purchaseData) {
+          throw new Error('No se encontró información de la compra');
+        }
+
+        const purchase = JSON.parse(purchaseData);
+        
+        // Verificar el pago y agregar créditos
+        const response = await fetch('/api/mercadopago/verify-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            paymentId,
+            userId: user.id,
+            purchase
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          setCreditsProcessed(true);
+          console.log('✅ Créditos procesados exitosamente');
+          // Limpiar datos de la compra
+          sessionStorage.removeItem('fastform_purchase');
+        } else {
+          throw new Error(result.message || 'Error al procesar créditos');
+        }
+
+      } catch (err) {
+        console.error('Error processing payment:', err);
+        setError(err instanceof Error ? err.message : 'Error desconocido');
+      } finally {
+        setProcessingCredits(false);
+        setIsLoading(false);
+      }
+    };
+
+    processPayment();
+  }, [searchParams, user, creditsProcessed]);
+
+  if (isLoading || processingCredits) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Procesando tu pago...</p>
+          <p className="text-muted-foreground">
+            {processingCredits ? 'Procesando créditos...' : 'Procesando tu pago...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar error si algo falló
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-12 h-12 text-red-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Error al Procesar Créditos
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            {error}
+          </p>
+          <div className="space-y-3">
+            <Button asChild className="w-full">
+              <Link href="/dashboard">
+                Ir al Dashboard
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full">
+              <Link href="/pricing">
+                Intentar de Nuevo
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     );

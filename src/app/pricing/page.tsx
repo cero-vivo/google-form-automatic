@@ -149,6 +149,9 @@ export default function PricingPage() {
 
       console.log('Enviando solicitud de compra:', requestBody);
 
+      // Guardar información de la compra para procesar después del pago
+      sessionStorage.setItem('fastform_purchase', JSON.stringify(requestBody));
+
       const response = await fetch('/api/mercadopago/create-preference', {
         method: 'POST',
         headers: {

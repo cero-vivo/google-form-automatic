@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       // Solo habilitar auto_return en producción donde las URLs son accesibles desde internet
       auto_return: process.env.NODE_ENV === 'production' ? 'approved' : undefined,
       notification_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/mercadopago/webhooks`,
-      external_reference: `form_credits_${Date.now()}`,
+      external_reference: `form_credits_${Date.now()}_${quantity}`,
       expires: true,
       expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 horas
       statement_descriptor: 'FastForm',

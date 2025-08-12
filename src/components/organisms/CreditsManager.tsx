@@ -16,13 +16,13 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-interface CreditTransaction {
-  id: string;
-  type: 'purchase' | 'usage';
-  amount: number;
-  description: string;
-  date: Date;
-  status: 'completed' | 'pending' | 'failed';
+import { CreditTransaction } from '@/types/credits';
+
+interface CreditsManagerProps {
+  currentCredits: number;
+  totalCreditsPurchased: number;
+  totalCreditsUsed: number;
+  transactions: CreditTransaction[];
 }
 
 interface CreditsManagerProps {
@@ -43,7 +43,7 @@ export default function CreditsManager({
   // Calcular estadísticas
   const usagePercentage = totalCreditsPurchased > 0 ? (totalCreditsUsed / totalCreditsPurchased) * 100 : 0;
   const remainingCredits = currentCredits;
-  const averageUsagePerForm = totalCreditsUsed > 0 ? (totalCreditsUsed / transactions.filter(t => t.type === 'usage').length) : 0;
+  const averageUsagePerForm = totalCreditsUsed > 0 ? (totalCreditsUsed / transactions.filter(t => t.type === 'use').length) : 0;
 
   // Formatear fecha
   const formatDate = (date: Date) => {
@@ -61,12 +61,15 @@ export default function CreditsManager({
     switch (type) {
       case 'purchase':
         return <Plus className="w-4 h-4 text-green-600" />;
-      case 'usage':
+      case 'use':
         return <FileText className="w-4 h-4 text-blue-600" />;
       default:
         return <CreditCard className="w-4 h-4 text-gray-600" />;
     }
   };
+
+  // Filtrar transacciones para mostrar solo las completadas
+  const completedTransactions = transactions.filter(t => t.status === 'completed');
 
   // Obtener color del badge según el estado
   const getStatusColor = (status: string) => {
@@ -235,7 +238,7 @@ export default function CreditsManager({
           </div>
         </CardHeader>
         <CardContent>
-          {transactions.length === 0 ? (
+          {completedTransactions.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <CreditCard className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>No hay transacciones aún</p>
@@ -243,7 +246,7 @@ export default function CreditsManager({
             </div>
           ) : (
             <div className="space-y-3">
-              {transactions.slice(0, 5).map((transaction) => (
+              {completedTransactions.slice(0, 5).map((transaction) => (
                 <div key={transaction.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
@@ -273,10 +276,10 @@ export default function CreditsManager({
                 </div>
               ))}
               
-              {transactions.length > 5 && (
+              {completedTransactions.length > 5 && (
                 <div className="text-center pt-2">
                   <Button variant="ghost" size="sm">
-                    Ver {transactions.length - 5} transacciones más
+                    Ver {completedTransactions.length - 5} transacciones más
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
