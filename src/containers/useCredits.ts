@@ -67,27 +67,17 @@ export const useCredits = (): UseCreditsReturn => {
     }
   }, []);
 
-  // Función estable para cargar créditos (no se recrea)
-  const stableLoadUserCredits = useCallback(async (userId: string) => {
+  // Función para inicializar créditos si no existen
+  const initializeCreditsIfNeeded = useCallback(async (userId: string) => {
     try {
-      setError(null);
-      setLoading(true);
-      
       const userCredits = await CreditsService.getUserCredits(userId);
       
       if (!userCredits) {
         // Inicializar créditos si el usuario no tiene
-        const newCredits = await CreditsService.initializeUserCredits(userId);
-        setCredits(newCredits);
-      } else {
-        setCredits(userCredits);
+        await CreditsService.initializeUserCredits(userId);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al cargar créditos';
-      setError(errorMessage);
-      console.error('Error loading credits:', err);
-    } finally {
-      setLoading(false);
+      console.error('Error initializing credits:', err);
     }
   }, []);
 
@@ -106,19 +96,19 @@ export const useCredits = (): UseCreditsReturn => {
       console.log(`✅ Suscribiendo a créditos en tiempo real para usuario: ${user.id}`);
       setLoading(true);
       
-      // Suscribirse a cambios en tiempo real
+      // Suscribirse a cambios en tiempo real usando onSnapshot
       const unsubscribe = CreditsService.subscribeToUserCredits(user.id, (userCredits) => {
         console.log(`📥 Créditos actualizados en tiempo real:`, userCredits);
         setCredits(userCredits);
         setLoading(false);
       });
 
-      // Cargar créditos iniciales
-      stableLoadUserCredits(user.id);
+      // Inicializar créditos si no existen
+      initializeCreditsIfNeeded(user.id);
 
       return unsubscribe;
     }
-  }, [isAuthenticated, user?.id]); // Removido stableLoadUserCredits para evitar loops
+  }, [isAuthenticated, user?.id]);
 
   // Consumir créditos
   const consumeCredits = useCallback(async (usage: CreditUsage): Promise<boolean> => {
