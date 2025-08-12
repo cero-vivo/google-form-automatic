@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthContext } from './useAuth';
 import { CreditsService } from '@/infrastructure/firebase/credits-service';
 import { UserCredits, CreditUsage } from '@/types/credits';
@@ -31,6 +31,7 @@ export const useCredits = (): UseCreditsReturn => {
   const [credits, setCredits] = useState<UserCredits | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const userIdRef = useRef<string | null>(null);
 
   // Calcular estadísticas
   const currentCredits = credits?.credits || 0;
@@ -46,6 +47,7 @@ export const useCredits = (): UseCreditsReturn => {
   const loadUserCredits = useCallback(async (userId: string) => {
     try {
       setError(null);
+      setLoading(true);
       
       const userCredits = await CreditsService.getUserCredits(userId);
       
@@ -60,35 +62,63 @@ export const useCredits = (): UseCreditsReturn => {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar créditos';
       setError(errorMessage);
       console.error('Error loading credits:', err);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  // Efecto principal para manejar autenticación y suscripción
+  // Función estable para cargar créditos (no se recrea)
+  const stableLoadUserCredits = useCallback(async (userId: string) => {
+    try {
+      setError(null);
+      setLoading(true);
+      
+      const userCredits = await CreditsService.getUserCredits(userId);
+      
+      if (!userCredits) {
+        // Inicializar créditos si el usuario no tiene
+        const newCredits = await CreditsService.initializeUserCredits(userId);
+        setCredits(newCredits);
+      } else {
+        setCredits(userCredits);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al cargar créditos';
+      setError(errorMessage);
+      console.error('Error loading credits:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Efecto principal para suscribirse a cambios en tiempo real
   useEffect(() => {
-    console.log(`🔄 useEffect ejecutado - isAuthenticated: ${isAuthenticated}, user: ${user?.id}`);
-    
     if (!isAuthenticated || !user) {
-      console.log('❌ Usuario no autenticado, limpiando estado');
       setCredits(null);
       setLoading(false);
+      userIdRef.current = null;
       return;
     }
 
-    console.log(`✅ Usuario autenticado, suscribiendo a créditos: ${user.id}`);
-    setLoading(true);
-    
-    // Suscribirse a cambios en tiempo real
-    const unsubscribe = CreditsService.subscribeToUserCredits(user.id, (userCredits) => {
-      console.log(`📥 Callback de créditos recibido:`, userCredits);
-      setCredits(userCredits);
-      setLoading(false);
-    });
+    // Solo suscribirse si el usuario cambió
+    if (userIdRef.current !== user.id) {
+      userIdRef.current = user.id;
+      console.log(`✅ Suscribiendo a créditos en tiempo real para usuario: ${user.id}`);
+      setLoading(true);
+      
+      // Suscribirse a cambios en tiempo real
+      const unsubscribe = CreditsService.subscribeToUserCredits(user.id, (userCredits) => {
+        console.log(`📥 Créditos actualizados en tiempo real:`, userCredits);
+        setCredits(userCredits);
+        setLoading(false);
+      });
 
-    // Cargar créditos iniciales
-    loadUserCredits(user.id);
+      // Cargar créditos iniciales
+      stableLoadUserCredits(user.id);
 
-    return unsubscribe;
-  }, [isAuthenticated, user?.id]); // Removido loadUserCredits de las dependencias
+      return unsubscribe;
+    }
+  }, [isAuthenticated, user?.id]); // Removido stableLoadUserCredits para evitar loops
 
   // Consumir créditos
   const consumeCredits = useCallback(async (usage: CreditUsage): Promise<boolean> => {
@@ -102,6 +132,8 @@ export const useCredits = (): UseCreditsReturn => {
       
       if (success) {
         console.log('✅ Créditos consumidos exitosamente');
+        // Recargar créditos después de consumir
+        await stableLoadUserCredits(user.id);
       }
       
       return success;
@@ -111,7 +143,7 @@ export const useCredits = (): UseCreditsReturn => {
       console.error('Error consuming credits:', err);
       throw err;
     }
-  }, [user]);
+  }, [user]); // Removido loadUserCredits para evitar loops
 
   // Verificar si tiene créditos suficientes
   const hasEnoughCredits = useCallback(async (requiredAmount: number = 1): Promise<boolean> => {
@@ -130,14 +162,11 @@ export const useCredits = (): UseCreditsReturn => {
     if (!user) return;
     
     try {
-      setLoading(true);
-      await loadUserCredits(user.id);
+      await stableLoadUserCredits(user.id);
     } catch (err) {
       console.error('Error refreshing credits:', err);
-    } finally {
-      setLoading(false);
     }
-  }, [user, loadUserCredits]);
+  }, [user]); // Removido stableLoadUserCredits para evitar loops
 
   // Limpiar error
   const clearError = useCallback(() => {

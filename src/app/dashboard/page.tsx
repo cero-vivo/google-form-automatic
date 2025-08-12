@@ -19,7 +19,9 @@ import Link from 'next/link';
 import { Question } from '@/domain/entities/question';
 import { useAuthContext } from '@/containers/useAuth';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
+import { useCredits } from '@/containers/useCredits';
 import { FormCreatedModal } from '@/components/organisms/FormCreatedModal';
+import CreditsAlert from '@/components/molecules/CreditsAlert';
 import FormInstructions from '@/components/organisms/FormInstructions';
 import { useRouter } from 'next/navigation';
 
@@ -44,6 +46,7 @@ export default function DashboardPage() {
   const [showFormsList, setShowFormsList] = useState(false);
   
   const { user, signOut, loading: authLoading } = useAuthContext();
+  const { currentCredits, loading: creditsLoading } = useCredits();
 
   const {
     createGoogleForm,
@@ -86,6 +89,12 @@ export default function DashboardPage() {
 
     if (loadedQuestions.length === 0) {
       console.error('No hay preguntas para crear el formulario');
+      return;
+    }
+
+    // Verificar créditos antes de crear el formulario
+    if (currentCredits < 1) {
+      alert('No tienes créditos suficientes para crear un formulario. Compra más créditos para continuar.');
       return;
     }
 
@@ -192,10 +201,23 @@ export default function DashboardPage() {
               variant="ghost" 
               size="sm"
               asChild
+              className="relative"
             >
               <Link href="/dashboard/credits">
                 <CreditCard className="h-4 w-4 mr-2" />
                 Créditos
+                {!creditsLoading && (
+                  <Badge 
+                    variant={currentCredits > 0 ? "secondary" : "destructive"}
+                    className={`ml-2 ${
+                      currentCredits > 0 
+                        ? 'bg-primary text-white hover:bg-primary/90' 
+                        : 'bg-red-600 text-white hover:bg-red-700'
+                    }`}
+                  >
+                    {currentCredits > 0 ? currentCredits : '0'}
+                  </Badge>
+                )}
               </Link>
             </Button>
             
@@ -226,6 +248,11 @@ export default function DashboardPage() {
           </div>
         </div>
       </header>
+
+      {/* Alerta de Créditos Bajos */}
+      <div className="container mx-auto px-4 pb-4 py-6">
+        <CreditsAlert currentCredits={currentCredits} />
+      </div>
 
       {/* Modal de formularios */}
       {showFormsList && (
@@ -388,12 +415,17 @@ export default function DashboardPage() {
                   </Button>
                   <Button 
                     onClick={handleCreateForm}
-                    disabled={isCreating || !formTitle.trim()}
+                    disabled={isCreating || !formTitle.trim() || currentCredits < 1}
                   >
                     {isCreating ? (
                       <>
                         <Sparkles className="h-4 w-4 mr-2 animate-spin" />
                         Creando...
+                      </>
+                    ) : currentCredits < 1 ? (
+                      <>
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Sin Créditos
                       </>
                     ) : (
                       'Crear Google Form'
@@ -559,12 +591,17 @@ export default function DashboardPage() {
                 <Button 
                   size="lg"
                   onClick={handleCreateForm}
-                  disabled={isCreating || !formTitle.trim()}
+                  disabled={isCreating || !formTitle.trim() || currentCredits < 1}
                 >
                   {isCreating ? (
                     <>
                       <Sparkles className="h-4 w-4 mr-2 animate-spin" />
                       Creando...
+                    </>
+                  ) : currentCredits < 1 ? (
+                    <>
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Sin Créditos
                     </>
                   ) : (
                     'Crear Google Form'

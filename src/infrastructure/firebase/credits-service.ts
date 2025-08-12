@@ -190,30 +190,36 @@ export class CreditsService {
     console.log(`🔍 Suscribiendo a créditos del usuario: ${userId}`);
     const docRef = doc(db, COLLECTION_NAME, userId);
     
-    return onSnapshot(docRef, (docSnap) => {
-      console.log(`📊 Snapshot recibido para usuario ${userId}:`, docSnap.exists());
-      
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        const userCredits: UserCredits = {
-          userId,
-          credits: data.credits || 0,
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-          history: data.history?.map((item: any) => ({
-            ...item,
-            date: item.date?.toDate() || new Date()
-          })) || []
-        };
-        console.log(`✅ Créditos actualizados para usuario ${userId}:`, userCredits.credits);
-        callback(userCredits);
-      } else {
-        console.log(`⚠️ No se encontraron créditos para usuario ${userId}`);
+    // Configurar opciones para evitar múltiples snapshots
+    const unsubscribe = onSnapshot(docRef, {
+      next: (docSnap) => {
+        console.log(`📊 Snapshot recibido para usuario ${userId}:`, docSnap.exists());
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const userCredits: UserCredits = {
+            userId,
+            credits: data.credits || 0,
+            updatedAt: data.updatedAt?.toDate() || new Date(),
+            history: data.history?.map((item: any) => ({
+              ...item,
+              date: item.date?.toDate() || new Date()
+            })) || []
+          };
+          console.log(`✅ Créditos actualizados para usuario ${userId}:`, userCredits.credits);
+          callback(userCredits);
+        } else {
+          console.log(`⚠️ No se encontraron créditos para usuario ${userId}`);
+          callback(null);
+        }
+      },
+      error: (error) => {
+        console.error('Error listening to user credits:', error);
         callback(null);
       }
-    }, (error) => {
-      console.error('Error listening to user credits:', error);
-      callback(null);
     });
+    
+    return unsubscribe;
   }
 
   /**
