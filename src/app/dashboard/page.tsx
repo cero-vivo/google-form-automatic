@@ -11,7 +11,8 @@ import {
   FileText,
   ArrowLeft,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  CreditCard
 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import Link from 'next/link';
@@ -185,6 +186,17 @@ export default function DashboardPage() {
             >
               <FileText className="h-4 w-4 mr-2" />
               {isLoadingForms ? 'Cargando...' : 'Mis formularios'}
+            </Button>
+            
+            <Button 
+              variant="ghost" 
+              size="sm"
+              asChild
+            >
+              <Link href="/dashboard/credits">
+                <CreditCard className="h-4 w-4 mr-2" />
+                Créditos
+              </Link>
             </Button>
             
             <div className="flex items-center space-x-2">
