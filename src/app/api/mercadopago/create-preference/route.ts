@@ -56,20 +56,24 @@ export async function POST(request: NextRequest) {
         },
       ],
       back_urls: {
-        success: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success`,
-        failure: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/failure`,
-        pending: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/pending`,
+        success: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success`,
+        failure: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/failure`,
+        pending: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/pending`,
       },
-      // Solo habilitar auto_return en producción donde las URLs son accesibles desde internet
+      // Solo habilitar auto_return en producción
       auto_return: process.env.NODE_ENV === 'production' ? 'approved' : undefined,
-      notification_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/mercadopago/webhooks`,
+      notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mercadopago/webhooks`,
       external_reference: `form_credits_${Date.now()}_${quantity}`,
       expires: true,
       expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 horas
       statement_descriptor: 'FastForm',
       binary_mode: true, // Solo pagos aprobados o rechazados
-      // Forzar modo sandbox en desarrollo
-      ...(process.env.NODE_ENV === 'development' && { test_mode: true })
+      // Configuración para desarrollo y producción
+      ...(process.env.NODE_ENV === 'development' && { 
+        // En desarrollo, usar URLs públicas o deshabilitar webhooks
+        notification_url: undefined,
+        auto_return: undefined
+      })
     };
 
     console.log('🔄 Enviando preferencia a Mercado Pago...');
