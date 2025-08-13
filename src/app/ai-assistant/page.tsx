@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { EditableFormPreview } from '@/components/organisms/EditableFormPreview';
+import { FormCreatedModal } from '@/components/organisms/FormCreatedModal';
 
 import { 
   Send, 
@@ -59,6 +60,8 @@ export default function AIAssistantPage() {
   const [isCreatingForm, setIsCreatingForm] = useState(false);
   const [editableForm, setEditableForm] = useState<EditableFormData | null>(null);
   const [showFormEditor, setShowFormEditor] = useState(false);
+  const [createdForm, setCreatedForm] = useState<any>(null);
+  const [showCreatedModal, setShowCreatedModal] = useState(false);
   
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { user, signOut, userEntity } = useAuthContext();
@@ -267,24 +270,31 @@ export default function AIAssistantPage() {
         console.warn('⚠️ Error consuming credits:', await creditsResponse.text());
       }
 
-      const successMessage: Message = {
-        id: Date.now().toString() + '-success',
-        role: 'assistant',
-        content: `🎉 ¡Formulario creado exitosamente!\n\n🔗 **Enlace para responder:** ${result.formUrl}\n🔗 **Enlace para editar:** ${result.editUrl}\n\n✅ El formulario ha sido creado en tu cuenta de Google Forms.\n\n💡 **Consejo:** Puedes personalizar aún más el formulario (temas, configuraciones avanzadas) directamente en Google Forms.`,
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, successMessage]);
+      // Show the created form modal instead of redirecting
+        setCreatedForm({
+          formId: result.formId,
+          title: result.title || formData.title,
+          formUrl: result.formUrl,
+          editUrl: result.editUrl,
+          questionCount: formData.questions.length
+        });
+        setShowCreatedModal(true);
+      
+      // Refresh credits
+      await refreshCredits();
+      
+      // Close the form editor
       setShowFormEditor(false);
       setEditableForm(null);
       
-      // Refresh credits and redirect to dashboard
-      await refreshCredits();
-      
-      // Redirect to dashboard after 3 seconds with success state
-      setTimeout(() => {
-        router.push('/dashboard?formCreated=true');
-      }, 3000);
+      // Add success message to chat
+      const successMessage: Message = {
+        id: Date.now().toString() + '-success',
+        role: 'assistant',
+        content: `🎉 ¡Formulario creado exitosamente! Ahora puedes ver y compartir tu formulario usando los enlaces del modal.`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, successMessage]);
       
     } catch (err: any) {
       const errorMessage = err.message || 'Error al crear el formulario en Google Forms';
@@ -532,6 +542,23 @@ export default function AIAssistantPage() {
           )}
         </div>
       </div>
+
+      {/* Form Created Modal */}
+      {(showCreatedModal || error) && (
+        <FormCreatedModal
+          createdForm={createdForm}
+          error={error}
+          onClose={() => {
+            setShowCreatedModal(false);
+            setCreatedForm(null);
+            setError(null);
+          }}
+          onClearError={() => {
+            setError(null);
+            setShowCreatedModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }

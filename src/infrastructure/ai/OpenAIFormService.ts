@@ -10,13 +10,18 @@ const questionSchema = z.object({
     'dropdown', 'escala_lineal', 'fecha', 'hora', 'email', 'numero',
     'archivo', 'grid', 'escala', 'fecha_hora'
   ]),
-  label: z.string().min(1),
+  label: z.string().min(1).optional(),
+  title: z.string().min(1).optional(),
   options: z.array(z.string()).optional(),
-  range: z.tuple([z.number(), z.number()]).optional()
+  range: z.tuple([z.number(), z.number()]).optional(),
+  required: z.boolean().optional()
+}).refine(data => data.label || data.title, {
+  message: "Either 'label' or 'title' must be provided"
 });
 
 const formSchema = z.object({
   title: z.string().min(1),
+  description: z.string().optional(),
   questions: z.array(questionSchema)
 });
 
@@ -107,35 +112,81 @@ export class OpenAIFormService {
         if (jsonMatch) {
           const formData = JSON.parse(jsonMatch[0]);
           const validatedForm = formSchema.parse(formData);
-          formPreview = validatedForm;
+          
+          // Normalize questions to use 'label' field consistently
+          const normalizedQuestions = validatedForm.questions.map(q => ({
+            ...q,
+            label: q.label || q.title || 'Pregunta sin título',
+            title: undefined // Remove title field to avoid confusion
+          }));
+          
+          formPreview = {
+            ...validatedForm,
+            questions: normalizedQuestions
+          };
         } else {
-          // If no JSON found, create a basic form structure from the AI's text response
-          console.log('No se encontró JSON válido, creando estructura básica');
+          // Check if the original message is already valid JSON
+          try {
+            const userJson = JSON.parse(message);
+            const validatedUserForm = formSchema.parse(userJson);
+            
+            const normalizedQuestions = validatedUserForm.questions.map(q => ({
+              ...q,
+              label: q.label || q.title || 'Pregunta sin título',
+              title: undefined
+            }));
+            
+            formPreview = {
+              ...validatedUserForm,
+              questions: normalizedQuestions
+            };
+          } catch {
+            // If no JSON found and message isn't JSON, create basic structure
+            console.log('No se encontró JSON válido, creando estructura básica');
+            formPreview = {
+              title: `Formulario generado`,
+              description: `Formulario basado en tu solicitud: ${message}`,
+              questions: [
+                {
+                  type: 'texto_largo',
+                  label: 'Cuéntanos más sobre tu solicitud',
+                  required: true
+                }
+              ]
+            };
+          }
+        }
+      } catch (error) {
+        console.log('Error parsing JSON, intentando parsear mensaje directo');
+        
+        // Try to parse the original message as JSON
+        try {
+          const userJson = JSON.parse(message);
+          const validatedUserForm = formSchema.parse(userJson);
+          
+          const normalizedQuestions = validatedUserForm.questions.map(q => ({
+            ...q,
+            label: q.label || q.title || 'Pregunta sin título',
+            title: undefined
+          }));
+          
+          formPreview = {
+            ...validatedUserForm,
+            questions: normalizedQuestions
+          };
+        } catch {
           formPreview = {
             title: `Formulario generado`,
-            description: `Formulario basado en tu solicitud: ${message}`,
+            description: `Formulario basado en: ${message}`,
             questions: [
               {
                 type: 'texto_largo',
-                label: 'Cuéntanos más sobre tu solicitud',
+                label: 'Respuesta principal',
                 required: true
               }
             ]
           };
         }
-      } catch (error) {
-        console.log('Error parsing JSON, creando estructura básica');
-        formPreview = {
-          title: `Formulario generado`,
-          description: `Formulario basado en: ${message}`,
-          questions: [
-            {
-              type: 'texto_largo',
-              label: 'Respuesta principal',
-              required: true
-            }
-          ]
-        };
       }
 
       // Actualizar contador de mensajes y créditos
@@ -196,7 +247,17 @@ export class OpenAIFormService {
 
       // Crear formulario en Google Forms
       const validatedForm = formSchema.parse(formData);
-      const googleFormId = await GoogleFormsService.createForm(validatedForm);
+      
+      // Ensure questions use 'label' field consistently
+      const normalizedForm = {
+        ...validatedForm,
+        questions: validatedForm.questions.map(q => ({
+          ...q,
+          label: q.label || q.title || 'Pregunta sin título'
+        }))
+      };
+      
+      const googleFormId = await GoogleFormsService.createForm(normalizedForm);
         
         // Consumir créditos
         await CreditsService.consumeCredits(userId, {

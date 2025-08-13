@@ -190,63 +190,93 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       index: index
     };
 
-    // Estructura correcta según la documentación oficial de Google Forms API
-    const questionItem: any = {
-      title: question.title,
-      description: question.description || ''
+    // Configurar tipo de pregunta según QuestionType
+    // Mapeo de tipos españoles a tipos de Google Forms
+    const typeMapping: Record<string, string> = {
+      'short_text': QuestionType.SHORT_TEXT,
+      'long_text': QuestionType.LONG_TEXT,
+      'multiple_choice': QuestionType.MULTIPLE_CHOICE,
+      'checkboxes': QuestionType.CHECKBOXES,
+      'dropdown': QuestionType.DROPDOWN,
+      'linear_scale': QuestionType.LINEAR_SCALE,
+      'date': QuestionType.DATE,
+      'time': QuestionType.TIME,
+      'email': QuestionType.EMAIL,
+      'number': QuestionType.NUMBER,
+      'phone': QuestionType.PHONE,
+      // Mapeo de tipos españoles
+      'texto_corto': QuestionType.SHORT_TEXT,
+      'texto_largo': QuestionType.LONG_TEXT,
+      'opcion_multiple': QuestionType.MULTIPLE_CHOICE,
+      'casillas': QuestionType.CHECKBOXES,
+      'lista_desplegable': QuestionType.DROPDOWN,
+      'escala_lineal': QuestionType.LINEAR_SCALE,
+      'fecha': QuestionType.DATE,
+      'hora': QuestionType.TIME,
+      'correo': QuestionType.EMAIL,
+      'numero': QuestionType.NUMBER,
+      'telefono': QuestionType.PHONE,
+      'casillas_de_verificacion': QuestionType.CHECKBOXES,
+      'opción_múltiple': QuestionType.MULTIPLE_CHOICE,
+      'fecha_y_hora': QuestionType.DATE
     };
 
-    // La pregunta va dentro de 'question' no directamente en el item
-    const questionConfig: any = {};
+    const normalizedType = typeMapping[question.type] || question.type;
+    
+    let questionConfig: any = {
+      required: question.required
+    };
 
-    // Configurar tipo de pregunta según QuestionType
-    switch (question.type) {
+    switch (normalizedType) {
       case QuestionType.SHORT_TEXT:
+      case 'short_text':
         questionConfig.textQuestion = {
           paragraph: false
         };
         break;
 
       case QuestionType.LONG_TEXT:
+      case 'long_text':
         questionConfig.textQuestion = {
           paragraph: true
         };
         break;
 
       case QuestionType.MULTIPLE_CHOICE:
-        if (question.multipleChoiceConfig?.options) {
-          questionConfig.choiceQuestion = {
-            type: 'RADIO',
-            options: question.multipleChoiceConfig.options.map(option => ({
-              value: option
-            }))
-          };
-        }
+      case 'multiple_choice':
+        const multipleOptions = question.multipleChoiceConfig?.options || question.options || [];
+        questionConfig.choiceQuestion = {
+          type: 'RADIO',
+          options: multipleOptions.map((option: string) => ({
+            value: option
+          }))
+        };
         break;
 
       case QuestionType.CHECKBOXES:
-        if (question.multipleChoiceConfig?.options) {
-          questionConfig.choiceQuestion = {
-            type: 'CHECKBOX',
-            options: question.multipleChoiceConfig.options.map(option => ({
-              value: option
-            }))
-          };
-        }
+      case 'checkboxes':
+        const checkboxOptions = question.multipleChoiceConfig?.options || question.options || [];
+        questionConfig.choiceQuestion = {
+          type: 'CHECKBOX',
+          options: checkboxOptions.map((option: string) => ({
+            value: option
+          }))
+        };
         break;
 
       case QuestionType.DROPDOWN:
-        if (question.multipleChoiceConfig?.options) {
-          questionConfig.choiceQuestion = {
-            type: 'DROP_DOWN',
-            options: question.multipleChoiceConfig.options.map(option => ({
-              value: option
-            }))
-          };
-        }
+      case 'dropdown':
+        const dropdownOptions = question.multipleChoiceConfig?.options || question.options || [];
+        questionConfig.choiceQuestion = {
+          type: 'DROP_DOWN',
+          options: dropdownOptions.map((option: string) => ({
+            value: option
+          }))
+        };
         break;
 
       case QuestionType.LINEAR_SCALE:
+      case 'linear_scale':
         const scaleConfig = question.linearScaleConfig;
         questionConfig.scaleQuestion = {
           low: scaleConfig?.min || 1,
@@ -257,6 +287,7 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
         break;
 
       case QuestionType.DATE:
+      case 'date':
         questionConfig.dateQuestion = {
           includeTime: false,
           includeYear: true
@@ -264,41 +295,39 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
         break;
 
       case QuestionType.TIME:
+      case 'time':
         questionConfig.timeQuestion = {
           duration: false
         };
         break;
 
       case QuestionType.EMAIL:
+      case 'email':
         questionConfig.textQuestion = {
           paragraph: false
         };
-        // TODO: Agregar validación de email si es posible
         break;
 
       case QuestionType.NUMBER:
+      case 'number':
         questionConfig.textQuestion = {
           paragraph: false
         };
-        // TODO: Agregar validación de número si es posible
         break;
 
       case QuestionType.PHONE:
+      case 'phone':
         questionConfig.textQuestion = {
           paragraph: false
         };
-        // TODO: Agregar validación de teléfono si es posible
         break;
 
       default:
-        // Por defecto, usar texto corto
+        console.warn(`Tipo de pregunta no reconocido: ${question.type}, usando texto corto por defecto`);
         questionConfig.textQuestion = {
           paragraph: false
         };
     }
-
-    // Agregar la configuración required al questionConfig
-    questionConfig.required = question.required;
 
     // Estructura final correcta según la API
     return {
@@ -588,4 +617,4 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
 }
 
 // Singleton instance
-export const googleFormsService = new GoogleFormsServiceImpl(); 
+export const googleFormsService = new GoogleFormsServiceImpl();
