@@ -150,8 +150,8 @@ export default function CheckoutPendingPage() {
             </p>
             <p className="text-sm text-muted-foreground">
               Contáctanos en{' '}
-              <a href="mailto:soporte@fastform.com" className="text-primary hover:underline">
-                soporte@fastform.com
+              <a href="mailto:soporte@fastform.pro" className="text-primary hover:underline">
+                soporte@fastform.pro
               </a>
               {' '}o revisa tu email para actualizaciones
             </p>
@@ -160,4 +160,4 @@ export default function CheckoutPendingPage() {
       </div>
     </div>
   );
-} 
+}

@@ -279,8 +279,8 @@ function CheckoutSuccessContent() {
             </p>
             <p className="text-sm text-muted-foreground">
               Contáctanos en{' '}
-              <a href="mailto:soporte@fastform.com" className="text-primary hover:underline">
-                soporte@fastform.com
+              <a href="mailto:soporte@fastform.pro" className="text-primary hover:underline">
+                soporte@fastform.pro
               </a>
             </p>
           </div>

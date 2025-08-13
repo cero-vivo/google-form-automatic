@@ -17,8 +17,8 @@ node debug-mercadopago.js
 2. Selecciona tu aplicación
 3. Ve a "Configuración básica"
 4. Agrega estos dominios en "Dominios de redirección":
-   - `https://fastform.com`
-   - `https://www.fastform.com`
+   - `https://fastform.pro`
+   - `https://www.fastform.pro`
    - `https://google-form-saas.vercel.app` (temporal)
 
 ### 3. Verificar Variables de Entorno
@@ -26,8 +26,8 @@ node debug-mercadopago.js
 # Tu .env.local debe tener:
 MERCADOPAGO_ACCESS_TOKEN=APP_USR-2658953944869049-081200-f4b13b220eab48dc951608902085c138-2624228048
 MERCADOPAGO_PUBLIC_KEY=APP_USR-TU_PUBLIC_KEY_AQUI
-NEXT_PUBLIC_BASE_URL=https://fastform.com
-NEXT_PUBLIC_APP_URL=https://fastform.com
+NEXT_PUBLIC_BASE_URL=https://fastform.pro
+NEXT_PUBLIC_APP_URL=https://fastform.pro
 ```
 
 ## 🚨 Importante sobre la Advertencia de Cookie
