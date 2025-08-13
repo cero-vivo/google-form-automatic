@@ -73,8 +73,10 @@ export const useCredits = (): UseCreditsReturn => {
       const userCredits = await CreditsService.getUserCredits(userId);
       
       if (!userCredits) {
+        console.log(`🆕 Inicializando créditos para usuario: ${userId}`);
         // Inicializar créditos si el usuario no tiene
-        await CreditsService.initializeUserCredits(userId);
+        const newCredits = await CreditsService.initializeUserCredits(userId);
+        setCredits(newCredits);
       }
     } catch (err) {
       console.error('Error initializing credits:', err);
@@ -96,19 +98,25 @@ export const useCredits = (): UseCreditsReturn => {
       console.log(`✅ Suscribiendo a créditos en tiempo real para usuario: ${user.id}`);
       setLoading(true);
       
-      // Suscribirse a cambios en tiempo real usando onSnapshot
-      const unsubscribe = CreditsService.subscribeToUserCredits(user.id, (userCredits) => {
-        console.log(`📥 Créditos actualizados en tiempo real:`, userCredits);
-        setCredits(userCredits);
-        setLoading(false);
+      let unsubscribe: (() => void) | null = null;
+      
+      // Inicializar créditos si no existen y luego suscribirse
+      initializeCreditsIfNeeded(user.id).then(() => {
+        // Luego suscribirse a cambios en tiempo real
+        unsubscribe = CreditsService.subscribeToUserCredits(user.id, (userCredits) => {
+          console.log(`📥 Créditos actualizados en tiempo real:`, userCredits);
+          setCredits(userCredits);
+          setLoading(false);
+        });
       });
-
-      // Inicializar créditos si no existen
-      initializeCreditsIfNeeded(user.id);
-
-      return unsubscribe;
+      
+      return () => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      };
     }
-  }, [isAuthenticated, user?.id]);
+  }, [isAuthenticated, user?.id, initializeCreditsIfNeeded]);
 
   // Consumir créditos
   const consumeCredits = useCallback(async (usage: CreditUsage): Promise<boolean> => {
@@ -123,7 +131,7 @@ export const useCredits = (): UseCreditsReturn => {
       if (success) {
         console.log('✅ Créditos consumidos exitosamente');
         // Recargar créditos después de consumir
-        await stableLoadUserCredits(user.id);
+      await loadUserCredits(user.id);
       }
       
       return success;
@@ -152,7 +160,7 @@ export const useCredits = (): UseCreditsReturn => {
     if (!user) return;
     
     try {
-      await stableLoadUserCredits(user.id);
+      await loadUserCredits(user.id);
     } catch (err) {
       console.error('Error refreshing credits:', err);
     }
@@ -183,4 +191,4 @@ export const useCredits = (): UseCreditsReturn => {
     // Utilidades
     clearError
   };
-}; 
+};

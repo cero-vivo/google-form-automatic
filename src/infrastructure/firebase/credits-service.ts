@@ -28,7 +28,7 @@ export class CreditsService {
         const data = docSnap.data();
         return {
           userId,
-          credits: data.credits || 0,
+          credits: data.credits ?? data.balance ?? 0,
           updatedAt: data.updatedAt?.toDate() || new Date(),
           history: data.history?.map((item: any) => ({
             ...item,
@@ -49,18 +49,36 @@ export class CreditsService {
    */
   static async initializeUserCredits(userId: string): Promise<UserCredits> {
     try {
+      // Importar CONFIG dinámicamente para evitar ciclos de importación
+      const { CONFIG } = await import('@/lib/config');
+      
+      const signupBonus = CONFIG.CREDITS.SIGNUP_BONUS;
+      const bonusTransaction = {
+        id: `signup_${Date.now()}`,
+        type: 'bonus' as const,
+        amount: signupBonus,
+        date: new Date(),
+        description: 'Bono de bienvenida',
+        status: 'completed' as const
+      };
+
       const userCredits: UserCredits = {
         userId,
-        credits: 0,
+        credits: signupBonus,
         updatedAt: new Date(),
-        history: []
+        history: [bonusTransaction]
       };
 
       await setDoc(doc(db, COLLECTION_NAME, userId), {
         ...userCredits,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
+        history: [{
+          ...bonusTransaction,
+          date: Timestamp.fromDate(bonusTransaction.date)
+        }]
       });
 
+      console.log(`✅ Créditos inicializados para usuario ${userId}: ${signupBonus} créditos`);
       return userCredits;
     } catch (error) {
       console.error('Error initializing user credits:', error);
@@ -199,7 +217,7 @@ export class CreditsService {
           const data = docSnap.data();
           const userCredits: UserCredits = {
             userId,
-            credits: data.credits || 0,
+            credits: data.credits ?? data.balance ?? 0,
             updatedAt: data.updatedAt?.toDate() || new Date(),
             history: data.history?.map((item: any) => ({
               ...item,
@@ -264,4 +282,4 @@ export class CreditsService {
       throw new Error('Error al obtener estadísticas de créditos');
     }
   }
-} 
+}

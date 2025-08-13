@@ -1,6 +1,6 @@
 export interface CreditTransaction {
   id: string;
-  type: 'purchase' | 'use';
+  type: 'purchase' | 'use' | 'bonus';
   amount: number;
   date: Date;
   paymentId?: string;
@@ -27,4 +27,4 @@ export interface CreditUsage {
   formId?: string;
   formTitle?: string;
   amount: number;
-} 
+}
