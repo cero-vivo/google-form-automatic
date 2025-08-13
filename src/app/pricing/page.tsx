@@ -144,7 +144,8 @@ export default function PricingPage() {
         unitPrice: Math.round(currentPrice / quantity),
         totalPrice: currentPrice,
         packSize: selectedPack?.packSize || null,
-        discountPercent: selectedPack?.discountPercent || 0
+        discountPercent: selectedPack?.discountPercent || 0,
+        userId: user?.id || ''
       };
 
       console.log('Enviando solicitud de compra:', requestBody);
@@ -504,4 +505,4 @@ export default function PricingPage() {
       </div>
     </div>
   );
-} 
+}

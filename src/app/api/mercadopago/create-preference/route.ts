@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { quantity, unitPrice, totalPrice, packSize, discountPercent } = body;
+    const { quantity, unitPrice, totalPrice, packSize, discountPercent, userId } = body;
 
     console.log('📝 Creando preferencia con datos:', { quantity, unitPrice, totalPrice, packSize, discountPercent });
 
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         pending: pendingUrl,
       },
       notification_url: webhookUrl,
-      external_reference: `form_credits_${Date.now()}_${quantity}`,
+      external_reference: `${userId}_${packSize || ''}_${quantity}`,
       expires: true,
       expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       statement_descriptor: 'FastForm',
