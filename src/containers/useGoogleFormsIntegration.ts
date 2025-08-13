@@ -157,6 +157,17 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
       
       setCreatedForm(result);
 
+      // Consumir crédito después de crear exitosamente
+      const usage = {
+        formId: result.formId,
+        formTitle: options.title || 'Formulario sin título',
+        amount: 1
+      };
+
+      // Importar CreditsService y consumir créditos
+      const { CreditsService } = await import('@/infrastructure/firebase/credits-service');
+      await CreditsService.consumeCredits(user.id, usage);
+
       // Compartir si se especificaron emails
       if (options.shareEmails && options.shareEmails.length > 0) {
         await shareGoogleForm(result.formId, options.shareEmails);
@@ -165,7 +176,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
       // TODO: Guardar en Firestore para persistencia
       await saveFormToDatabase(result, options);
 
-      console.log('✅ Formulario creado exitosamente:', result);
+      console.log('✅ Formulario creado y crédito consumido exitosamente:', result);
       return result;
 
     } catch (err) {
@@ -424,4 +435,4 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     requestGooglePermissions,
     hasGooglePermissions
   };
-}; 
+};
