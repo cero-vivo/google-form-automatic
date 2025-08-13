@@ -39,6 +39,8 @@ export default function DashboardPage() {
   // Guardar montaje para evitar desajustes de hidratación
   const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => setHasMounted(true), []);
+  
+
 
   const router = useRouter();
   
@@ -392,8 +394,89 @@ export default function DashboardPage() {
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-4">¡Bienvenido a FastForm!</h2>
               <p className="text-xl text-muted-foreground mb-6">
-                Comienza subiendo un archivo Excel o CSV para crear tu primer formulario
+                Elige cómo quieres crear tu formulario
               </p>
+            </div>
+
+            {/* Creation Options */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* AI Chat Option */}
+              <Card className="hover:shadow-lg transition-shadow duration-200">
+                <CardHeader>
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <Sparkles className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">Crear con IA</CardTitle>
+                      <CardDescription className="text-sm">
+                        Generar un formulario mediante chat impulsado por IA
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="text-sm text-muted-foreground">
+                      <p>• Describe tus preguntas en lenguaje natural</p>
+                      <p>• La IA genera el formulario automáticamente</p>
+                      <p>• Perfecto para formularios complejos o personalizados</p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                        Costo: 2 créditos
+                      </Badge>
+                      <Button 
+                        onClick={() => router.push('/ai-assistant')}
+                        className="bg-purple-600 hover:bg-purple-700"
+                        disabled={creditsLoading ? false : currentCredits < 2}
+                        title="Publicar vía IA cuesta 2 créditos"
+                      >
+                        Crear con IA
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* File Upload Option */}
+              <Card className="hover:shadow-lg transition-shadow duration-200">
+                <CardHeader>
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <FileText className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">Crear desde CSV/Excel</CardTitle>
+                      <CardDescription className="text-sm">
+                        Importar un archivo CSV o Excel y convertirlo en un formulario
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="text-sm text-muted-foreground">
+                      <p>• Sube archivos Excel (.xlsx) o CSV</p>
+                      <p>• Detección automática de tipos de preguntas</p>
+                      <p>• Ideal para migrar formularios existentes</p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                        Costo: 1 crédito
+                      </Badge>
+                      <Button 
+                        onClick={() => setShowPreview(false)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                        disabled={creditsLoading ? false : currentCredits < 1}
+                        title="Publicar desde archivo cuesta 1 crédito"
+                      >
+                        Crear desde archivo
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* File Upload */}
