@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { CreditsService } from '../firebase/credits-service';
 import { GoogleFormsService } from '@/infrastructure/firebase/GoogleFormsService';
 import { FirebaseRepository } from '@/infrastructure/firebase/FirebaseRepository';
+import { OPENAI_CONFIG } from '@/lib/config';
 
 const questionSchema = z.object({
   type: z.enum([
@@ -95,10 +96,10 @@ export class OpenAIFormService {
       };
 
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: OPENAI_CONFIG.model,
         messages: enhancedMessages,
-        temperature: 1,
-        max_completion_tokens: 1000
+        temperature: OPENAI_CONFIG.temperature,
+        max_completion_tokens: OPENAI_CONFIG.maxCompletionTokens
       });
 
       

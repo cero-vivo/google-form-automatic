@@ -1,5 +1,6 @@
 import { QuestionEntity } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
+import { OPENAI_CONFIG } from '@/lib/config';
 
 interface FormStructure {
   title: string;
@@ -8,8 +9,11 @@ interface FormStructure {
 }
 
 interface AIQuestion {
-  questionText: string;
-  questionType: string;
+  questionText?: string;
+  questionType?: string;
+  type?: string;
+  title?: string;
+  required?: boolean;
   options?: string[];
 }
 
@@ -34,46 +38,21 @@ export class OpenAIFormService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
+          model: OPENAI_CONFIG.model,
           messages: [
             {
               role: 'system',
-              content: `Eres un experto en crear formularios de Google Forms. Genera estructuras de formularios completas basadas en las solicitudes del usuario.
-
-Reglas:
-1. Siempre proporciona un título claro y descriptivo
-2. Incluye una descripción que explique el propósito del formulario
-3. Crea entre 5-15 preguntas relevantes
-4. Usa tipos de preguntas apropiados:
-   - short_text: para respuestas breves
-   - multiple_choice: cuando hay opciones limitadas
-   - checkboxes: para selección múltiple
-   - linear_scale: para calificaciones
-   - date: para fechas
-   - email: para correos electrónicos
-   - number: para cantidades
-   - long_text: para respuestas extensas
-
-Formato de respuesta JSON:
-{
-  "title": "Título del formulario",
-  "description": "Descripción detallada del propósito",
-  "questions": [
-    {
-      "questionText": "Texto de la pregunta",
-      "questionType": "tipo_de_pregunta",
-      "options": ["opción1", "opción2"] // solo para multiple_choice y checkboxes
-    }
-  ]
-}`
+              content: OPENAI_CONFIG.systemPrompt
             },
             {
               role: 'user',
-              content: prompt
+              content: `${prompt}
+
+${OPENAI_CONFIG.userPromptSuffix}`
             }
           ],
-          max_completion_tokens: 2000,
-          temperature: 0.5,
+          max_completion_tokens: OPENAI_CONFIG.maxCompletionTokens,
+          temperature: OPENAI_CONFIG.temperature,
         }),
       });
 
@@ -85,12 +64,16 @@ Formato de respuesta JSON:
         
         // Convert AI response format to domain Question format
         const questions = aiResponse.questions.map((aiQuestion: AIQuestion, index: number) => {
-          const questionType = this.mapAIQuestionTypeToDomain(aiQuestion.questionType);
+          const questionType = this.mapAIQuestionTypeToDomain(
+            aiQuestion.questionType || aiQuestion.type || 'short_text'
+          );
+          const questionText = aiQuestion.questionText || aiQuestion.title || 'Pregunta sin título';
+          
           const question = new QuestionEntity(
             `q${index + 1}`,
             questionType,
-            aiQuestion.questionText,
-            false,
+            questionText,
+            aiQuestion.required || false,
             index
           );
           
@@ -119,6 +102,7 @@ Formato de respuesta JSON:
 
   private mapAIQuestionTypeToDomain(aiType: string): QuestionType {
     const typeMap: Record<string, QuestionType> = {
+      // English mappings
       'short_text': QuestionType.SHORT_TEXT,
       'multiple_choice': QuestionType.MULTIPLE_CHOICE,
       'checkboxes': QuestionType.CHECKBOXES,
@@ -129,10 +113,26 @@ Formato de respuesta JSON:
       'long_text': QuestionType.LONG_TEXT,
       'dropdown': QuestionType.DROPDOWN,
       'time': QuestionType.TIME,
-      'phone': QuestionType.PHONE
+      'phone': QuestionType.PHONE,
+      
+      // Spanish mappings
+      'texto_corto': QuestionType.SHORT_TEXT,
+      'texto_largo': QuestionType.LONG_TEXT,
+      'opcion_multiple': QuestionType.MULTIPLE_CHOICE,
+      'opciones_multiples': QuestionType.MULTIPLE_CHOICE,
+      'casillas': QuestionType.CHECKBOXES,
+      'checkbox': QuestionType.CHECKBOXES,
+      'escala_lineal': QuestionType.LINEAR_SCALE,
+      'fecha': QuestionType.DATE,
+      'hora': QuestionType.TIME,
+      'correo': QuestionType.EMAIL,
+      'numero': QuestionType.NUMBER,
+      'desplegable': QuestionType.DROPDOWN,
+      'telefono': QuestionType.PHONE,
+      'teléfono': QuestionType.PHONE
     };
     
-    return typeMap[aiType] || QuestionType.SHORT_TEXT;
+    return typeMap[aiType.toLowerCase()] || QuestionType.SHORT_TEXT;
   }
 
   private getMockFormStructure(prompt: string): FormStructure {
@@ -211,7 +211,7 @@ Formato de respuesta JSON:
       questions: [
         new QuestionEntity('q1', QuestionType.SHORT_TEXT, 'Nombre completo', false, 0),
         new QuestionEntity('q2', QuestionType.EMAIL, 'Correo electrónico', false, 1),
-        new QuestionEntity('q3', QuestionType.NUMBER, '¿Cuál es tu edad?', false, 2),
+        new QuestionEntity('q3', QuestionType.SHORT_TEXT, 'Empresa/Organización', false, 2),
         (() => {
           const q4 = new QuestionEntity('q4', QuestionType.MULTIPLE_CHOICE, '¿Cómo nos encontraste?', false, 3);
           q4.multipleChoiceConfig = { options: ['Google', 'Redes sociales', 'Recomendación', 'Otro'] };
