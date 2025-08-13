@@ -11,6 +11,7 @@ import {
 import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { auth, db, COLLECTIONS } from './config';
 import { UserEntity } from '@/domain/entities/user';
+import { CONFIG } from '@/lib/config';
 
 export interface AuthService {
   signInWithGoogle(): Promise<FirebaseUser>;
@@ -205,7 +206,40 @@ class FirebaseAuthService implements AuthService {
 
     await setDoc(doc(db, COLLECTIONS.USERS, user.uid), firestoreData);
 
+    // Crear documento de créditos con bonificación de registro
+    await this.createUserCredits(user.uid);
+
     console.log('✅ User document created in Firestore');
+  }
+
+  private async createUserCredits(userId: string): Promise<void> {
+    try {
+      const creditsData = {
+        userId,
+        balance: CONFIG.CREDITS.SIGNUP_BONUS,
+        totalPurchased: 0,
+        totalUsed: 0,
+        totalEarned: CONFIG.CREDITS.SIGNUP_BONUS,
+        transactions: [{
+          type: 'bonus',
+          amount: CONFIG.CREDITS.SIGNUP_BONUS,
+          description: 'Créditos de bienvenida',
+          timestamp: new Date(),
+          metadata: {
+            reason: 'signup_bonus',
+            bonusAmount: CONFIG.CREDITS.SIGNUP_BONUS
+          }
+        }],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      await setDoc(doc(db, COLLECTIONS.USER_CREDITS, userId), creditsData);
+      console.log(`✅ Credits document created with ${CONFIG.CREDITS.SIGNUP_BONUS} bonus credits`);
+    } catch (error) {
+      console.error('❌ Error creating user credits:', error);
+      // No lanzar error para no interrumpir el flujo de registro
+    }
   }
 
   private async updateUserDocument(userId: string, updates: any): Promise<void> {
@@ -270,4 +304,4 @@ class FirebaseAuthService implements AuthService {
 }
 
 // Singleton instance
-export const firebaseAuthService = new FirebaseAuthService(); 
+export const firebaseAuthService = new FirebaseAuthService();
