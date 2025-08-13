@@ -1,8 +1,8 @@
 import OpenAI from 'openai';
 import { z } from 'zod';
-import { CreditService } from '../firebase/CreditService';
-import { GoogleFormsService } from '../firebase/GoogleFormsService';
-import { FirebaseRepository } from '../firebase/FirebaseRepository';
+import { CreditsService } from '../firebase/credits-service';
+import { GoogleFormsService } from '@/infrastructure/firebase/GoogleFormsService';
+import { FirebaseRepository } from '@/infrastructure/firebase/FirebaseRepository';
 
 const questionSchema = z.object({
   type: z.enum([
@@ -38,8 +38,8 @@ export class OpenAIFormService {
   }> {
     try {
       // Verificar créditos disponibles
-      const userCredits = await CreditService.getUserCredits(userId);
-      if (userCredits.remaining < 1) {
+      const userCredits = await CreditsService.getUserCredits(userId);
+      if (!userCredits || userCredits.balance < 1) {
         throw new Error('Créditos insuficientes para continuar');
       }
 
@@ -57,7 +57,7 @@ export class OpenAIFormService {
         model: 'gpt-5-nano',
         messages: messages,
         temperature: 0.1,
-        max_tokens: 1000
+        max_completion_tokens: 1000
       });
 
       const aiResponse = response.choices[0]?.message?.content || '';
@@ -80,7 +80,10 @@ export class OpenAIFormService {
       const creditsUsed = Math.floor(totalMessages / 5);
 
       if (creditsUsed > 0) {
-        await CreditService.deductCredits(userId, creditsUsed, 'chat_message');
+        await CreditsService.consumeCredits(userId, {
+          amount: creditsUsed,
+          formTitle: 'Chat con IA'
+        });
         await FirebaseRepository.logChatInteraction(userId, {
           userId,
           messages: totalMessages,
@@ -108,8 +111,8 @@ export class OpenAIFormService {
   }> {
     try {
       // Verificar créditos para publicación
-      const userCredits = await CreditService.getUserCredits(userId);
-      if (userCredits.remaining < 2) {
+      const userCredits = await CreditsService.getUserCredits(userId);
+      if (!userCredits || userCredits.balance < 2) {
         throw new Error('Créditos insuficientes para publicar el formulario');
       }
 
@@ -117,8 +120,11 @@ export class OpenAIFormService {
       const validatedForm = formSchema.parse(formData);
       const googleFormId = await GoogleFormsService.createForm(validatedForm);
         
-        // Deducir créditos
-        await CreditService.deductCredits(userId, 2, 'form_creation');
+        // Consumir créditos
+        await CreditsService.consumeCredits(userId, {
+          amount: 2,
+          formTitle: validatedForm.title || 'Formulario sin título'
+        });
 
         // Guardar en Firebase
         await FirebaseRepository.saveForm(userId, {

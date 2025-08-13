@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { OpenAIFormService } from '@/infrastructure/services/OpenAIFormService';
-import { CreditService } from '@/infrastructure/services/CreditService';
+import { OpenAIFormService } from '@/infrastructure/ai/OpenAIFormService';
+import { CreditsService } from '@/infrastructure/firebase/credits-service';
 
 const openAIFormService = new OpenAIFormService();
-const creditService = new CreditService();
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,17 +22,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check credits
-    const userCredits = await creditService.getUserCredits(userId);
-    if (userCredits < 2) {
+    // Check and initialize credits if needed
+    let userCredits = await CreditsService.getUserCredits(userId);
+    let creditBalance = userCredits?.balance || 0;
+    console.log(`User ${userId} has ${creditBalance} credits`);
+    
+    // Initialize credits if user doesn't exist
+    if (!userCredits) {
+      console.log(`Initializing credits for user ${userId}`);
+      const initializedCredits = await CreditsService.initializeUserCredits(userId);
+      creditBalance = initializedCredits.balance;
+      console.log(`After initialization, user ${userId} has ${creditBalance} credits`);
+    }
+    
+    if (creditBalance < 2) {
       return NextResponse.json(
-        { success: false, error: 'Créditos insuficientes. Necesitas al menos 2 créditos.' },
+        { success: false, error: `Créditos insuficientes. Necesitas al menos 2 créditos. Tienes: ${creditBalance}` },
         { status: 402 }
       );
     }
 
     // Generate form structure with AI
-    const formStructure = await openAIFormService.generateFormFromPrompt(message);
+    const result = await openAIFormService.processChatMessage(userId, message, []);
+    const formStructure = result.formPreview;
 
     if (!formStructure) {
       return NextResponse.json(
@@ -42,11 +53,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Consume credits for form generation (2 credits)
+    try {
+      await CreditsService.consumeCredits(userId, {
+        amount: 2,
+        formTitle: formStructure.title || 'Formulario sin título'
+      });
+      console.log(`✅ Consumidos 2 créditos del usuario ${userId} por generación de formulario`);
+    } catch (creditError) {
+      console.error('Error consumiendo créditos:', creditError);
+      // Continuar aunque falle la deducción, pero loggear el error
+    }
+
     return NextResponse.json({
       success: true,
       form: {
         title: formStructure.title,
-        description: formStructure.description,
+        description: formStructure.description || 'Formulario generado con IA',
         questions: formStructure.questions
       }
     });

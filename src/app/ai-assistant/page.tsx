@@ -41,23 +41,25 @@ export default function AIAssistantPage() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentCredits, setCurrentCredits] = useState(0);
+
   const [isCreatingForm, setIsCreatingForm] = useState(false);
   
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { user } = useAuthContext();
-  const { credits: userCredits, loading: creditsLoading } = useCredits();
-  const credits = typeof userCredits === 'number' ? userCredits : 0;
+  const { currentCredits: credits, loading: creditsLoading, refreshCredits } = useCredits();
   const router = useRouter();
 
   useEffect(() => {
-    if (!creditsLoading) {
-      setCurrentCredits(credits);
-    }
+    console.log('🔍 AI Assistant - Credits Debug:', {
+      user: user?.id,
+      isAuthenticated: !!user,
+      creditsLoading,
+      actualCredits: credits
+    });
   }, [credits, creditsLoading]);
 
   useEffect(() => {
-    // Add welcome message
+    // Add welcome messageitos disponibles
     const welcomeMessage: Message = {
       id: 'welcome',
       role: 'assistant',
@@ -80,8 +82,16 @@ export default function AIAssistantPage() {
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
     
-    if (currentCredits < 2) {
-      setError('No tienes suficientes créditos para crear un formulario. Por favor, adquiere más créditos.');
+    console.log('=== VALIDATION DEBUG ===');
+    console.log('Current credits value:', credits);
+    console.log('Credits type:', typeof credits);
+    console.log('Credits < 2?', credits < 2);
+    
+    // Clear any previous error
+    setError(null);
+    
+    if (credits < 2) {
+      setError(`No tienes suficientes créditos para crear un formulario. Necesitas al menos 2 créditos. Tienes: ${credits}`);
       return;
     }
 
@@ -122,7 +132,7 @@ export default function AIAssistantPage() {
         };
 
         setMessages(prev => [...prev, assistantMessage]);
-        setCurrentCredits(prev => prev - 2);
+        // The credits will be updated automatically by the useCredits hook
       } else {
         setError(data.error || 'Error al generar el formulario');
       }
@@ -208,8 +218,22 @@ export default function AIAssistantPage() {
           <div className="flex items-center space-x-4">
             <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 border">
               <Sparkles className="h-3 w-3 mr-1" />
-              Créditos: {currentCredits}
+              {creditsLoading ? 'Cargando...' : `Créditos: ${credits}`}
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={refreshCredits}
+              disabled={creditsLoading}
+              className="text-xs hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              Actualizar
+            </Button>
+            {credits === 0 && !creditsLoading && (
+              <span className="text-xs text-amber-600 dark:text-amber-400">
+                Si tienes créditos, espera un momento o actualiza la página
+              </span>
+            )}
           </div>
         </div>
       </header>
@@ -322,7 +346,10 @@ export default function AIAssistantPage() {
               <div className="mt-4 flex gap-2">
                 <Input
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={(e) => {
+                  setInputValue(e.target.value);
+                  setError(null); // Clear error when user starts typing
+                }}
                   onKeyPress={handleKeyPress}
                   placeholder="Describe el formulario que necesitas..."
                   disabled={isLoading || isCreatingForm}
@@ -330,7 +357,7 @@ export default function AIAssistantPage() {
                 />
                 <Button
                   onClick={handleSendMessage}
-                  disabled={!inputValue.trim() || isLoading || isCreatingForm || currentCredits < 2}
+                  disabled={!inputValue.trim() || isLoading || isCreatingForm || credits < 2}
                   className="bg-purple-600 hover:bg-purple-700"
                 >
                   <Send className="h-4 w-4" />
@@ -354,7 +381,7 @@ export default function AIAssistantPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setInputValue(example)}
-                  disabled={currentCredits < 2}
+                  disabled={credits < 2}
                   className="text-left justify-start h-auto py-2 px-3 text-sm"
                 >
                   {example}

@@ -1,5 +1,5 @@
 import { db } from '@/infrastructure/firebase/config';
-import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc, increment } from 'firebase/firestore';
 
 export class CreditService {
   async getUserCredits(userId: string): Promise<number> {
@@ -7,14 +7,27 @@ export class CreditService {
       const userDoc = await getDoc(doc(db, 'userCredits', userId));
       
       if (userDoc.exists()) {
-        return userDoc.data().credits || 0;
+        const data = userDoc.data();
+        // Handle both old and new format
+        if (data.credits !== undefined) {
+          return data.credits;
+        } else if (data.remaining !== undefined) {
+          return data.remaining;
+        } else {
+          return 0;
+        }
       } else {
         // Initialize user credits if doesn't exist
-        await updateDoc(doc(db, 'userCredits', userId), {
-          credits: 10, // Default credits for new users
+        const initialCredits = 50;
+        await setDoc(doc(db, 'userCredits', userId), {
+          credits: initialCredits,
+          total: initialCredits,
+          used: 0,
+          remaining: initialCredits,
           lastUpdated: new Date()
         });
-        return 10;
+        console.log(`Initialized credits for user ${userId}: ${initialCredits}`);
+        return initialCredits;
       }
     } catch (error) {
       console.error('Error getting user credits:', error);
@@ -74,6 +87,27 @@ export class CreditService {
     } catch (error) {
       console.error('Error getting credit history:', error);
       return [];
+    }
+  }
+
+  async initializeUserCredits(userId: string): Promise<void> {
+    try {
+      const userRef = doc(db, 'userCredits', userId);
+      const userDoc = await getDoc(userRef);
+      
+      if (!userDoc.exists()) {
+        const initialCredits = 50;
+        await setDoc(userRef, {
+          credits: initialCredits,
+          total: initialCredits,
+          used: 0,
+          remaining: initialCredits,
+          lastUpdated: new Date()
+        });
+        console.log(`Initialized credits for user ${userId}: ${initialCredits}`);
+      }
+    } catch (error) {
+      console.error('Error initializing user credits:', error);
     }
   }
 }
