@@ -22,6 +22,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/containers/useAuth';
 import { useCredits } from '@/containers/useCredits';
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface EditableQuestion {
@@ -60,7 +61,7 @@ export default function AIAssistantPage() {
   const [showFormEditor, setShowFormEditor] = useState(false);
   
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuthContext();
+  const { user, signOut, userEntity } = useAuthContext();
   const { currentCredits: credits, loading: creditsLoading, refreshCredits } = useCredits();
   const router = useRouter();
 
@@ -177,52 +178,127 @@ export default function AIAssistantPage() {
   };
 
   const handleCreateForm = async (formData: EditableFormData) => {
+    if (!user) {
+      setError('No hay usuario autenticado');
+      router.push('/auth/login');
+      return;
+    }
+
+    if (formData.questions.length === 0) {
+      setError('No hay preguntas para crear el formulario');
+      return;
+    }
+
     setIsCreatingForm(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/google-forms/create', {
+      // Prepare form data in the same format as dashboard
+      const formSettings = {
+        collectEmails: false // Default setting, can be extended later
+      };
+
+      // Get access token from user entity
+      const accessToken = userEntity?.googleAccessToken;
+      if (!accessToken) {
+        throw new Error('No tienes los permisos necesarios de Google. Por favor, cierra sesión y vuelve a iniciar sesión con Google para obtener los permisos requeridos.');
+      }
+
+      // Check token expiry
+      if (userEntity?.googleTokenExpiry && userEntity.googleTokenExpiry <= new Date()) {
+        throw new Error('Tu sesión con Google ha expirado. Por favor, cierra sesión y vuelve a iniciar sesión con Google para renovar los permisos.');
+      }
+
+    const response = await fetch('/api/google-forms/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: formData.title,
-          description: formData.description,
-          questions: formData.questions.map(q => ({
-            title: q.label,
-            type: q.type,
-            options: q.options,
-            range: q.range,
-            required: q.required
-          })),
-          userId: user?.id
+          formData: {
+            title: formData.title || 'Formulario sin título',
+            description: formData.description,
+            questions: formData.questions.map(q => ({
+              title: q.label,
+              type: q.type,
+              options: q.options,
+              range: q.range,
+              required: q.required,
+              description: q.description || ''
+            })),
+            settings: formSettings
+          },
+          accessToken
         }),
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        const successMessage: Message = {
-          id: Date.now().toString() + '-success',
-          role: 'assistant',
-          content: `¡Formulario creado exitosamente!\n\n🔗 **Enlace para responder:** ${data.formUrl}\n🔗 **Enlace para editar:** ${data.editUrl}\n\nEl formulario ha sido creado en tu cuenta de Google Forms.`,
-          timestamp: new Date()
-        };
-
-        setMessages(prev => [...prev, successMessage]);
-        setShowFormEditor(false);
-        setEditableForm(null);
+      if (!response.ok) {
+        const errorData = await response.json();
         
-        // Redirect to dashboard after 3 seconds
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 3000);
-      } else {
-        setError(data.error || 'Error al crear el formulario');
+        // Handle specific authentication errors
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Tu sesión con Google ha expirado. Por favor, cierra sesión y vuelve a iniciar sesión con Google para renovar los permisos.');
+        }
+        
+        throw new Error(errorData.error || 'Error al crear formulario');
       }
-    } catch (err) {
-      setError('Error al crear el formulario en Google Forms');
+
+      const { data: result } = await response.json();
+
+      // Consume credits after successful creation
+      const usage = {
+        formId: result.formId,
+        formTitle: formData.title || 'Formulario sin título',
+        amount: 2 // AI assistant costs 2 credits
+      };
+
+      const creditsResponse = await fetch('/api/credits/consume', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          usage
+        }),
+      });
+
+      if (!creditsResponse.ok) {
+        console.warn('⚠️ Error consuming credits:', await creditsResponse.text());
+      }
+
+      const successMessage: Message = {
+        id: Date.now().toString() + '-success',
+        role: 'assistant',
+        content: `🎉 ¡Formulario creado exitosamente!\n\n🔗 **Enlace para responder:** ${result.formUrl}\n🔗 **Enlace para editar:** ${result.editUrl}\n\n✅ El formulario ha sido creado en tu cuenta de Google Forms.\n\n💡 **Consejo:** Puedes personalizar aún más el formulario (temas, configuraciones avanzadas) directamente en Google Forms.`,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, successMessage]);
+      setShowFormEditor(false);
+      setEditableForm(null);
+      
+      // Refresh credits and redirect to dashboard
+      await refreshCredits();
+      
+      // Redirect to dashboard after 3 seconds with success state
+      setTimeout(() => {
+        router.push('/dashboard?formCreated=true');
+      }, 3000);
+      
+    } catch (err: any) {
+      const errorMessage = err.message || 'Error al crear el formulario en Google Forms';
+      setError(errorMessage);
+      
+      // Add error message to chat
+      const errorChatMessage: Message = {
+        id: Date.now().toString() + '-error',
+        role: 'assistant',
+        content: `❌ ${errorMessage}\n\nPor favor, intenta nuevamente o contacta soporte si el problema persiste.`,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorChatMessage]);
     } finally {
       setIsCreatingForm(false);
     }

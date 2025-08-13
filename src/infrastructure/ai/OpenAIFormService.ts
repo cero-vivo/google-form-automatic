@@ -108,9 +108,34 @@ export class OpenAIFormService {
           const formData = JSON.parse(jsonMatch[0]);
           const validatedForm = formSchema.parse(formData);
           formPreview = validatedForm;
+        } else {
+          // If no JSON found, create a basic form structure from the AI's text response
+          console.log('No se encontró JSON válido, creando estructura básica');
+          formPreview = {
+            title: `Formulario generado`,
+            description: `Formulario basado en tu solicitud: ${message}`,
+            questions: [
+              {
+                type: 'texto_largo',
+                label: 'Cuéntanos más sobre tu solicitud',
+                required: true
+              }
+            ]
+          };
         }
       } catch (error) {
-        console.log('No se encontró JSON válido en la respuesta');
+        console.log('Error parsing JSON, creando estructura básica');
+        formPreview = {
+          title: `Formulario generado`,
+          description: `Formulario basado en: ${message}`,
+          questions: [
+            {
+              type: 'texto_largo',
+              label: 'Respuesta principal',
+              required: true
+            }
+          ]
+        };
       }
 
       // Actualizar contador de mensajes y créditos

@@ -1,6 +1,6 @@
 {
   "agent_name": "FastForm SaaS Specialist",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "specialization": "Google Forms Automation Platform with MercadoPago Integration",
   "stack_expertise": [
     "Next.js 15.4+ App Router",
@@ -12,23 +12,26 @@
     "Tailwind CSS 3.4+ with JIT",
     "Clean Architecture + Atomic Design",
     "React Hook Form + Zod Validation",
-    "React Query for Server State"
+    "React Query for Server State",
+    "React 18+ with Server Components",
+    "Lucide React Icons",
+    "Framer Motion for Animations"
   ],
   "primary_language": "Spanish",
   "secondary_language": "English",
   "architecture": {
     "clean_architecture": {
       "domain_layer": "Pure business logic with entities: FormEntity, QuestionEntity, UserEntity, CreditEntity",
-      "application_layer": "Use cases: CreateFormUseCase, UploadFileUseCase, ProcessPaymentUseCase, services: FileParserService, GoogleFormsService, CreditService, PaymentService",
+      "application_layer": "Use cases: CreateFormUseCase, UploadFileUseCase, ProcessPaymentUseCase, EditFormUseCase, services: FileParserService, GoogleFormsService, CreditService, PaymentService",
       "infrastructure_layer": "FirebaseAuth, FirestoreRepositories, GoogleAPIsAdapter, MercadoPagoAdapter, StorageService",
       "presentation_layer": "Container-View pattern with custom hooks: useFileUpload, useFormCreation, useCredits, useAuth"
     },
     "atomic_design": {
-      "atoms": "shadcn/ui components: Button, Input, Card, Dialog, Form, etc.",
+      "atoms": "shadcn/ui components: Button, Input, Card, Dialog, Form, Badge, Progress",
       "molecules": "FileUploadZone, QuestionCard, CreditDisplay, FormPreview",
-      "organisms": "FormsDashboard, FileProcessor, PaymentFlow, SidebarNavigation",
-      "templates": "MainLayout, AuthLayout, DashboardLayout, CheckoutLayout",
-      "pages": "HomePage, DashboardPage, PricingPage, CheckoutSuccessPage"
+      "organisms": "FormsDashboard, FileProcessor, PaymentFlow, SidebarNavigation, EditableFormPreview",
+      "templates": "MainLayout, AuthLayout, DashboardLayout, CheckoutLayout, AIAssistantLayout",
+      "pages": "HomePage, DashboardPage, PricingPage, CheckoutSuccessPage, AIAssistantPage"
     }
   },
   "firebase_config": {
@@ -39,7 +42,8 @@
       "responses/{responseId}",
       "templates/{templateId}",
       "analytics/{analyticsId}",
-      "userCredits/{userId}"
+      "userCredits/{userId}",
+      "payments/{paymentId}"
     ],
     "storage_paths": [
       "uploads/{userId}/{timestamp}",
@@ -51,7 +55,7 @@
     "emulators": "localhost:4000 for local development"
   },
   "google_apis": {
-    "forms_api": "v1 - Form creation, question management, response handling",
+    "forms_api": "v1 - Form creation, question management, response handling, real-time updates",
     "drive_api": "v3 - File storage, sharing permissions, folder management",
     "oauth2": "Token refresh, scope management, consent handling",
     "scopes": [
@@ -64,7 +68,8 @@
       "Preference API for payment creation",
       "Webhook handling for IPN notifications",
       "Payment verification and status updates",
-      "Refund processing"
+      "Refund processing",
+      "Subscription management"
     ],
     "credit_system": {
       "plans": {
@@ -75,7 +80,8 @@
       "pricing": {
         "base_price": 1,
         "pack_discounts": {"20": 0.9, "50": 0.8, "100": 0.7},
-        "dynamic_pricing": true
+        "dynamic_pricing": true,
+        "trial_credits": 10
       }
     }
   },
@@ -164,7 +170,8 @@
     "file_upload": "Drag & drop → validation → parsing → preview → edit → confirm → publish",
     "payment_flow": "Select plan → generate preference → redirect to MercadoPago → webhook notification → update credits → send confirmation",
     "user_management": "OAuth signup → credit assignment → usage tracking → analytics → retention campaigns",
-    "error_handling": "User-friendly messages → error boundaries → retry mechanisms → logging → alerts"
+    "error_handling": "User-friendly messages → error boundaries → retry mechanisms → logging → alerts",
+    "form_editing": "Generate form → visual editor → modify questions → add/remove options → set validation → publish to Google Forms"
   },
   "debugging_tools": {
     "logging": "Structured logging with levels: debug, info, warn, error, with emojis for quick identification",
@@ -203,5 +210,19 @@
       "multi_stage": true,
       "health_check": "/api/health"
     }
-  }
+  },
+  "recent_improvements": {
+    "form_editor": "Added EditableFormPreview component for visual form editing before Google Forms upload",
+    "ui_consistency": "Replaced missing shadcn/ui components with available ones maintaining design system",
+    "user_flow": "Enhanced AI assistant page with form editing capabilities",
+    "error_handling": "Improved component import resolution and fallback strategies"
+  },
+  "future_enhancements": [
+    "Add more shadcn/ui components to complete the design system",
+    "Implement real-time collaboration for form editing",
+    "Add form templates and cloning functionality",
+    "Enhance AI-powered question suggestions",
+    "Add analytics dashboard for form performance",
+    "Implement bulk operations for form management"
+  ]
 }

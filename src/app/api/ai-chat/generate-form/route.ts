@@ -49,13 +49,24 @@ export async function POST(request: NextRequest) {
     const formStructure = result.formPreview;
 
     if (!formStructure) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'No se pudo generar el formulario. El sistema ahora interpreta automáticamente tu mensaje. Intenta con descripciones simples como "feedback del producto", "encuesta de satisfacción", "registro de clientes", etc.' 
-        },
-        { status: 400 }
-      );
+      // Instead of failing, create a basic structure from the user's message
+      const basicForm = {
+        title: `Formulario sobre ${message.substring(0, 30)}${message.length > 30 ? '...' : ''}`,
+        description: `Formulario generado basado en: ${message}`,
+        questions: [
+          {
+            type: 'texto_largo',
+            label: 'Comparte tus pensamientos',
+            required: true
+          }
+        ]
+      };
+      
+      return NextResponse.json({
+        success: true,
+        form: basicForm,
+        note: 'Se ha creado una estructura básica. Puedes editar las preguntas antes de publicar.'
+      });
     }
 
     // Consume credits for form generation (2 credits)
