@@ -7,9 +7,13 @@ if (!accessToken) {
   console.error('⚠️ MERCADOPAGO_ACCESS_TOKEN no está configurado');
 }
 
-// Configurar Mercado Pago
+// Configurar Mercado Pago - PRODUCCIÓN
 const client = new MercadoPagoConfig({ 
-  accessToken: accessToken || 'test_token' 
+  accessToken: accessToken || 'test_token',
+  options: {
+    timeout: 5000,
+    idempotencyKey: `create-preference-${Date.now()}`,
+  }
 });
 
 export async function POST(request: NextRequest) {
@@ -44,6 +48,34 @@ export async function POST(request: NextRequest) {
     // Crear preferencia de Mercado Pago
     const preference = new Preference(client);
     
+    // Función para obtener URL base segura
+    const getBaseUrl = () => {
+      if (process.env.NODE_ENV === 'production') {
+        return process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`;
+      }
+      return process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    };
+    
+    const baseUrl = getBaseUrl().replace(/\/$/, '');
+    
+    // Validar que las URLs sean válidas
+    const successUrl = `${baseUrl}/checkout/success`;
+    const failureUrl = `${baseUrl}/checkout/failure`;
+    const pendingUrl = `${baseUrl}/checkout/pending`;
+    const webhookUrl = `${baseUrl}/api/mercadopago/webhooks`;
+
+    console.log('🔍 Configuración de preferencia:', {
+      baseUrl,
+      successUrl,
+      failureUrl,
+      pendingUrl,
+      webhookUrl,
+      nodeEnv: process.env.NODE_ENV,
+      hasBaseUrl: !!process.env.NEXT_PUBLIC_BASE_URL,
+      hasVercelUrl: !!process.env.VERCEL_URL,
+      isSandbox: process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith('TEST')
+    });
+
     const preferenceData = {
       items: [
         {
@@ -56,24 +88,16 @@ export async function POST(request: NextRequest) {
         },
       ],
       back_urls: {
-        success: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/success`,
-        failure: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/failure`,
-        pending: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/pending`,
+        success: successUrl,
+        failure: failureUrl,
+        pending: pendingUrl,
       },
-      // Solo habilitar auto_return en producción
-      auto_return: process.env.NODE_ENV === 'production' ? 'approved' : undefined,
-      notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mercadopago/webhooks`,
+      notification_url: webhookUrl,
       external_reference: `form_credits_${Date.now()}_${quantity}`,
       expires: true,
-      expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 horas
+      expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       statement_descriptor: 'FastForm',
-      binary_mode: true, // Solo pagos aprobados o rechazados
-      // Configuración para desarrollo y producción
-      ...(process.env.NODE_ENV === 'development' && { 
-        // En desarrollo, usar URLs públicas o deshabilitar webhooks
-        notification_url: undefined,
-        auto_return: undefined
-      })
+      binary_mode: true,
     };
 
     console.log('🔄 Enviando preferencia a Mercado Pago...');
@@ -109,4 +133,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

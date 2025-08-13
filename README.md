@@ -954,4 +954,202 @@ Este proyecto está licenciado bajo la **MIT License** - ver el archivo [LICENSE
 <img src="https://img.shields.io/github/forks/tu-usuario/fast-form?style=social" alt="GitHub forks" />
 <img src="https://img.shields.io/github/issues/tu-usuario/fast-form" alt="GitHub issues" />
 </div>
+## 💳 Integración MercadoPago Checkout Pro
+
+### 🏗️ Arquitectura de Pagos
+
+FastForm utiliza **MercadoPago Checkout Pro** para procesar pagos de forma segura y confiable. La integración está diseñada para ser escalable y mantener la experiencia de usuario fluida.
+
+### 🔧 Configuración de MercadoPago
+
+#### Variables de Entorno Requeridas
+```bash
+# Mercado Pago Configuration
+MERCADOPAGO_ACCESS_TOKEN=your_mercadopago_access_token_here
+MERCADOPAGO_PUBLIC_KEY=your_mercadopago_public_key_here
+NEXT_PUBLIC_BASE_URL=http://localhost:3000  # o tu dominio en producción
+```
+
+#### Credenciales
+- **Sandbox**: Usa credenciales de prueba para desarrollo
+- **Producción**: Cambia a credenciales reales para producción
+- **Access Token**: Token privado para el backend
+- **Public Key**: Clave pública para el frontend (si es necesario)
+
+### 🔄 Flujo Completo de Pago
+
+```mermaid
+graph TD
+    A[Página de Precios] --> B[Crear Preferencia]
+    B --> C[Redirigir a Checkout Pro]
+    C --> D[Usuario completa pago]
+    D --> E[Retorno a FastForm]
+    E --> F[Verificar pago]
+    F --> G[Actualizar créditos]
+    G --> H[Notificar usuario]
+```
+
+### 📋 Endpoints de la API
+
+#### POST `/api/mercadopago/create-preference`
+**Descripción**: Crea una preferencia de pago en MercadoPago
+
+**Request Body**:
+```json
+{
+  "quantity": 20,
+  "unitPrice": 1,
+  "totalPrice": 20,
+  "packSize": 20,
+  "discountPercent": 10
+}
+```
+
+**Response**:
+```json
+{
+  "id": "preference_id",
+  "initPoint": "https://checkout.mercadopago.com/...",
+  "sandboxInitPoint": "https://sandbox.mercadopago.com/..."
+}
+```
+
+#### POST `/api/mercadopago/verify-payment`
+**Descripción**: Verifica el estado del pago después del retorno
+
+**Request Body**:
+```json
+{
+  "paymentId": "payment_id",
+  "userId": "user_firebase_uid",
+  "purchase": { ... }
+}
+```
+
+#### POST `/api/mercadopago/webhooks`
+**Descripción**: Recibe notificaciones IPN de MercadoPago
+
+### 🎯 Página de Precios
+
+**Archivo**: `src/app/pricing/page.tsx`
+
+#### Características de Precios
+- **Precio Base**: 1 ARS por formulario individual
+- **Packs con Descuento**:
+  - 20 créditos: 10% descuento
+  - 50 créditos: 20% descuento
+  - 100 créditos: 30% descuento
+- **Incremento Dinámico**: 3% adicional por formulario extra
+
+#### Ejemplo de Cálculo
+```typescript
+// Precio dinámico para cantidad personalizada
+const calculatePrice = (qty: number): number => {
+  if (qty <= 1) return 1; // 1 ARS
+  
+  let totalPrice = 1;
+  for (let i = 2; i <= qty; i++) {
+    const increment = 1 * (0.03) * (i - 1);
+    totalPrice += 1 + increment;
+  }
+  return Math.round(totalPrice);
+};
+```
+
+### 🌐 URLs de Retorno
+
+Después del pago, el usuario es redirigido a:
+
+- **Éxito**: `/checkout/success` - Pago procesado correctamente
+- **Fallo**: `/checkout/failure` - Pago rechazado o cancelado
+- **Pendiente**: `/checkout/pending` - Pago en proceso
+
+### 🧪 Testing y Desarrollo
+
+#### Modo Sandbox
+```bash
+# Credenciales de prueba
+MERCADOPAGO_ACCESS_TOKEN=TEST-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+NODE_ENV=development
+```
+
+#### Tarjetas de Prueba
+- **Aprobada**: `5031 7557 3453 0604` (cualquier CVV y fecha)
+- **Rechazada**: `5031 7557 3453 0604` (usar monto $100)
+- **Pendiente**: `5031 7557 3453 0604` (usar monto $101)
+
+#### Verificación de Configuración
+```bash
+# Endpoint de prueba
+GET http://localhost:3000/api/mercadopago/test
+
+# Respuesta esperada
+{
+  "status": "ok",
+  "mercadopagoConfigured": true,
+  "hasAccessToken": "Sí",
+  "message": "Mercado Pago está configurado correctamente"
+}
+```
+
+### 🔍 Monitoreo y Logs
+
+#### Logs del Servidor
+Cuando se crea una preferencia exitosamente:
+```
+📝 Creando preferencia con datos: { quantity: 20, unitPrice: 1, totalPrice: 18, packSize: 20, discountPercent: 10 }
+🔄 Enviando preferencia a Mercado Pago...
+✅ Preferencia creada exitosamente: [preference_id]
+```
+
+#### Logs de Webhooks
+```
+Webhook recibido de Mercado Pago: {
+  type: 'payment',
+  paymentId: 'payment_id',
+  timestamp: '2024-01-01T12:00:00.000Z'
+}
+```
+
+### 🚀 Producción
+
+#### Checklist de Producción
+1. **Credenciales**: Cambiar a credenciales de producción
+2. **URLs**: Actualizar `NEXT_PUBLIC_BASE_URL` con tu dominio real
+3. **Webhooks**: Verificar que las URLs sean accesibles públicamente
+4. **SSL**: Asegurar HTTPS para webhooks
+5. **Monitoreo**: Configurar alertas para pagos fallidos
+
+#### Configuración de Producción
+```bash
+# Variables de entorno para producción
+MERCADOPAGO_ACCESS_TOKEN=APP-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+NEXT_PUBLIC_BASE_URL=https://tudominio.com
+NODE_ENV=production
+```
+
+### 📊 Características Avanzadas
+
+#### Seguridad
+- **Modo Binario**: Solo pagos aprobados o rechazados
+- **Expiración**: Preferencias expiran en 24 horas
+- **Validación**: Verificación de datos antes de procesar
+- **HTTPS**: Requerido para webhooks en producción
+
+#### Personalización
+- **Statement Descriptor**: "FastForm" en extractos bancarios
+- **Descripción Dinámica**: Muestra detalles del pack
+- **External Reference**: IDs únicos para tracking
+- **Back URLs**: Personalizadas según ambiente
+
+### 📚 Recursos Adicionales
+
+- **[MERCADOPAGO_SETUP.md](./MERCADOPAGO_SETUP.md)** - Guía detallada de configuración
+- **[MERCADOPAGO_TROUBLESHOOTING.md](./MERCADOPAGO_TROUBLESHOOTING.md)** - Solución de problemas
+- **[Documentación Oficial](https://www.mercadopago.com.ar/developers/es/docs)** - API de MercadoPago
+- **[Checkout Pro](https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/overview)** - Documentación completa
+
+---
+
 # google-form-automatic
