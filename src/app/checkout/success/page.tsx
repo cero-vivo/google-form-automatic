@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, FileText, ArrowRight, AlertCircle } from 'lucide-react';
@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useAuthContext } from '@/containers/useAuth';
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [processingCredits, setProcessingCredits] = useState(false);
   const [creditsProcessed, setCreditsProcessed] = useState(false);
@@ -16,33 +16,65 @@ export default function CheckoutSuccessPage() {
   const searchParams = useSearchParams();
   const { user } = useAuthContext();
 
+  // Efecto para redirigir si no hay usuario autenticado
   useEffect(() => {
+    const checkAuthAndRedirect = () => {
+      // Si no hay usuario y no estamos esperando el login
+      if (!user && !sessionStorage.getItem('fastform_auth_check')) {
+        // Marcar que ya verificamos autenticación
+        sessionStorage.setItem('fastform_auth_check', 'true');
+        
+        // Guardar la URL actual para redirigir después del login
+        sessionStorage.setItem('fastform_redirect_after_login', window.location.href);
+        
+        // Redirigir al login
+        window.location.href = '/auth/login';
+        return;
+      }
+    };
+
+    checkAuthAndRedirect();
+  }, [user]);
+
+  // Efecto para procesar el pago
+  useEffect(() => {
+    let isMounted = true;
+    
     const processPayment = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        // Obtener parámetros de la URL
         const paymentId = searchParams.get('payment_id');
         const status = searchParams.get('status');
-        const externalReference = searchParams.get('external_reference');
 
-        if (!paymentId || !user) {
-          console.log('No payment_id or user found');
+        if (!paymentId) {
           setIsLoading(false);
           return;
         }
 
-        // Si el pago ya fue procesado, no hacer nada
-        if (creditsProcessed) {
+        // Verificar si ya fue procesado en esta sesión
+        const alreadyProcessed = sessionStorage.getItem('fastform_processed');
+        if (alreadyProcessed) {
           setIsLoading(false);
           return;
         }
 
-        setProcessingCredits(true);
-
-        // Obtener información de la compra desde localStorage o sessionStorage
+        // Verificar si hay datos de compra
         const purchaseData = sessionStorage.getItem('fastform_purchase');
         if (!purchaseData) {
-          throw new Error('No se encontró información de la compra');
+          // Si no hay datos pero hay paymentId, podría ser una recarga
+          // Limpiar la marca de procesado para permitir reintento
+          sessionStorage.removeItem('fastform_processed');
+          setIsLoading(false);
+          return;
         }
+
+        // Marcar como procesando
+        sessionStorage.setItem('fastform_processing', 'true');
+        setProcessingCredits(true);
 
         const purchase = JSON.parse(purchaseData);
         
@@ -61,26 +93,42 @@ export default function CheckoutSuccessPage() {
 
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success && isMounted) {
           setCreditsProcessed(true);
-          console.log('✅ Créditos procesados exitosamente');
-          // Limpiar datos de la compra
+          sessionStorage.setItem('fastform_processed', 'true');
           sessionStorage.removeItem('fastform_purchase');
-        } else {
+          sessionStorage.removeItem('fastform_processing');
+          sessionStorage.removeItem('fastform_auth_check');
+          console.log('✅ Créditos procesados exitosamente');
+        } else if (isMounted) {
           throw new Error(result.message || 'Error al procesar créditos');
         }
 
       } catch (err) {
-        console.error('Error processing payment:', err);
-        setError(err instanceof Error ? err.message : 'Error desconocido');
+        if (isMounted) {
+          console.error('Error processing payment:', err);
+          setError(err instanceof Error ? err.message : 'Error desconocido');
+        }
       } finally {
-        setProcessingCredits(false);
-        setIsLoading(false);
+        if (isMounted) {
+          setProcessingCredits(false);
+          setIsLoading(false);
+          sessionStorage.removeItem('fastform_processing');
+        }
       }
     };
 
-    processPayment();
-  }, [searchParams, user, creditsProcessed]);
+    // Solo procesar si tenemos usuario y no está procesando
+    if (user && !sessionStorage.getItem('fastform_processing') && !sessionStorage.getItem('fastform_processed')) {
+      processPayment();
+    } else if (user) {
+      setIsLoading(false);
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchParams, user]);
 
   if (isLoading || processingCredits) {
     return (
@@ -240,4 +288,19 @@ export default function CheckoutSuccessPage() {
       </div>
     </div>
   );
-} 
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <CheckoutSuccessContent />
+    </Suspense>
+  );
+}
