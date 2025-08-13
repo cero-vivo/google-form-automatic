@@ -374,15 +374,37 @@ export default function DashboardPage() {
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-4">¡Bienvenido a FastForm!</h2>
               <p className="text-xl text-muted-foreground mb-6">
-                Comienza subiendo un archivo Excel o CSV para crear tu primer formulario
+                Elige cómo quieres crear tu formulario
               </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700"
+                  onClick={() => router.push('/dashboard/create-simple')}
+                >
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Crear Formulario Simple
+                </Button>
+                
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => document.querySelector('[data-file-upload]')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <FileText className="h-5 w-5 mr-2" />
+                  Subir desde Excel/CSV
+                </Button>
+              </div>
             </div>
 
             {/* File Upload */}
-            <FileUploadCard 
-              onQuestionsLoaded={handleQuestionsLoaded}
-              className="mb-8"
-            />
+            <div data-file-upload>
+              <FileUploadCard 
+                onQuestionsLoaded={handleQuestionsLoaded}
+                className="mb-8"
+              />
+            </div>
 
             {/* Instructions */}
             <FormInstructions />
@@ -637,4 +659,4 @@ export default function DashboardPage() {
 
     </div>
   );
-} 
+}
