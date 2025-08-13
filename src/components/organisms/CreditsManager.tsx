@@ -39,11 +39,11 @@ export default function CreditsManager({
   transactions
 }: CreditsManagerProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [visibleTransactions, setVisibleTransactions] = useState(10);
 
   // Calcular estadísticas
   const usagePercentage = totalCreditsPurchased > 0 ? (totalCreditsUsed / totalCreditsPurchased) * 100 : 0;
   const remainingCredits = currentCredits;
-  const averageUsagePerForm = totalCreditsUsed > 0 ? (totalCreditsUsed / transactions.filter(t => t.type === 'use').length) : 0;
 
   // Formatear fecha
   const formatDate = (date: Date) => {
@@ -184,57 +184,14 @@ export default function CreditsManager({
         </CardContent>
       </Card>
 
-      {/* Estadísticas adicionales */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Promedio por Formulario</CardTitle>
-            <CardDescription>
-              Créditos utilizados en promedio por formulario
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">
-              {averageUsagePerForm.toFixed(1)}
-            </div>
-            <p className="text-sm text-muted-foreground">
-              créditos por formulario
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Eficiencia</CardTitle>
-            <CardDescription>
-              Porcentaje de créditos utilizados eficientemente
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {totalCreditsPurchased > 0 ? Math.round((totalCreditsUsed / totalCreditsPurchased) * 100) : 0}%
-            </div>
-            <p className="text-sm text-muted-foreground">
-              de créditos utilizados
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Historial de transacciones */}
+{/* Historial de transacciones */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg">Historial de Transacciones</CardTitle>
-              <CardDescription>
-                Registro de compras y uso de créditos
-              </CardDescription>
-            </div>
-            <Button variant="outline" size="sm">
-              <Calendar className="w-4 h-4 mr-2" />
-              Ver Todo
-            </Button>
+          <div>
+            <CardTitle className="text-lg">Historial de Transacciones</CardTitle>
+            <CardDescription>
+              Registro de compras y uso de créditos
+            </CardDescription>
           </div>
         </CardHeader>
         <CardContent>
@@ -246,7 +203,7 @@ export default function CreditsManager({
             </div>
           ) : (
             <div className="space-y-3">
-              {completedTransactions.slice(0, 5).map((transaction) => (
+              {completedTransactions.slice(0, visibleTransactions).map((transaction) => (
                 <div key={transaction.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
@@ -276,10 +233,14 @@ export default function CreditsManager({
                 </div>
               ))}
               
-              {completedTransactions.length > 5 && (
+              {completedTransactions.length > visibleTransactions && (
                 <div className="text-center pt-2">
-                  <Button variant="ghost" size="sm">
-                    Ver {completedTransactions.length - 5} transacciones más
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setVisibleTransactions(prev => prev + 10)}
+                  >
+                    Cargar más
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
@@ -308,4 +269,4 @@ export default function CreditsManager({
       </Card>
     </div>
   );
-} 
+}
