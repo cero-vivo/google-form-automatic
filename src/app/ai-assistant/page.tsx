@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { EditableFormPreview } from '@/components/organisms/EditableFormPreview';
 
 import { 
   Send, 
@@ -23,17 +24,29 @@ import { useAuthContext } from '@/containers/useAuth';
 import { useCredits } from '@/containers/useCredits';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface EditableQuestion {
+  id: string;
+  type: string;
+  label: string;
+  options?: string[];
+  range?: [number, number];
+  required?: boolean;
+  description?: string;
+}
+
+interface EditableFormData {
+  title: string;
+  description: string;
+  questions: EditableQuestion[];
+}
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
   isFormPreview?: boolean;
-  formData?: {
-    title: string;
-    description: string;
-    questions: any[];
-  };
+  formData?: EditableFormData;
 }
 
 export default function AIAssistantPage() {
@@ -43,6 +56,8 @@ export default function AIAssistantPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [isCreatingForm, setIsCreatingForm] = useState(false);
+  const [editableForm, setEditableForm] = useState<EditableFormData | null>(null);
+  const [showFormEditor, setShowFormEditor] = useState(false);
   
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { user } = useAuthContext();
@@ -122,17 +137,35 @@ export default function AIAssistantPage() {
       const data = await response.json();
 
       if (data.success) {
+        const editableQuestions = data.form.questions.map((q: any, index: number) => ({
+          id: `q${index}`,
+          type: q.type || 'texto_corto',
+          label: q.label || q.title || 'Pregunta',
+          options: q.options || (q.multipleChoiceConfig?.options),
+          range: q.range,
+          required: q.required || false,
+          description: q.description || ''
+        }));
+
+        const editableFormData: EditableFormData = {
+          title: data.form.title,
+          description: data.form.description || '',
+          questions: editableQuestions
+        };
+
+        setEditableForm(editableFormData);
+        setShowFormEditor(true);
+        
         const assistantMessage: Message = {
           id: Date.now().toString() + '-assistant',
           role: 'assistant',
-          content: `¡Perfecto! He creado un formulario basado en tu solicitud. Aquí tienes una vista previa:`,
+          content: `¡Perfecto! He creado un formulario basado en tu solicitud. Ahora puedes revisar y editar las preguntas antes de crear el formulario en Google Forms.`,
           timestamp: new Date(),
           isFormPreview: true,
-          formData: data.form
+          formData: editableFormData
         };
 
         setMessages(prev => [...prev, assistantMessage]);
-        // The credits will be updated automatically by the useCredits hook
       } else {
         setError(data.error || 'Error al generar el formulario');
       }
@@ -143,7 +176,7 @@ export default function AIAssistantPage() {
     }
   };
 
-  const handleCreateForm = async (formData: any) => {
+  const handleCreateForm = async (formData: EditableFormData) => {
     setIsCreatingForm(true);
     setError(null);
 
@@ -156,7 +189,13 @@ export default function AIAssistantPage() {
         body: JSON.stringify({
           title: formData.title,
           description: formData.description,
-          questions: formData.questions,
+          questions: formData.questions.map(q => ({
+            title: q.label,
+            type: q.type,
+            options: q.options,
+            range: q.range,
+            required: q.required
+          })),
           userId: user?.id
         }),
       });
@@ -172,6 +211,8 @@ export default function AIAssistantPage() {
         };
 
         setMessages(prev => [...prev, successMessage]);
+        setShowFormEditor(false);
+        setEditableForm(null);
         
         // Redirect to dashboard after 3 seconds
         setTimeout(() => {
@@ -249,7 +290,7 @@ export default function AIAssistantPage() {
           )}
 
           {/* Chat Interface */}
-          <Card className="h-[600px] flex flex-col">
+          <Card className="h-[calc(100vh-12rem)] flex flex-col">
             <CardHeader>
               <CardTitle>Chat con IA</CardTitle>
               <CardDescription>
@@ -257,9 +298,9 @@ export default function AIAssistantPage() {
               </CardDescription>
             </CardHeader>
             
-            <CardContent className="flex-1 flex flex-col">
-              <div className="flex-1 pr-4 overflow-y-auto" ref={scrollAreaRef}>
-                <div className="space-y-4">
+            <CardContent className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex-1 overflow-y-auto pr-2" ref={scrollAreaRef}>
+                <div className="space-y-4 pb-4">
                   <AnimatePresence>
                     {messages.map((message) => (
                       <motion.div
@@ -270,7 +311,7 @@ export default function AIAssistantPage() {
                         className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         {message.role === 'assistant' && (
-                          <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
                             <Bot className="h-4 w-4 text-purple-600" />
                           </div>
                         )}
@@ -281,7 +322,7 @@ export default function AIAssistantPage() {
                               ? 'bg-purple-600 text-white' 
                               : 'bg-slate-100 dark:bg-slate-800'
                           }`}>
-                            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                            <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                             
                             {message.isFormPreview && message.formData && (
                               <div className="mt-4 p-4 bg-white dark:bg-slate-900 rounded-lg border">
@@ -321,7 +362,7 @@ export default function AIAssistantPage() {
                         </div>
                         
                         {message.role === 'user' && (
-                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
                             <User className="h-4 w-4 text-blue-600" />
                           </div>
                         )}
@@ -331,7 +372,7 @@ export default function AIAssistantPage() {
                   
                   {isLoading && (
                     <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
                         <Bot className="h-4 w-4 text-purple-600" />
                       </div>
                       <div className="bg-slate-100 dark:bg-slate-800 rounded-lg px-4 py-2">
@@ -343,7 +384,7 @@ export default function AIAssistantPage() {
               </div>
               
               {/* Input Area */}
-              <div className="mt-4 flex gap-2">
+              <div className="flex gap-2 border-t pt-4">
                 <Input
                   value={inputValue}
                   onChange={(e) => {
@@ -358,7 +399,7 @@ export default function AIAssistantPage() {
                 <Button
                   onClick={handleSendMessage}
                   disabled={!inputValue.trim() || isLoading || isCreatingForm || credits < 2}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-purple-600 hover:bg-purple-700 flex-shrink-0"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
@@ -366,29 +407,53 @@ export default function AIAssistantPage() {
             </CardContent>
           </Card>
 
-          {/* Quick Examples */}
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold mb-3">Ejemplos rápidos:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {[
-                "Encuesta de satisfacción para restaurante",
-                "Formulario de registro para evento corporativo",
-                "Cuestionario de evaluación de desempeño",
-                "Formulario de feedback de producto"
-              ].map((example) => (
-                <Button
-                  key={example}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setInputValue(example)}
-                  disabled={credits < 2}
-                  className="text-left justify-start h-auto py-2 px-3 text-sm"
-                >
-                  {example}
-                </Button>
-              ))}
+          {/* Form Editor */}
+          {showFormEditor && editableForm && (
+            <div className="mt-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Editar Formulario</CardTitle>
+                  <CardDescription>
+                    Revisa y edita las preguntas antes de crear el formulario en Google Forms
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <EditableFormPreview
+                    form={editableForm}
+                    onFormChange={setEditableForm}
+                    onCreateForm={handleCreateForm}
+                    isCreating={isCreatingForm}
+                  />
+                </CardContent>
+              </Card>
             </div>
-          </div>
+          )}
+
+          {/* Quick Examples */}
+          {!showFormEditor && (
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold mb-3">Ejemplos rápidos:</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {[
+                  "Encuesta de satisfacción para restaurante",
+                  "Formulario de registro para evento corporativo",
+                  "Cuestionario de evaluación de desempeño",
+                  "Formulario de feedback de producto"
+                ].map((example) => (
+                  <Button
+                    key={example}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setInputValue(example)}
+                    disabled={credits < 2}
+                    className="text-left justify-start h-auto py-2 px-3 text-sm"
+                  >
+                    {example}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -164,8 +164,8 @@ export function AIChatFormCreator() {
             <h2 className="text-lg font-semibold">Chat de creación</h2>
           </div>
           <div className="flex-1 flex flex-col p-4">
-            <div className="flex-1 mb-4 overflow-y-auto max-h-96">
-              <div className="space-y-4">
+            <div className="flex-1 mb-4 overflow-y-auto">
+              <div className="space-y-4 min-h-full">
                 {messages.map((message) => (
                   <div
                     key={message.id}
