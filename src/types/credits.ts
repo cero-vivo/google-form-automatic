@@ -10,8 +10,12 @@ export interface CreditTransaction {
 
 export interface UserCredits {
   userId: string;
-  credits: number;
+  balance: number;
   updatedAt: Date;
+  createdAt?: Date;
+  totalEarned?: number;
+  totalPurchased?: number;
+  totalUsed?: number;
   history: CreditTransaction[];
 }
 

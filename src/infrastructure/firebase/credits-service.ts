@@ -28,7 +28,7 @@ export class CreditsService {
         const data = docSnap.data();
         return {
           userId,
-          credits: data.credits ?? data.balance ?? 0,
+          balance: data.balance ?? 0,
           updatedAt: data.updatedAt?.toDate() || new Date(),
           history: data.history?.map((item: any) => ({
             ...item,
@@ -64,14 +64,19 @@ export class CreditsService {
 
       const userCredits: UserCredits = {
         userId,
-        credits: signupBonus,
+        balance: signupBonus,
         updatedAt: new Date(),
         history: [bonusTransaction]
       };
 
       await setDoc(doc(db, COLLECTION_NAME, userId), {
-        ...userCredits,
+        userId,
+        balance: signupBonus,
         updatedAt: serverTimestamp(),
+        createdAt: serverTimestamp(),
+        totalEarned: signupBonus,
+        totalPurchased: 0,
+        totalUsed: 0,
         history: [{
           ...bonusTransaction,
           date: Timestamp.fromDate(bonusTransaction.date)
@@ -111,7 +116,9 @@ export class CreditsService {
 
       // Actualizar créditos y agregar al historial
       batch.update(userCreditsRef, {
-        credits: increment(purchase.quantity),
+        balance: increment(purchase.quantity),
+        totalEarned: increment(purchase.quantity),
+        totalPurchased: increment(purchase.quantity),
         updatedAt: serverTimestamp(),
         history: arrayUnion({
           ...purchaseTransaction,
@@ -124,7 +131,10 @@ export class CreditsService {
       if (!docSnap.exists()) {
         batch.set(userCreditsRef, {
           userId,
-          credits: purchase.quantity,
+          balance: purchase.quantity,
+          totalEarned: purchase.quantity,
+          totalPurchased: purchase.quantity,
+          totalUsed: 0,
           updatedAt: serverTimestamp(),
           history: [{
             ...purchaseTransaction,
@@ -153,7 +163,7 @@ export class CreditsService {
       
       // Verificar si el usuario tiene créditos suficientes
       const currentCredits = await this.getUserCredits(userId);
-      if (!currentCredits || currentCredits.credits < usage.amount) {
+      if (!currentCredits || currentCredits.balance < usage.amount) {
         throw new Error('Créditos insuficientes');
       }
 
@@ -169,7 +179,8 @@ export class CreditsService {
 
       // Actualizar créditos y agregar al historial
       await updateDoc(userCreditsRef, {
-        credits: increment(-usage.amount),
+        balance: increment(-usage.amount),
+        totalUsed: increment(usage.amount),
         updatedAt: serverTimestamp(),
         history: arrayUnion({
           ...usageTransaction,
@@ -191,7 +202,7 @@ export class CreditsService {
   static async hasEnoughCredits(userId: string, requiredAmount: number = 1): Promise<boolean> {
     try {
       const userCredits = await this.getUserCredits(userId);
-      return userCredits ? userCredits.credits >= requiredAmount : false;
+      return userCredits ? userCredits.balance >= requiredAmount : false;
     } catch (error) {
       console.error('Error checking credits availability:', error);
       return false;
@@ -217,14 +228,14 @@ export class CreditsService {
           const data = docSnap.data();
           const userCredits: UserCredits = {
             userId,
-            credits: data.credits ?? data.balance ?? 0,
+            balance: data.balance ?? 0,
             updatedAt: data.updatedAt?.toDate() || new Date(),
             history: data.history?.map((item: any) => ({
               ...item,
               date: item.date?.toDate() || new Date()
             })) || []
           };
-          console.log(`✅ Créditos actualizados para usuario ${userId}:`, userCredits.credits);
+          console.log(`✅ Créditos actualizados para usuario ${userId}:`, userCredits.balance);
           callback(userCredits);
         } else {
           console.log(`⚠️ No se encontraron créditos para usuario ${userId}`);
@@ -268,7 +279,7 @@ export class CreditsService {
         .filter(t => t.type === 'use' && t.status === 'completed')
         .reduce((sum, t) => sum + t.amount, 0);
 
-      const currentCredits = userCredits.credits;
+      const currentCredits = userCredits.balance;
       const usagePercentage = totalPurchased > 0 ? (totalUsed / totalPurchased) * 100 : 0;
 
       return {

@@ -30,10 +30,10 @@ async function fixExistingUserCredits() {
       console.log('📊 Datos actuales:', data);
       
       // Verificar si hay inconsistencias en la estructura
-      const currentCredits = data.credits ?? data.balance ?? 0;
+      const currentCredits = data.balance ?? 0;
       console.log('💰 Créditos actuales:', currentCredits);
       
-      // Si tiene 0 créditos o no tiene el campo credits correctamente, actualizar
+      // Si tiene 0 créditos o no tiene el campo balance correctamente, actualizar
       const hasBonus = data.history?.some(h => h.type === 'bonus') || false;
       
       if (currentCredits === 0 && !hasBonus) {
@@ -53,7 +53,10 @@ async function fixExistingUserCredits() {
         
         const updatedCredits = {
           ...data,
-          credits: signupBonus,
+          balance: signupBonus,
+          totalEarned: signupBonus,
+          totalPurchased: data.totalPurchased || 0,
+          totalUsed: data.totalUsed || 0,
           updatedAt: new Date(),
           history: [
             ...(data.history || []),

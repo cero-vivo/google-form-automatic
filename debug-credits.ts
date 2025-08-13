@@ -28,7 +28,7 @@ async function debugCreditsFromBrowser() {
     if (creditsDoc.exists()) {
       const data = creditsDoc.data();
       console.log('✅ Créditos encontrados:', {
-        credits: data.credits,
+        balance: data.balance,
         updatedAt: data.updatedAt?.toDate?.(),
         history: data.history?.length || 0,
         fullData: data
@@ -51,7 +51,10 @@ async function debugCreditsFromBrowser() {
       
       const userCredits = {
         userId: currentUser.uid,
-        credits: signupBonus,
+        balance: signupBonus,
+        totalEarned: signupBonus,
+        totalPurchased: 0,
+        totalUsed: 0,
         updatedAt: new Date(),
         history: [bonusTransaction]
       };

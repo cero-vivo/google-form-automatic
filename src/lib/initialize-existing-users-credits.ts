@@ -11,8 +11,11 @@ import { CONFIG } from './config';
 
 interface UserCredits {
   userId: string;
-  credits: number;
+  balance: number;
   updatedAt: Date;
+  totalEarned?: number;
+  totalPurchased?: number;
+  totalUsed?: number;
   history: Array<{
     id: string;
     type: string;
@@ -81,8 +84,11 @@ export async function initializeExistingUsersCredits(): Promise<{
 
           const userCredits: UserCredits = {
             userId,
-            credits: signupBonus,
+            balance: signupBonus,
             updatedAt: new Date(),
+            totalEarned: signupBonus,
+            totalPurchased: 0,
+            totalUsed: 0,
             history: [bonusTransaction]
           };
 
@@ -134,11 +140,14 @@ export async function initializeUserCredits(userId: string): Promise<boolean> {
     };
 
     const userCredits: UserCredits = {
-      userId,
-      credits: signupBonus,
-      updatedAt: new Date(),
-      history: [bonusTransaction]
-    };
+        userId,
+        balance: signupBonus,
+        updatedAt: new Date(),
+        totalEarned: signupBonus,
+        totalPurchased: 0,
+        totalUsed: 0,
+        history: [bonusTransaction]
+      };
 
     await setDoc(creditsDocRef, userCredits);
     console.log(`✅ Créditos inicializados para usuario ${userId}: ${signupBonus} créditos`);

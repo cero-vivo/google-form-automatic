@@ -34,7 +34,7 @@ export const useCredits = (): UseCreditsReturn => {
   const userIdRef = useRef<string | null>(null);
 
   // Calcular estadísticas
-  const currentCredits = credits?.credits || 0;
+  const currentCredits = credits?.balance || 0;
   const totalPurchased = credits?.history
     .filter(t => t.type === 'purchase' && t.status === 'completed')
     .reduce((sum, t) => sum + t.amount, 0) || 0;
