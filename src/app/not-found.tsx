@@ -23,13 +23,13 @@ export default function NotFound() {
           </Link>
           
           <Link 
-            href="/create"
+            href="/dashboard"
             className="inline-block w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
           >
-            Crear formulario
+            Ir al dashboard
           </Link>
         </div>
       </div>
     </div>
   );
-} 
+}

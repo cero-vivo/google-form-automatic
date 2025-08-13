@@ -9,7 +9,6 @@ Sitemap: https://fastform.app/sitemap.xml
 
 # Allow access to important pages
 Allow: /dashboard
-Allow: /create
 Allow: /docs
 Allow: /pricing
 Allow: /auth/login
@@ -27,4 +26,4 @@ Crawl-delay: 1`;
       'Content-Type': 'text/plain',
     },
   });
-} 
+}

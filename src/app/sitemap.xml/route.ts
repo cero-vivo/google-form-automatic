@@ -17,12 +17,7 @@ export async function GET() {
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>${baseUrl}/create</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+
   <url>
     <loc>${baseUrl}/docs</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
@@ -41,12 +36,7 @@ export async function GET() {
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-  <url>
-    <loc>${baseUrl}/como-convertir-csv-google-forms</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
+
 </urlset>`;
 
   return new NextResponse(sitemap, {
@@ -54,4 +44,4 @@ export async function GET() {
       'Content-Type': 'application/xml',
     },
   });
-} 
+}
