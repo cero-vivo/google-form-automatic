@@ -57,74 +57,31 @@ export class OpenAIFormService {
         { role: 'user', content: message }
       ];
 
-      // Análisis inteligente del mensaje del usuario
-      let interpretedMessage = message;
-      
-      // Extraer contexto específico del mensaje
-      const lowerMessage = message.toLowerCase();
-      const hasArgentine = lowerMessage.includes('argentina') || lowerMessage.includes('argentino');
-      const hasMovies = lowerMessage.includes('película') || lowerMessage.includes('pelicula') || lowerMessage.includes('cine') || lowerMessage.includes('movie') || lowerMessage.includes('film');
-      const hasRating = lowerMessage.includes('puntos') || lowerMessage.includes('puntua') || lowerMessage.includes('rating') || lowerMessage.includes('evaluar') || lowerMessage.includes('calificar');
-      const hasMultiple = lowerMessage.includes('varias') || lowerMessage.includes('múltiples') || lowerMessage.includes('varios');
-      
-      if (hasMovies && hasArgentine && hasRating) {
-        // Mensaje específico: "encuestas por puntos a las mejores peliculas de argentina"
-        interpretedMessage = `Crear formulario de encuesta de películas argentinas donde los participantes califiquen películas del cine argentino. Incluir:
-        - Lista representativa de películas argentinas famosas
-        - Sistema de puntuación 1-10 para cada película
-        - Preguntas sobre géneros preferidos del cine argentino
-        - Espacio para agregar películas favoritas no incluidas
-        - Preguntas sobre preferencias y razones de elección`;
-      } else if (hasMovies && hasArgentine) {
-        interpretedMessage = `Crear formulario sobre películas argentinas para cinéfilos, incluyendo películas favoritas, directores, géneros y experiencias`;
-      } else if (hasMovies) {
-        interpretedMessage = `Crear formulario sobre cine y películas para cinéfilos, incluyendo películas favoritas, géneros y recomendaciones`;
-      } else if (lowerMessage.includes('feedback') || lowerMessage.includes('opinión')) {
-        interpretedMessage = `Crear formulario de feedback de producto para usuarios actuales`;
-      } else if (lowerMessage.includes('encuesta') || lowerMessage.includes('satisfacción')) {
-        interpretedMessage = `Crear formulario de encuesta de satisfacción del cliente`;
-      } else if (lowerMessage.includes('registro') || lowerMessage.includes('inscripción')) {
-        interpretedMessage = `Crear formulario de registro de nuevos usuarios`;
-      } else if (lowerMessage.includes('evaluación') || lowerMessage.includes('desempeño')) {
-        interpretedMessage = `Crear formulario de evaluación de desempeño para empleados`;
-      } else if (message.length < 20) {
-        interpretedMessage = `Crear formulario de ${message}`;
-      }
+      // Usar el mensaje del usuario directamente sin interpretación forzada
+      const interpretedMessage = message;
 
       // Actualizar el último mensaje del usuario con el mensaje interpretado
       messages[messages.length - 1] = { role: 'user', content: interpretedMessage };
 
-      const prompt = `Analiza la siguiente solicitud del usuario y crea un formulario de Google Forms que refleje su intención real: "${interpretedMessage}".
-
-        INSTRUCCIONES:
-        1. Lee cuidadosamente la solicitud del usuario
-        2. Identifica el tipo de formulario que realmente quiere crear
-        3. Crea preguntas relevantes y naturales para ese contexto
-        4. No fuerces estructuras predefinidas - adapta el formulario a la solicitud real
+      const prompt = `Crea un formulario de Google Forms basado en esta solicitud: "${interpretedMessage}".
 
         RESPONDE ÚNICAMENTE con este formato JSON:
         
         {
-          "title": "Título del formulario (basado en la solicitud)",
-          "description": "Descripción que complemente el título",
+          "title": "Título del formulario",
+          "description": "Descripción breve",
           "questions": [
             {
               "type": "tipo_de_pregunta",
-              "title": "Pregunta clara y relevante",
-              "description": "Contexto o instrucción adicional si es necesario",
+              "title": "Texto de la pregunta",
+              "description": "Instrucción adicional (opcional)",
               "required": true/false,
-              "options": ["opción1", "opción2"] // solo para opcion_multiple, checkboxes, dropdown
+              "options": ["opción1", "opción2"] // para opcion_multiple, checkboxes, dropdown
             }
           ]
         }
 
-        TIPOS DE PREGUNTAS DISPONIBLES: texto_corto, texto_largo, opcion_multiple, checkboxes, dropdown, escala_lineal, fecha, hora, email, numero, archivo
-
-        EJEMPLOS DE INTERPRETACIÓN:
-        - "encuestas por puntos a las mejores peliculas de argentina" → Formulario de calificación de películas argentinas
-        - "feedback del producto" → Formulario de opinión sobre producto/servicio
-        - "encuesta de satisfacción" → Formulario de satisfacción del cliente
-        - "registro de usuarios" → Formulario de captura de datos de nuevos usuarios`
+        TIPOS DE PREGUNTAS: texto_corto, texto_largo, opcion_multiple, checkboxes, dropdown, escala_lineal, fecha, hora, email, numero, archivo`
 
       const enhancedMessages = [...messages];
       enhancedMessages[enhancedMessages.length - 1] = {

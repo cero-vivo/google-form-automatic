@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return NextResponse.json(
         { 
-          error: 'Por favor proporciona una descripción clara. Ejemplos simples: "feedback del producto", "encuesta de satisfacción", "registro de usuarios", "encuestas por puntos a películas argentinas"' 
+          error: 'Por favor proporciona una descripción para tu formulario' 
         },
         { status: 400 }
       );
