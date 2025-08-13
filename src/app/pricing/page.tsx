@@ -41,7 +41,7 @@ export default function PricingPage() {
   // CONFIGURACIÓN CENTRALIZADA DE PRECIOS - CAMBIAR AQUÍ PARA ACTUALIZAR TODOS
   const PRICING_CONFIG = {
     unitPrice: 1, // ARS por formulario individual
-    additionalIncrementPercent: 5, // 5% por formulario adicional (solo para cantidad personalizada)
+    additionalIncrementPercent: 3, // 2.5% por formulario adicional (solo para cantidad personalizada)
     packs: {
       pack20: {
         size: 20,
