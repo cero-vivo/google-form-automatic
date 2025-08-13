@@ -77,7 +77,11 @@ export const useAuth = (): UseAuthReturn => {
 
   // Escuchar cambios en el estado de autenticación
   useEffect(() => {
+    let isMounted = true;
+
     const unsubscribe = firebaseAuthService.onAuthStateChanged(async (firebaseUser) => {
+      if (!isMounted) return;
+
       setLoading(true);
       setError(null);
 
@@ -86,24 +90,36 @@ export const useAuth = (): UseAuthReturn => {
           const authUser = convertFirebaseUser(firebaseUser);
           const entity = await loadUserEntity(firebaseUser.uid);
           
-          setUser(authUser);
-          setUserEntity(entity);
-          
-          console.log('✅ User authenticated:', authUser.email);
+          if (isMounted) {
+            setUser(authUser);
+            setUserEntity(entity);
+            console.log('✅ User authenticated:', authUser.email);
+          }
         } catch (err) {
           console.error('❌ Error loading user data:', err);
-          setError('Error al cargar datos del usuario');
+          if (isMounted) {
+            setError('Error al cargar datos del usuario');
+            setUser(null);
+            setUserEntity(null);
+          }
         }
       } else {
-        setUser(null);
-        setUserEntity(null);
-        console.log('✅ User signed out');
+        if (isMounted) {
+          setUser(null);
+          setUserEntity(null);
+          console.log('✅ User signed out');
+        }
       }
       
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     });
 
-    return unsubscribe;
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, [convertFirebaseUser, loadUserEntity]);
 
   const signInWithGoogle = useCallback(async () => {
@@ -111,7 +127,15 @@ export const useAuth = (): UseAuthReturn => {
     setError(null);
 
     try {
-      await firebaseAuthService.signInWithGoogle();
+      // Agregar timeout de 30 segundos para prevenir loading infinito
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout de conexión')), 30000);
+      });
+
+      await Promise.race([
+        firebaseAuthService.signInWithGoogle(),
+        timeoutPromise
+      ]);
       // El estado se actualiza automáticamente por onAuthStateChanged
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al conectar con Google';
@@ -227,4 +251,4 @@ export const useAuthContext = (): UseAuthReturn => {
     throw new Error('useAuthContext debe usarse dentro de AuthProvider');
   }
   return context;
-}; 
+};

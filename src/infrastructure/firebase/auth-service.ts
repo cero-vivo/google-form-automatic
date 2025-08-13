@@ -53,10 +53,16 @@ class FirebaseAuthService implements AuthService {
 
   async signInWithGoogle(): Promise<FirebaseUser> {
     try {
-      const userCredential: UserCredential = await signInWithPopup(
-        this.auth,
-        this.googleProvider
-      );
+      // Timeout de 30 segundos para la autenticación
+      const authPromise = signInWithPopup(this.auth, this.googleProvider);
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout de autenticación')), 30000);
+      });
+
+      const userCredential: UserCredential = await Promise.race([
+        authPromise,
+        timeoutPromise
+      ]);
       
       const user = userCredential.user;
       
@@ -64,8 +70,16 @@ class FirebaseAuthService implements AuthService {
       const credential = GoogleAuthProvider.credentialFromResult(userCredential);
       const accessToken = credential?.accessToken;
       
-      // Verificar si es usuario nuevo o existente
-      const userDoc = await getDoc(doc(db, COLLECTIONS.USERS, user.uid));
+      // Verificar si es usuario nuevo o existente con timeout
+      const userCheckPromise = getDoc(doc(db, COLLECTIONS.USERS, user.uid));
+      const userTimeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout al verificar usuario')), 10000);
+      });
+
+      const userDoc = await Promise.race([
+        userCheckPromise,
+        userTimeoutPromise
+      ]);
       
       if (!userDoc.exists()) {
         // Usuario nuevo - crear documento

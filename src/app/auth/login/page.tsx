@@ -23,15 +23,22 @@ export default function LoginPage() {
   const { 
     signInWithGoogle, 
     loading, 
-    error 
+    error,
+    clearError 
   } = useAuthContext();
 
   const handleGoogleLogin = async () => {
     try {
+      // Verificar conexión a internet
+      if (!navigator.onLine) {
+        alert('No hay conexión a internet. Por favor, verifica tu conexión.');
+        return;
+      }
+
       await signInWithGoogle();
       router.push('/dashboard');
     } catch (err) {
-      // Error ya manejado por useAuth
+      // Error ya manejado por useAuth - no necesitamos hacer nada aquí
     }
   };
 
@@ -75,13 +82,16 @@ export default function LoginPage() {
             {/* Google Login Button */}
             <Button
               className="w-full h-12"
-              onClick={handleGoogleLogin}
+              onClick={() => {
+                clearError();
+                handleGoogleLogin();
+              }}
               disabled={loading}
             >
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Conectando...
+                  {error ? 'Reintentando...' : 'Conectando con Google...'}
                 </>
               ) : (
                 <>
@@ -93,10 +103,30 @@ export default function LoginPage() {
 
             {/* Error Message */}
             {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
+              <div className="space-y-3">
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="text-sm">
+                    {error.includes('Timeout') ? 
+                      'La conexión está tardando más de lo esperado. Por favor, verifica tu conexión a internet.' :
+                      error.includes('popup') ?
+                      'Por favor, permite las ventanas emergentes (popups) en tu navegador para continuar.' :
+                      error.includes('cancelado') ?
+                      'El proceso de autenticación fue cancelado. Intenta nuevamente.' :
+                      error
+                    }
+                  </AlertDescription>
+                </Alert>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                >
+                  <Chrome className="mr-2 h-4 w-4" />
+                  Intentar de nuevo
+                </Button>
+              </div>
             )}
 
             {/* What you get */}
@@ -153,4 +183,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-} 
+}
