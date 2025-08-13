@@ -15,9 +15,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!message || message.trim().length < 5) {
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return NextResponse.json(
-        { success: false, error: 'Por favor proporciona una descripción más detallada del formulario' },
+        { 
+          error: 'Por favor proporciona una descripción clara. Ejemplos simples: "feedback del producto", "encuesta de satisfacción", "registro de usuarios", "encuestas por puntos a películas argentinas"' 
+        },
         { status: 400 }
       );
     }
@@ -48,8 +50,11 @@ export async function POST(request: NextRequest) {
 
     if (!formStructure) {
       return NextResponse.json(
-        { success: false, error: 'No se pudo generar el formulario. Intenta con una descripción más clara.' },
-        { status: 500 }
+        { 
+          success: false, 
+          error: 'No se pudo generar el formulario. El sistema ahora interpreta automáticamente tu mensaje. Intenta con descripciones simples como "feedback del producto", "encuesta de satisfacción", "registro de clientes", etc.' 
+        },
+        { status: 400 }
       );
     }
 

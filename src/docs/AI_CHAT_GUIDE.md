@@ -35,7 +35,7 @@ src/
 
 ```bash
 # Agregar a .env.local
-NEXT_PUBLIC_OPENAI_API_KEY=sk-tu-openai-api-key-aqui
+OPENAI_API_KEY=sk-tu-openai-api-key-aqui
 ```
 
 ## Uso del Sistema de Créditos
