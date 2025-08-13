@@ -206,7 +206,9 @@ export default function DashboardPage() {
               <Link href="/dashboard/credits">
                 <CreditCard className="h-4 w-4 mr-2" />
                 Créditos
-                {!creditsLoading && (
+                {creditsLoading ? (
+                  <div className="ml-2 h-5 w-8 rounded-full bg-gray-200 animate-pulse" />
+                ) : (
                   <Badge 
                     variant={currentCredits > 0 ? "secondary" : "destructive"}
                     className={`ml-2 ${
@@ -251,7 +253,23 @@ export default function DashboardPage() {
 
       {/* Alerta de Créditos Bajos */}
       <div className="container mx-auto px-4 pb-4 py-6">
-        <CreditsAlert currentCredits={currentCredits} />
+        {creditsLoading ? (
+          <div className="mb-4 border-l-4 border-gray-300 bg-gray-100 p-4 animate-pulse">
+            <div className="flex items-start space-x-3">
+              <div className="h-5 w-5 rounded-full bg-gray-300" />
+              <div className="flex-1">
+                <div className="h-4 w-32 bg-gray-300 rounded mb-2" />
+                <div className="h-3 w-full bg-gray-300 rounded mb-3" />
+                <div className="flex items-center space-x-3 mt-3">
+                  <div className="h-8 w-32 bg-gray-300 rounded" />
+                  <div className="h-8 w-28 bg-gray-300 rounded" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <CreditsAlert currentCredits={currentCredits} />
+        )}
       </div>
 
       {/* Modal de formularios */}
@@ -415,12 +433,17 @@ export default function DashboardPage() {
                   </Button>
                   <Button 
                     onClick={handleCreateForm}
-                    disabled={isCreating || !formTitle.trim() || currentCredits < 1}
+                    disabled={isCreating || !formTitle.trim() || (creditsLoading ? false : currentCredits < 1)}
                   >
                     {isCreating ? (
                       <>
                         <Sparkles className="h-4 w-4 mr-2 animate-spin" />
                         Creando...
+                      </>
+                    ) : creditsLoading ? (
+                      <>
+                        <div className="h-4 w-4 mr-2 rounded-full bg-gray-300 animate-pulse" />
+                        Verificando créditos...
                       </>
                     ) : currentCredits < 1 ? (
                       <>
@@ -591,12 +614,17 @@ export default function DashboardPage() {
                 <Button 
                   size="lg"
                   onClick={handleCreateForm}
-                  disabled={isCreating || !formTitle.trim() || currentCredits < 1}
+                  disabled={isCreating || !formTitle.trim() || (creditsLoading ? false : currentCredits < 1)}
                 >
                   {isCreating ? (
                     <>
                       <Sparkles className="h-4 w-4 mr-2 animate-spin" />
                       Creando...
+                    </>
+                  ) : creditsLoading ? (
+                    <>
+                      <div className="h-4 w-4 mr-2 rounded-full bg-gray-300 animate-pulse" />
+                      Verificando créditos...
                     </>
                   ) : currentCredits < 1 ? (
                     <>
@@ -637,4 +665,4 @@ export default function DashboardPage() {
 
     </div>
   );
-} 
+}
