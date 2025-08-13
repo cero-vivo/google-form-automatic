@@ -1,0 +1,21 @@
+{
+  "name": "FastForm - Convertir CSV a Google Forms",
+  "short_name": "FastForm",
+  "description": "Convierte archivos CSV y Excel a Google Forms automáticamente",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#22A565",
+  "icons": [
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
