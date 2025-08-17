@@ -1,0 +1,6 @@
+Pregunta,Tipo,Opciones,Requerido,Descripcion
+¿Cuál es tu nombre?,short_text,,TRUE,Nombre completo del participante
+¿Cuál es tu edad?,number,,TRUE,Edad en años
+¿Cuál es tu color favorito?,multiple_choice,Rojo,Azul,Verde,Otro,FALSE,Selecciona tu color preferido
+¿Estás de acuerdo con los términos?,checkboxes,Sí,FALSE,Aceptación de términos y condiciones
+¿Cómo calificarías nuestro servicio?,linear_scale,1,5,TRUE,Evalúa del 1 al 5 donde 5 es excelente

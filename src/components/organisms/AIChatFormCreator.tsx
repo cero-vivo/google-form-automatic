@@ -284,7 +284,6 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
               <div className="flex justify-end space-x-2">
                 <button
                   onClick={() => {
-                    onFormCreated && onFormCreated(formPreview);
                     setShowPublishDialog(false);
                     if (publishStatus === 'success') {
                       setFormPreview(null);
