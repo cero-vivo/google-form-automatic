@@ -21,27 +21,57 @@ export function CreationMethods({ onQuestionsLoaded, onFormCreated, currentCredi
   const creationMethods = [
     {
       id: 'ai',
-      name: 'Crear con IA',
+      name: 'Asistente IA',
       icon: Sparkles,
-      description: 'Genera formularios mediante chat inteligente',
+      description: 'Crea formularios conversando con nuestra IA. Describe lo que necesitas y generaremos el formulario perfecto.',
       cost: 2,
-      features: ['Procesamiento de lenguaje natural', 'Sugerencias inteligentes', 'Optimización automática']
+      colorClass: 'text-forms',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200',
+      hoverBgColor: 'hover:bg-purple-100',
+      features: [
+        'Conversación natural',
+        'Detección inteligente de tipos de preguntas',
+        'Sugerencias de validación',
+        'Edición visual en tiempo real',
+        'Optimización automática'
+      ]
     },
     {
       id: 'file',
-      name: 'Importar CSV/Excel',
+      name: 'Importar Archivo',
       icon: FileText,
-      description: 'Convierte archivos existentes en formularios',
+      description: 'Sube un archivo Excel, CSV o Google Sheets y conviértelo automáticamente en un formulario.',
       cost: 1,
-      features: ['Soporte Excel/CSV', 'Detección automática', 'Validación inteligente']
+      colorClass: 'text-excel',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200',
+      hoverBgColor: 'hover:bg-green-100',
+      features: [
+        'Soporte Excel, CSV, Google Sheets',
+        'Mapeo automático de columnas',
+        'Validación de datos',
+        'Vista previa antes de crear',
+        'Detección de tipos de preguntas'
+      ]
     },
     {
       id: 'manual',
       name: 'Constructor Manual',
       icon: LayoutGrid,
-      description: 'Crea formularios desde cero con interfaz visual',
+      description: 'Crea tu formulario paso a paso con nuestro editor visual intuitivo y plantillas predefinidas.',
       cost: 1,
-      features: ['Interfaz interactiva', 'Tipos de pregunta completos', 'Personalización total']
+      colorClass: 'text-velocity',
+      bgColor: 'bg-orange-50',
+      borderColor: 'border-orange-200',
+      hoverBgColor: 'hover:bg-orange-100',
+      features: [
+        'Editor drag & drop',
+        'Plantillas profesionales',
+        'Personalización completa',
+        'Validación en tiempo real',
+        'Vista previa instantánea'
+      ]
     }
   ];
 
@@ -90,38 +120,66 @@ export function CreationMethods({ onQuestionsLoaded, onFormCreated, currentCredi
     <div className={`space-y-6 ${className}`}>
       <div className="grid md:grid-cols-3 gap-6">
         {creationMethods.map((method) => (
-          <Card key={method.id} className="flex flex-col">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <method.icon className="h-5 w-5 mr-2" />
-                {method.name}
-              </CardTitle>
-              <CardDescription>{method.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1">
-              <div className="space-y-3">
-                <p className="text-sm font-medium">
-                  Costo: {method.cost} crédito{method.cost > 1 ? 's' : ''}
-                </p>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  {method.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="mr-2">•</span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  onClick={() => setActiveMethod(method.id)}
-                  disabled={!canCreateMethod(method.cost)}
-                  className="w-full mt-4"
-                  variant={canCreateMethod(method.cost) ? "default" : "outline"}
-                >
-                  {canCreateMethod(method.cost) ? 'Usar este método' : `Necesitas ${method.cost} créditos`}
-                </Button>
+          <div
+            key={method.id}
+            className={`group relative overflow-hidden rounded-lg border ${method.borderColor} ${method.bgColor} shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-300`}
+          >
+            <div className="p-6 space-y-5">
+              <div className="flex items-center space-x-4">
+                <div className={`flex-shrink-0 w-12 h-12 rounded-lg ${method.hoverBgColor} flex items-center justify-center transition-colors duration-200`}>
+                  <method.icon className={`h-6 w-6 ${method.colorClass} transition-colors duration-200`} />
+                </div>
+                <div>
+                  <h3 className={`text-lg font-semibold ${method.colorClass}`}>
+                    {method.name}
+                  </h3>
+                  <p className="text-sm text-slate-500 mt-1">
+                    {method.description}
+                  </p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+
+              <div className="pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-slate-700">Costo</span>
+                  <span className={`px-2.5 py-1 rounded-md ${method.bgColor} ${method.colorClass} text-sm font-medium transition-colors duration-200`}>
+                    {method.cost} crédito{method.cost > 1 ? 's' : ''}
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-slate-700">Características</h4>
+                  <ul className="space-y-1.5">
+                    {method.features.map((feature, index) => (
+                      <li key={index} className="flex items-start space-x-2">
+                        <span className={`text-sm mt-0.5 ${method.colorClass} transition-colors duration-200`}>•</span>
+                        <span className="text-sm text-slate-600">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => setActiveMethod(method.id)}
+                disabled={!canCreateMethod(method.cost)}
+                className={`w-full mt-4 transition-all duration-200 ${
+                  canCreateMethod(method.cost)
+                    ? `bg-white ${method.colorClass} border ${method.borderColor} hover:${method.hoverBgColor} hover:text-white hover:shadow-md`
+                    : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                }`}
+              >
+                {canCreateMethod(method.cost) ? (
+                  <span className="flex items-center justify-center">
+                    Comenzar
+                    <method.icon className="ml-2 h-4 w-4" />
+                  </span>
+                ) : (
+                  `Necesitas ${method.cost} créditos`
+                )}
+              </Button>
+            </div>
+          </div>
         ))}
       </div>
     </div>
