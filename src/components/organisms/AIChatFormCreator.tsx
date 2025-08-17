@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { OpenAIFormService } from '@/infrastructure/ai/OpenAIFormService';
 import { FormPreview } from '@/components/molecules/FormPreview';
 import { CreditDisplay } from '@/components/molecules/CreditDisplay';
 import { Send, Bot, User, AlertCircle, CheckCircle } from 'lucide-react';
@@ -26,7 +25,7 @@ interface FormPreviewData {
   }>;
 }
 
-export function AIChatFormCreator() {
+export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData: FormPreviewData) => void }) {
   const { user } = useAuth();
   const { credits: userCredits, refreshCredits } = useCredits();
   const credits = typeof userCredits === 'number' ? userCredits : 0;
@@ -39,8 +38,6 @@ export function AIChatFormCreator() {
   const [creditsUsed, setCreditsUsed] = useState(0);
   const [totalMessages, setTotalMessages] = useState(0);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-
-  const openAIFormService = new OpenAIFormService();
 
   useEffect(() => {
     refreshCredits();
@@ -72,26 +69,35 @@ export function AIChatFormCreator() {
         content: msg.content
       }));
 
-      const response = await openAIFormService.processChatMessage(
-        user.id,
-        inputValue,
-        conversation
-      );
+      const response = await fetch('/api/ai-chat/generate-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: inputValue,
+          userId: user.id,
+          conversation
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Error al procesar el mensaje');
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response.response,
+        content: `He creado un formulario llamado "${data.form.title}" con ${data.form.questions.length} preguntas. ¿Deseas publicarlo?`,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, assistantMessage]);
-      setCreditsUsed(response.creditsUsed);
-      setTotalMessages(response.totalMessages);
-      
-      if (response.formPreview) {
-        setFormPreview(response.formPreview);
-      }
+      setFormPreview(data.form);
+      setCreditsUsed(2); // API consumes 2 credits per form generation
+      setTotalMessages(messages.length + 1);
 
       refreshCredits();
     } catch (error) {
@@ -115,8 +121,14 @@ export function AIChatFormCreator() {
     setPublishStatus('publishing');
 
     try {
-      const result = await openAIFormService.publishFormFromChat(user.id, formPreview);
+      // Use the existing form creation flow through the dashboard
+      // This will trigger the onFormCreated callback with the form data
       setPublishStatus('success');
+      
+      if (onFormCreated && formPreview) {
+        onFormCreated(formPreview);
+      }
+      
       refreshCredits();
     } catch (error) {
       console.error('Error al publicar formulario:', error);
@@ -272,6 +284,7 @@ export function AIChatFormCreator() {
               <div className="flex justify-end space-x-2">
                 <button
                   onClick={() => {
+                    onFormCreated && onFormCreated(formPreview);
                     setShowPublishDialog(false);
                     if (publishStatus === 'success') {
                       setFormPreview(null);
