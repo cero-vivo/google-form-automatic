@@ -11,6 +11,8 @@ import { Plus, Trash2, Settings, LayoutGrid, Type, List, CheckSquare, Calendar, 
 import { Question } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
 import { useCredits } from '@/containers/useCredits';
+import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
+import { FormCreatedModal } from './FormCreatedModal';
 
 interface ManualFormBuilderProps {
   onFormCreated?: (formData: any) => void;
@@ -38,6 +40,7 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualF
   const [error, setError] = useState<string | null>(null);
 
   const { consumeCredits } = useCredits();
+  const { createGoogleForm, isCreating, error: googleError, createdForm, clearError, clearCreatedForm } = useGoogleFormsIntegration();
 
   const addQuestion = () => {
     const newQuestion: Question = {
@@ -95,18 +98,27 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualF
     }
 
     try {
-      await consumeCredits({
-        amount: 1,
-        formTitle: formTitle
-      });
-      
-      onFormCreated?.({
+      const result = await createGoogleForm({
         title: formTitle,
         description: formDescription,
         questions: questions,
-        collectEmail: collectEmail,
-        creationMethod: 'manual'
+        settings: {
+          collectEmails: collectEmail
+        }
       });
+
+      if (result) {
+        onFormCreated?.({
+          title: formTitle,
+          description: formDescription,
+          questions: questions,
+          collectEmail: collectEmail,
+          creationMethod: 'manual',
+          formId: result.formId,
+          formUrl: result.formUrl,
+          editUrl: result.editUrl
+        });
+      }
     } catch (error) {
       setError('Error al crear el formulario');
     }
@@ -300,9 +312,9 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualF
           </CardContent>
         </Card>
 
-        {error && (
+        {(error || googleError) && (
           <Alert variant="destructive" className="border-red-200">
-            <AlertDescription className="text-red-800 font-medium">{error}</AlertDescription>
+            <AlertDescription className="text-red-800 font-medium">{error || googleError}</AlertDescription>
           </Alert>
         )}
 
@@ -321,17 +333,31 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualF
           
           <Button 
             onClick={handleCreateForm}
-            disabled={questions.length === 0 || !formTitle.trim() || currentCredits < 1}
+            disabled={questions.length === 0 || !formTitle.trim() || currentCredits < 1 || isCreating}
             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
             size="lg"
           >
-            {questions.length === 0 ? 'Agrega preguntas primero' : 
-             !formTitle.trim() ? 'Agrega un título al formulario' :
-             currentCredits < 1 ? 'No tienes créditos suficientes' :
-             `Crear formulario en Google Forms`}
+            {isCreating ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                Creando formulario...
+              </>
+            ) : (
+              questions.length === 0 ? 'Agrega preguntas primero' : 
+              !formTitle.trim() ? 'Agrega un título al formulario' :
+              currentCredits < 1 ? 'No tienes créditos suficientes' :
+              `Crear formulario en Google Forms`
+            )}
           </Button>
         </div>
       </div>
+
+      <FormCreatedModal 
+        createdForm={createdForm}
+        error={googleError}
+        onClose={clearCreatedForm}
+        onClearError={clearError}
+      />
     </div>
   );
 }
