@@ -33,6 +33,7 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualF
   const [questions, setQuestions] = useState<Question[]>([]);
   const [formTitle, setFormTitle] = useState('');
   const [formDescription, setFormDescription] = useState('');
+  const [collectEmail, setCollectEmail] = useState(true);
   const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -103,6 +104,7 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualF
         title: formTitle,
         description: formDescription,
         questions: questions,
+        collectEmail: collectEmail,
         creationMethod: 'manual'
       });
     } catch (error) {
@@ -152,6 +154,18 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualF
                 className="mt-1"
               />
               <p className="text-xs text-slate-500 mt-1">Ayuda a los usuarios a entender el objetivo del formulario</p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                id="collect-email"
+                type="checkbox"
+                checked={collectEmail}
+                onChange={(e) => setCollectEmail(e.target.checked)}
+                className="rounded border-slate-300"
+              />
+              <Label htmlFor="collect-email" className="text-sm text-slate-700 cursor-pointer">
+                Recopilar emails de quienes respondan el formulario
+              </Label>
             </div>
           </CardContent>
         </Card>
