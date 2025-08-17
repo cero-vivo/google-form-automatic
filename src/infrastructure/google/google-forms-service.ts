@@ -204,6 +204,10 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       'email': QuestionType.EMAIL,
       'number': QuestionType.NUMBER,
       'phone': QuestionType.PHONE,
+      'file_upload': 'file_upload',
+      'grid': 'grid',
+      'rating': 'rating',
+      'datetime': 'datetime',
       // Mapeo de tipos españoles
       'texto_corto': QuestionType.SHORT_TEXT,
       'texto_largo': QuestionType.LONG_TEXT,
@@ -216,6 +220,10 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       'correo': QuestionType.EMAIL,
       'numero': QuestionType.NUMBER,
       'telefono': QuestionType.PHONE,
+      'archivo': 'file_upload',
+      'matriz': 'grid',
+      'calificacion': 'rating',
+      'fecha_hora': 'datetime',
       'casillas_de_verificacion': QuestionType.CHECKBOXES,
       'opción_múltiple': QuestionType.MULTIPLE_CHOICE,
       'fecha_y_hora': QuestionType.DATE
@@ -245,6 +253,9 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       case QuestionType.MULTIPLE_CHOICE:
       case 'multiple_choice':
         const multipleOptions = question.multipleChoiceConfig?.options || question.options || [];
+        if (multipleOptions.length === 0) {
+          throw new Error(`La pregunta "${question.title}" es de tipo opción múltiple pero no tiene opciones. Por favor, proporciona al menos una opción.`);
+        }
         questionConfig.choiceQuestion = {
           type: 'RADIO',
           options: multipleOptions.map((option: string) => ({
@@ -256,6 +267,9 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       case QuestionType.CHECKBOXES:
       case 'checkboxes':
         const checkboxOptions = question.multipleChoiceConfig?.options || question.options || [];
+        if (checkboxOptions.length === 0) {
+          throw new Error(`La pregunta "${question.title}" es de tipo casillas de verificación pero no tiene opciones. Por favor, proporciona al menos una opción.`);
+        }
         questionConfig.choiceQuestion = {
           type: 'CHECKBOX',
           options: checkboxOptions.map((option: string) => ({
@@ -267,6 +281,9 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       case QuestionType.DROPDOWN:
       case 'dropdown':
         const dropdownOptions = question.multipleChoiceConfig?.options || question.options || [];
+        if (dropdownOptions.length === 0) {
+          throw new Error(`La pregunta "${question.title}" es de tipo lista desplegable pero no tiene opciones. Por favor, proporciona al menos una opción.`);
+        }
         questionConfig.choiceQuestion = {
           type: 'DROP_DOWN',
           options: dropdownOptions.map((option: string) => ({
@@ -319,6 +336,50 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       case 'phone':
         questionConfig.textQuestion = {
           paragraph: false
+        };
+        break;
+
+      case 'file_upload':
+        // TODO: Implementar cuando Google Forms API soporte file upload
+        questionConfig.textQuestion = {
+          paragraph: false
+        };
+        break;
+
+      case 'grid':
+        // Grid questions requieren configuración específica de filas y columnas
+        // Por ahora, convertir a opción múltiple con opciones
+        const gridOptions = question.multipleChoiceConfig?.options || question.options || [];
+        if (gridOptions.length === 0) {
+          throw new Error(`La pregunta "${question.title}" es de tipo matriz/grid pero no tiene opciones. Por favor, proporciona al menos una opción.`);
+        }
+        questionConfig.choiceQuestion = {
+          type: 'RADIO',
+          options: gridOptions.map((option: string) => ({
+            value: option
+          }))
+        };
+        break;
+
+      case 'rating':
+        // Mapear rating a linear scale
+        const ratingConfig = { min: 1, max: 5 };
+        const ratingOptions = question.options?.[0]?.split('-') || ['1', '5'];
+        if (ratingOptions.length === 2) {
+          ratingConfig.min = parseInt(ratingOptions[0]) || 1;
+          ratingConfig.max = parseInt(ratingOptions[1]) || 5;
+        }
+        questionConfig.scaleQuestion = {
+          low: ratingConfig.min,
+          high: ratingConfig.max,
+          lowLabel: '',
+          highLabel: ''
+        };
+        break;
+
+      case 'datetime':
+        questionConfig.dateQuestion = {
+          includeTime: true
         };
         break;
 

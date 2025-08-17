@@ -1,0 +1,150 @@
+{
+  "plan": {
+    "version": "2.1.0",
+    "updated_at": "2024-12-19",
+    "reordered_steps": [
+      {
+        "step": 2,
+        "name": "Advanced Question Types Implementation",
+        "priority": "HIGH",
+        "estimated_coverage_increase": "35%",
+        "features": [
+          "File Upload Questions",
+          "Grid Questions (Checkbox & Radio)",
+          "Rating Scale Questions",
+          "DateTime Questions",
+          "Time Questions"
+        ],
+        "implementation": {
+          "new_files": [
+            "src/infrastructure/google/advanced-question-types.ts",
+            "src/components/molecules/AdvancedQuestionPreview.tsx",
+            "src/components/organisms/AdvancedFormBuilder.tsx"
+          ],
+          "modified_files": [
+            "src/infrastructure/google/google-forms-service.ts",
+            "src/domain/types/form.types.ts",
+            "src/components/molecules/FormInstructions.tsx"
+          ],
+          "database_changes": {
+            "firestore": "Add advanced_question_config field to forms collection"
+          },
+          "api_endpoints": [
+            "POST /api/forms/advanced",
+            "PUT /api/forms/{id}/questions/advanced"
+          ]
+        },
+        "testing": {
+          "unit_tests": [
+            "AdvancedQuestionService.test.ts",
+            "GridQuestionValidation.test.ts",
+            "FileUploadQuestion.test.ts"
+          ],
+          "integration_tests": [
+            "AdvancedFormCreationFlow.test.ts",
+            "GoogleFormsAdvancedQuestions.test.ts"
+          ],
+          "e2e_tests": [
+            "CreateAdvancedForm.test.ts",
+            "FileUploadQuestionFlow.test.ts"
+          ]
+        },
+        "rollback": "Revert to previous google-forms-service.ts version",
+        "risk": "MEDIUM",
+        "estimated_time": "3-4 days"
+      },
+      {
+        "step": 1,
+        "name": "Quiz Settings & Grading",
+        "priority": "MEDIUM",
+        "estimated_coverage_increase": "25%",
+        "features": [
+          "Quiz Mode Toggle",
+          "Point Values per Question",
+          "Correct Answers Definition",
+          "Feedback Messages",
+          "Quiz Results Settings"
+        ],
+        "implementation": {
+          "new_files": [
+            "src/infrastructure/google/quiz-settings.ts",
+            "src/components/molecules/QuizSettings.tsx"
+          ],
+          "modified_files": [
+            "src/infrastructure/google/google-forms-service.ts",
+            "src/domain/types/form.types.ts"
+          ]
+        },
+        "testing": {
+          "unit_tests": ["QuizSettings.test.ts"],
+          "integration_tests": ["QuizCreationFlow.test.ts"]
+        },
+        "rollback": "Disable quiz settings in service",
+        "risk": "LOW",
+        "estimated_time": "2-3 days"
+      },
+      {
+        "step": 3,
+        "name": "Advanced Validation Rules",
+        "priority": "HIGH",
+        "estimated_coverage_increase": "20%",
+        "features": [
+          "Text Validation (Length, Regex)",
+          "Number Validation (Range)",
+          "Date Validation (Range)",
+          "Custom Error Messages",
+          "Response Limits"
+        ]
+      },
+      {
+        "step": 4,
+        "name": "Conditional Logic",
+        "priority": "MEDIUM",
+        "estimated_coverage_increase": "15%",
+        "features": [
+          "Go to section based on answer",
+          "Skip logic",
+          "Show/hide questions"
+        ]
+      },
+      {
+        "step": 5,
+        "name": "Advanced Form Settings",
+        "priority": "LOW",
+        "estimated_coverage_increase": "5%",
+        "features": [
+          "Custom confirmation message",
+          "Progress bar settings",
+          "Shuffle question order",
+          "Limit to 1 response"
+        ]
+      }
+    ],
+    "compatibility": {
+      "google_forms_api": "v1",
+      "batch_update_limit": 1000,
+      "rate_limits": {
+        "create": "60/minute",
+        "update": "120/minute"
+      }
+    },
+    "monitoring": {
+      "metrics": [
+        "api_coverage_percentage",
+        "error_rate",
+        "response_time",
+        "feature_usage"
+      ],
+      "alerts": [
+        "coverage_drop",
+        "api_errors",
+        "performance_degradation"
+      ]
+    },
+    "deployment": {
+      "strategy": "feature_flags",
+      "rollback": "instant_revert",
+      "testing": "canary_deployment"
+    }
+  }
+}

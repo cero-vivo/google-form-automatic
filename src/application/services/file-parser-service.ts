@@ -227,6 +227,47 @@ export class FileParserServiceImpl implements FileParserService {
     return ['question', 'type', 'options', 'required', 'description'];
   }
 
+  private detectQuestionTypeFromText(questionText: string, typeHint?: string): QuestionType {
+    const text = questionText.toLowerCase();
+    
+    // Detectar archivos por palabras clave en el texto de la pregunta
+    if (text.includes('sube') || text.includes('adjunta') || text.includes('carga') || 
+        text.includes('pdf') || text.includes('cv') || text.includes('documento') || 
+        text.includes('archivo') || text.includes('foto') || text.includes('imagen')) {
+      return QuestionType.FILE_UPLOAD;
+    }
+    
+    // Detectar grid/evaluación por palabras clave
+    if (text.includes('evalúa') || text.includes('evaluar') || text.includes('califica') || 
+        text.includes('rate') || text.includes('puntúa') || text.includes('escala') ||
+        text.includes('del 1 al') || text.includes('del 1-10') || text.includes('del 1 al 10')) {
+      return QuestionType.GRID;
+    }
+    
+    // Detectar email
+    if (text.includes('email') || text.includes('correo') || text.includes('@')) {
+      return QuestionType.EMAIL;
+    }
+    
+    // Detectar número
+    if (text.includes('número') || text.includes('teléfono') || text.includes('edad') || 
+        text.includes('cuántos') || text.includes('cuántas')) {
+      return QuestionType.NUMBER;
+    }
+    
+    // Detectar fecha
+    if (text.includes('fecha') || text.includes('cumpleaños') || text.includes('nacimiento')) {
+      return QuestionType.DATE;
+    }
+    
+    // Si hay un hint de tipo, usarlo
+    if (typeHint) {
+      return this.parseQuestionType(typeHint);
+    }
+    
+    return QuestionType.SHORT_TEXT;
+  }
+
   private parseRow(row: any[], headers: string[], rowNumber: number): Question | null {
     const rowData: Record<string, any> = {};
     
@@ -248,19 +289,29 @@ export class FileParserServiceImpl implements FileParserService {
       throw new Error(`Fila ${rowNumber}: La pregunta es requerida`);
     }
 
-    // Determinar el tipo de pregunta
-    const questionType = this.parseQuestionType(rowData.type?.toString().trim());
+    // Determinar el tipo de pregunta - usar detección inteligente si no hay tipo especificado
+    let questionType = this.parseQuestionType(rowData.type?.toString().trim());
+    if (questionType === QuestionType.SHORT_TEXT && !rowData.type) {
+      questionType = this.detectQuestionTypeFromText(questionText);
+    }
 
     // Parsear opciones si es necesario
     let multipleChoiceConfig;
     if (this.requiresOptions(questionType)) {
       const optionsText = rowData.options?.toString().trim();
-      if (optionsText) {
-        multipleChoiceConfig = {
-          options: this.parseOptions(optionsText),
-          allowOther: false
-        };
+      if (!optionsText) {
+        throw new Error(`Fila ${rowNumber}: La pregunta "${questionText}" es de tipo ${questionType} y requiere opciones. Por favor, proporciona opciones separadas por comas en la columna 'options'.`);
       }
+      
+      const options = this.parseOptions(optionsText);
+      if (options.length === 0) {
+        throw new Error(`Fila ${rowNumber}: La pregunta "${questionText}" es de tipo ${questionType} pero no tiene opciones válidas. Por favor, proporciona al menos una opción.`);
+      }
+      
+      multipleChoiceConfig = {
+        options: options,
+        allowOther: false
+      };
     }
 
     // Parsear si es requerido
@@ -315,7 +366,12 @@ export class FileParserServiceImpl implements FileParserService {
                         (requerida || '').toString().toLowerCase().trim() === 'yes';
 
       // Mapear tipos de Google Forms a nuestros tipos
-      const questionType = this.mapGoogleFormsType(tipoLower);
+      let questionType = this.mapGoogleFormsType(tipoLower);
+      
+      // Si no se pudo mapear claramente, usar detección inteligente
+      if (questionType === QuestionType.SHORT_TEXT && (!tipo || tipo.trim() === '')) {
+        questionType = this.detectQuestionTypeFromText(pregunta.toString().trim());
+      }
       
       // Filtrar opciones válidas (solo para tipos que las necesitan)
       const validOptions = opciones
@@ -334,10 +390,13 @@ export class FileParserServiceImpl implements FileParserService {
       };
 
       // Agregar configuración específica según el tipo
-      if ((questionType === QuestionType.MULTIPLE_CHOICE || 
-           questionType === QuestionType.CHECKBOXES || 
-           questionType === QuestionType.DROPDOWN) && 
-          validOptions.length > 0) {
+      if (questionType === QuestionType.MULTIPLE_CHOICE || 
+          questionType === QuestionType.CHECKBOXES || 
+          questionType === QuestionType.DROPDOWN) {
+        if (validOptions.length === 0) {
+          throw new Error(`Fila ${rowNumber}: La pregunta "${pregunta}" es de tipo ${questionType} y requiere opciones. Por favor, proporciona al menos una opción en las columnas de opciones.`);
+        }
+        
         question.multipleChoiceConfig = {
           options: validOptions,
           allowOther: false
@@ -375,6 +434,9 @@ export class FileParserServiceImpl implements FileParserService {
       return QuestionType.LINEAR_SCALE;
     }
     if (tipo.includes('fecha') || tipo.includes('date')) {
+      if (tipo.includes('hora') || tipo.includes('time')) {
+        return QuestionType.DATETIME;
+      }
       return QuestionType.DATE;
     }
     if (tipo.includes('hora') || tipo.includes('time')) {
@@ -388,6 +450,12 @@ export class FileParserServiceImpl implements FileParserService {
     }
     if (tipo.includes('teléfono') || tipo.includes('phone')) {
       return QuestionType.PHONE;
+    }
+    if (tipo.includes('archivo') || tipo.includes('file') || tipo.includes('upload') || tipo.includes('adjuntar') || tipo.includes('sube') || tipo.includes('cargar') || tipo.includes('pdf') || tipo.includes('documento')) {
+      return QuestionType.FILE_UPLOAD;
+    }
+    if (tipo.includes('matriz') || tipo.includes('grid') || tipo.includes('matrix') || tipo.includes('tabla') || tipo.includes('evalúa') || tipo.includes('evaluar') || tipo.includes('calificar') || tipo.includes('rate')) {
+      return QuestionType.GRID;
     }
 
     // Por defecto, usar texto corto
@@ -442,6 +510,30 @@ export class FileParserServiceImpl implements FileParserService {
       'date': QuestionType.DATE,
       'hora': QuestionType.TIME,
       'time': QuestionType.TIME,
+      'fecha_hora': QuestionType.DATETIME,
+      'datetime': QuestionType.DATETIME,
+      'fecha y hora': QuestionType.DATETIME,
+      
+      // Archivo
+      'archivo': QuestionType.FILE_UPLOAD,
+      'file_upload': QuestionType.FILE_UPLOAD,
+      'upload': QuestionType.FILE_UPLOAD,
+      'adjuntar': QuestionType.FILE_UPLOAD,
+      'attachment': QuestionType.FILE_UPLOAD,
+      'sube': QuestionType.FILE_UPLOAD,
+      'cargar': QuestionType.FILE_UPLOAD,
+      'pdf': QuestionType.FILE_UPLOAD,
+      'documento': QuestionType.FILE_UPLOAD,
+      
+      // Matriz/Grid
+      'matriz': QuestionType.GRID,
+      'grid': QuestionType.GRID,
+      'tabla': QuestionType.GRID,
+      'matrix': QuestionType.GRID,
+      'evalua': QuestionType.GRID,
+      'evaluar': QuestionType.GRID,
+      'calificar': QuestionType.GRID,
+      'rate': QuestionType.GRID,
       
       // Otros
       'email': QuestionType.EMAIL,
@@ -459,7 +551,8 @@ export class FileParserServiceImpl implements FileParserService {
     return [
       QuestionType.MULTIPLE_CHOICE,
       QuestionType.CHECKBOXES,
-      QuestionType.DROPDOWN
+      QuestionType.DROPDOWN,
+      QuestionType.GRID
     ].includes(type);
   }
 
@@ -535,4 +628,4 @@ export class FileParserServiceImpl implements FileParserService {
   private isCSVFile(file: File): boolean {
     return ['text/csv', 'application/csv'].includes(file.type);
   }
-} 
+}

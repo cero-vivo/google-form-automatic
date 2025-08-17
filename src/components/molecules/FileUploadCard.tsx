@@ -15,18 +15,20 @@ import * as XLSX from 'xlsx';
 export interface FileUploadCardProps {
   onQuestionsLoaded?: (questions: Question[]) => void;
   className?: string;
+  hideTemplate?: boolean;
 }
 
-const FileUploadCard: React.FC<FileUploadCardProps> = ({ 
+const FileUploadCard: React.FC<FileUploadCardProps> = ({
   onQuestionsLoaded,
-  className = ""
+  className = "",
+  hideTemplate = false
 }) => {
-  const { 
-    loading, 
-    progress, 
-    error, 
-    questions, 
-    handleFileSelect: uploadFile, 
+  const {
+    loading,
+    progress,
+    error,
+    questions,
+    handleFileSelect: uploadFile,
     clearError,
     clearFile
   } = useFileUpload();
@@ -52,12 +54,16 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
       [QuestionType.MULTIPLE_CHOICE]: 'Opción Múltiple',
       [QuestionType.CHECKBOXES]: 'Selección Múltiple',
       [QuestionType.DROPDOWN]: 'Lista Desplegable',
-      [QuestionType.LINEAR_SCALE]: 'Escala Linear',
+      [QuestionType.LINEAR_SCALE]: 'Escala Lineal',
       [QuestionType.DATE]: 'Fecha',
       [QuestionType.TIME]: 'Hora',
       [QuestionType.EMAIL]: 'Email',
       [QuestionType.NUMBER]: 'Número',
-      [QuestionType.PHONE]: 'Teléfono'
+      [QuestionType.PHONE]: 'Teléfono',
+      [QuestionType.FILE_UPLOAD]: 'Archivo Adjunto',
+      [QuestionType.GRID]: 'Cuadrícula',
+      [QuestionType.RATING]: 'Calificación',
+      [QuestionType.DATETIME]: 'Fecha y Hora'
     };
     return labels[type] || type;
   };
@@ -74,7 +80,11 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
       [QuestionType.TIME]: 'bg-red-50 text-red-700',
       [QuestionType.EMAIL]: 'bg-indigo-50 text-indigo-700',
       [QuestionType.NUMBER]: 'bg-gray-50 text-gray-700',
-      [QuestionType.PHONE]: 'bg-cyan-50 text-cyan-700'
+      [QuestionType.PHONE]: 'bg-cyan-50 text-cyan-700',
+      [QuestionType.FILE_UPLOAD]: 'bg-teal-50 text-teal-700',
+      [QuestionType.GRID]: 'bg-rose-50 text-rose-700',
+      [QuestionType.RATING]: 'bg-emerald-50 text-emerald-700',
+      [QuestionType.DATETIME]: 'bg-violet-50 text-violet-700'
     };
     return colors[type] || 'bg-gray-50 text-gray-700';
   };
@@ -84,7 +94,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
     const exampleData = [
       // Header
       ['Pregunta', 'Tipo', 'Opciones', 'Requerido', 'Descripción'],
-      
+
       // Ejemplos para cada tipo
       ['¿Cuál es tu nombre completo?', 'short_text', '', 'Sí', 'Ingresa tu nombre y apellidos'],
       ['¿Podrías contarnos tu experiencia?', 'long_text', '', 'No', 'Describe tu experiencia en detalle'],
@@ -96,12 +106,16 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
       ['¿A qué hora prefieres ser contactado?', 'time', '', 'No', 'Formato: HH:MM'],
       ['¿Cuál es tu correo electrónico?', 'email', '', 'Sí', 'Ingresa un email válido'],
       ['¿Cuántos años tienes?', 'number', '', 'No', 'Solo números'],
-      ['¿Cuál es tu número de teléfono?', 'phone', '', 'No', 'Incluye código de país si es necesario']
+      ['¿Cuál es tu número de teléfono?', 'phone', '', 'No', 'Incluye código de país si es necesario'],
+      ['¿Qué archivo necesitas adjuntar?', 'file_upload', 'pdf,doc,docx,xlsx', 'Sí', 'Adjunta tu documento en formato PDF o Excel'],
+      ['¿Cómo calificarías estos aspectos?', 'grid', 'Servicio:1-5,Precio:1-5,Calidad:1-5', 'No', 'Evalúa cada aspecto del 1 al 5'],
+      ['¿Qué tan satisfecho estás?', 'rating', '1-10', 'No', 'Escala del 1 (muy insatisfecho) al 10 (muy satisfecho)'],
+      ['¿Cuándo prefieres tu cita?', 'datetime', '', 'Sí', 'Selecciona fecha y hora para tu cita']
     ];
 
     // Crear hoja de cálculo
     const worksheet = XLSX.utils.aoa_to_sheet(exampleData);
-    
+
     // Configurar ancho de columnas
     const columnWidths = [
       { wch: 35 }, // Pregunta
@@ -115,7 +129,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
     // Crear libro de trabajo
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Ejemplo Formulario');
-    
+
     // Descargar archivo
     XLSX.writeFile(workbook, 'ejemplo_formulario_completo.xlsx');
   };
@@ -134,33 +148,39 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Formato Compatible */}
-          <Alert className="bg-white border border-gray-200">
-            <FileSpreadsheet className="w-4 h-4 text-excel" />
-            <AlertDescription className="space-y-2">
-              <div>
-                <strong>Formato requerido:</strong> Tu archivo debe tener estas columnas:
-              </div>
-              <code className="block bg-gray-100 px-2 py-1 rounded text-sm">
-                Pregunta | Tipo | Opciones | Requerido | Descripción
-              </code>
-              <div className="space-y-1">
-                <div><strong>Tipos soportados:</strong></div>
-                <div className="text-xs grid grid-cols-2 gap-1 text-gray-700">
-                  <span>• short_text (Respuesta corta)</span>
-                  <span>• long_text (Respuesta larga)</span>
-                  <span>• multiple_choice (Opción múltiple)</span>
-                  <span>• checkboxes (Casillas múltiples)</span>
-                  <span>• dropdown (Lista desplegable)</span>
-                  <span>• linear_scale (Escala lineal)</span>
-                  <span>• date (Fecha)</span>
-                  <span>• time (Hora)</span>
-                  <span>• email (Correo electrónico)</span>
-                  <span>• number (Número)</span>
-                  <span>• phone (Teléfono)</span>
+          {!hideTemplate && (
+            <Alert className="bg-white border border-gray-200">
+              <FileSpreadsheet className="w-4 h-4 text-excel" />
+              <AlertDescription className="space-y-2">
+                <div>
+                  <strong>Formato requerido:</strong> Tu archivo debe tener estas columnas:
                 </div>
-              </div>
-            </AlertDescription>
-          </Alert>
+                <code className="block bg-gray-100 px-2 py-1 rounded text-sm">
+                  Pregunta | Tipo | Opciones | Requerido | Descripción
+                </code>
+                <div className="space-y-1">
+                  <div><strong>Tipos soportados:</strong></div>
+                  <div className="text-xs grid grid-cols-2 gap-1 text-gray-700">
+                    <span>• short_text (Respuesta corta)</span>
+                    <span>• long_text (Respuesta larga)</span>
+                    <span>• multiple_choice (Opción múltiple)</span>
+                    <span>• checkboxes (Casillas múltiples)</span>
+                    <span>• dropdown (Lista desplegable)</span>
+                    <span>• linear_scale (Escala lineal)</span>
+                    <span>• date (Fecha)</span>
+                    <span>• time (Hora)</span>
+                    <span>• email (Correo electrónico)</span>
+                    <span>• number (Número)</span>
+                    <span>• phone (Teléfono)</span>
+                    <span>• file_upload (Archivo adjunto)</span>
+                    <span>• grid (Cuadrícula)</span>
+                    <span>• rating (Calificación)</span>
+                    <span>• datetime (Fecha y hora)</span>
+                  </div>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Download Example Button */}
           <div className="bg-excel-light p-3 rounded-lg">
@@ -171,8 +191,8 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
                   Descarga un archivo Excel con ejemplos de todos los tipos
                 </p>
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={generateExampleExcel}
                 className="flex items-center gap-2 border-excel text-excel hover:bg-excel/5"
@@ -195,9 +215,8 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
             />
             <label
               htmlFor="file-upload"
-              className={`cursor-pointer flex flex-col items-center gap-2 ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`cursor-pointer flex flex-col items-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             >
               <FileText className="w-12 h-12 text-gray-400" />
               <span className="text-lg font-medium text-primary">
@@ -333,4 +352,4 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
   );
 };
 
-export default FileUploadCard; 
+export default FileUploadCard;

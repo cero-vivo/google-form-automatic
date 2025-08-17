@@ -2,9 +2,13 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, FileText } from 'lucide-react';
+import { ArrowLeft, FileText, Download } from 'lucide-react';
 import Link from 'next/link';
 import FormInstructions from '@/components/organisms/FormInstructions';
+import AdvancedQuestionPreview from '@/components/molecules/AdvancedQuestionPreview';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AdvancedQuestionExamples } from '@/components/molecules/AdvancedQuestionExamples';
+import FileUploadCard from '@/components/molecules/FileUploadCard';
 
 export default function DocsPage() {
   return (
@@ -51,6 +55,23 @@ export default function DocsPage() {
 
         {/* Main Instructions */}
         <FormInstructions />
+
+        {/* Demo Section - Now positioned after the first documentation block */}
+        <div className="max-w-4xl mx-auto mt-12 mb-12">
+          <FileUploadCard hideTemplate={true} />
+        </div>
+
+        {/* Advanced Question Examples */}
+        <div className="max-w-4xl mx-auto mt-12">
+          <AdvancedQuestionExamples />
+        </div>
+
+        {/* Advanced Question Types */}
+        <div className="max-w-4xl mx-auto mt-12">
+          <AdvancedQuestionPreview />
+        </div>
+
+
 
         {/* Additional Information */}
         <div className="mt-12 space-y-8">
@@ -134,4 +155,4 @@ export default function DocsPage() {
       </div>
     </div>
   );
-} 
+}

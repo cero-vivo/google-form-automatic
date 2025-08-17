@@ -14,7 +14,7 @@ export default function FormInstructions() {
       // Header
       ['Pregunta', 'Tipo', 'Opciones', 'Requerido', 'Descripción'],
       
-      // Ejemplos para cada tipo
+      // Ejemplos para tipos básicos
       ['¿Cuál es tu nombre completo?', 'short_text', '', 'Sí', 'Ingresa tu nombre y apellidos'],
       ['¿Podrías contarnos tu experiencia?', 'long_text', '', 'No', 'Describe tu experiencia en detalle'],
       ['¿Cuál es tu color favorito?', 'multiple_choice', 'Rojo,Azul,Verde,Amarillo,Otro', 'No', 'Selecciona una opción'],
@@ -25,7 +25,17 @@ export default function FormInstructions() {
       ['¿A qué hora prefieres ser contactado?', 'time', '', 'No', 'Formato: HH:MM'],
       ['¿Cuál es tu correo electrónico?', 'email', '', 'Sí', 'Ingresa un email válido'],
       ['¿Cuántos años tienes?', 'number', '', 'No', 'Solo números'],
-      ['¿Cuál es tu número de teléfono?', 'phone', '', 'No', 'Incluye código de país si es necesario']
+      ['¿Cuál es tu número de teléfono?', 'phone', '', 'No', 'Incluye código de país si es necesario'],
+      
+      // Ejemplos para tipos avanzados
+      ['Sube tu CV actualizado', 'file_upload', 'pdf,doc,docx', 'Sí', 'Formatos permitidos: PDF, DOC, DOCX'],
+      ['Evalúa estos productos', 'grid', 'Producto 1,Producto 2,Producto 3|Excelente,Bueno,Regular,Malo', 'No', 'Matriz de evaluación'],
+      ['¿Qué tan satisfecho estás?', 'rating', '1-10', 'No', 'Escala de satisfacción del 1 al 10'],
+      ['¿Cuándo fue tu última visita?', 'datetime', '', 'No', 'Fecha y hora completa'],
+      ['¿En qué país y ciudad naciste?', 'grid', 'País|Ciudad', 'Sí', 'Matriz de texto corto'],
+      ['¿Cuál es tu sitio web?', 'website', '', 'No', 'Ingresa una URL válida'],
+      ['¿Cuál es tu código postal?', 'text', '', 'No', 'Código postal de tu domicilio'],
+      ['¿Aceptas los términos?', 'yes_no', '', 'Sí', 'Respuesta sí o no']
     ];
 
     // Crear hoja de cálculo
@@ -89,6 +99,7 @@ export default function FormInstructions() {
             <h4 className="font-medium mb-2">Tipos de preguntas soportados</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
               <div className="space-y-2">
+                <h5 className="font-semibold text-xs mb-2">Tipos Básicos</h5>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">short_text</Badge>
                   <span>Respuesta corta</span>
@@ -115,6 +126,23 @@ export default function FormInstructions() {
                 </div>
               </div>
               <div className="space-y-2">
+                <h5 className="font-semibold text-xs mb-2">Tipos Avanzados</h5>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">file_upload</Badge>
+                  <span>Carga de archivos</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">grid</Badge>
+                  <span>Matriz de preguntas</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">rating</Badge>
+                  <span>Escala de calificación</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">datetime</Badge>
+                  <span>Fecha y hora</span>
+                </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">date</Badge>
                   <span>Fecha</span>
@@ -180,6 +208,8 @@ export default function FormInstructions() {
               Pregunta,Tipo,Opciones,Requerido<br/>
               ¿Cuál es tu nombre?,short_text,,Sí<br/>
               ¿Cuál es tu color favorito?,multiple_choice,"Rojo,Azul,Verde,Amarillo",No<br/>
+              Sube tu documento,file_upload,"pdf,doc,docx",Sí<br/>
+              Evalúa estos aspectos,grid,"Aspecto 1,Aspecto 2,Aspecto 3|Excelente,Bueno,Regular",No<br/>
               Comentarios adicionales,long_text,,No
             </code>
           </div>
@@ -219,4 +249,4 @@ export default function FormInstructions() {
       </CardContent>
     </Card>
   );
-} 
+}

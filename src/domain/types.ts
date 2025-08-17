@@ -10,7 +10,11 @@ export enum QuestionType {
   TIME = 'time',
   EMAIL = 'email',
   NUMBER = 'number',
-  PHONE = 'phone'
+  PHONE = 'phone',
+  FILE_UPLOAD = 'file_upload',
+  GRID = 'grid',
+  RATING = 'rating',
+  DATETIME = 'datetime'
 }
 
 export enum FormStatus {
@@ -56,4 +60,4 @@ export interface LinearScaleConfig {
 export interface DateTimeConfig {
   includeTime?: boolean;
   dateFormat?: string;
-} 
+}
