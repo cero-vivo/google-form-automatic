@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Grid3X3, Star, CalendarDays, Clock } from 'lucide-react';
+import { Upload, Star, CalendarDays, Clock } from 'lucide-react';
 
 interface AdvancedQuestionPreviewProps {
   className?: string;
@@ -9,28 +9,7 @@ interface AdvancedQuestionPreviewProps {
 
 export default function AdvancedQuestionPreview({ className }: AdvancedQuestionPreviewProps) {
   const advancedTypes = [
-    {
-      type: 'file_upload',
-      name: 'Carga de Archivos',
-      description: 'Permite a los usuarios subir archivos adjuntos',
-      icon: Upload,
-      example: {
-        question: 'Sube tu CV actualizado',
-        options: 'pdf,doc,docx,jpg,png',
-        validation: 'Máximo 10MB por archivo'
-      }
-    },
-    {
-      type: 'grid',
-      name: 'Matriz de Preguntas',
-      description: 'Tabla con filas y columnas para evaluar múltiples aspectos',
-      icon: Grid3X3,
-      example: {
-        question: 'Evalúa estos productos',
-        options: 'Producto A,Producto B,Producto C|Excelente,Bueno,Regular,Malo',
-        validation: 'Selección única por fila'
-      }
-    },
+
     {
       type: 'rating',
       name: 'Escala de Calificación',
@@ -41,26 +20,12 @@ export default function AdvancedQuestionPreview({ className }: AdvancedQuestionP
         options: '1-10',
         validation: 'Escala del 1 al 10'
       }
-    },
-    {
-      type: 'datetime',
-      name: 'Fecha y Hora',
-      description: 'Selector de fecha y hora completo',
-      icon: CalendarDays,
-      example: {
-        question: '¿Cuándo fue tu última visita?',
-        options: '',
-        validation: 'Formato: DD/MM/AAAA HH:MM'
-      }
     }
   ];
 
   const getIcon = (type: string) => {
     switch (type) {
-      case 'file_upload': return Upload;
-      case 'grid': return Grid3X3;
       case 'rating': return Star;
-      case 'datetime': return CalendarDays;
       default: return Upload;
     }
   };
@@ -112,10 +77,8 @@ export default function AdvancedQuestionPreview({ className }: AdvancedQuestionP
       <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border">
         <h4 className="text-sm font-medium mb-2">📋 Formato para tipos avanzados:</h4>
         <div className="text-xs space-y-2">
-          <div><strong>file_upload:</strong> extensiones permitidas separadas por comas (ej: pdf,doc,jpg)</div>
-          <div><strong>grid:</strong> filas|columnas (ej: Producto 1,Producto 2|Excelente,Bueno,Regular)</div>
+  
           <div><strong>rating:</strong> rango numérico (ej: 1-5, 1-10)</div>
-          <div><strong>datetime:</strong> sin opciones, usa formato automático</div>
         </div>
       </div>
     </div>

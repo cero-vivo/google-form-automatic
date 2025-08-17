@@ -47,23 +47,20 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
     }
   };
 
-  const getQuestionTypeLabel = (type: QuestionType): string => {
-    const labels = {
+  const getQuestionTypeLabel = (type: string): string => {
+    const labels: Record<string, string> = {
       [QuestionType.SHORT_TEXT]: 'Texto Corto',
       [QuestionType.LONG_TEXT]: 'Texto Largo',
       [QuestionType.MULTIPLE_CHOICE]: 'Opción Múltiple',
-      [QuestionType.CHECKBOXES]: 'Selección Múltiple',
+      [QuestionType.CHECKBOXES]: 'Casillas',
       [QuestionType.DROPDOWN]: 'Lista Desplegable',
       [QuestionType.LINEAR_SCALE]: 'Escala Lineal',
       [QuestionType.DATE]: 'Fecha',
       [QuestionType.TIME]: 'Hora',
       [QuestionType.EMAIL]: 'Email',
       [QuestionType.NUMBER]: 'Número',
-      [QuestionType.PHONE]: 'Teléfono',
-      [QuestionType.FILE_UPLOAD]: 'Archivo Adjunto',
-      [QuestionType.GRID]: 'Cuadrícula',
-      [QuestionType.RATING]: 'Calificación',
-      [QuestionType.DATETIME]: 'Fecha y Hora'
+    
+      [QuestionType.RATING]: 'Calificación'
     };
     return labels[type] || type;
   };
@@ -80,11 +77,9 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
       [QuestionType.TIME]: 'bg-red-50 text-red-700',
       [QuestionType.EMAIL]: 'bg-indigo-50 text-indigo-700',
       [QuestionType.NUMBER]: 'bg-gray-50 text-gray-700',
-      [QuestionType.PHONE]: 'bg-cyan-50 text-cyan-700',
-      [QuestionType.FILE_UPLOAD]: 'bg-teal-50 text-teal-700',
-      [QuestionType.GRID]: 'bg-rose-50 text-rose-700',
-      [QuestionType.RATING]: 'bg-emerald-50 text-emerald-700',
-      [QuestionType.DATETIME]: 'bg-violet-50 text-violet-700'
+      [QuestionType.PHONE]: 'bg-violet-50 text-violet-700',
+    
+      [QuestionType.RATING]: 'bg-emerald-50 text-emerald-700'
     };
     return colors[type] || 'bg-gray-50 text-gray-700';
   };
@@ -106,11 +101,9 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
       ['¿A qué hora prefieres ser contactado?', 'time', '', 'No', 'Formato: HH:MM'],
       ['¿Cuál es tu correo electrónico?', 'email', '', 'Sí', 'Ingresa un email válido'],
       ['¿Cuántos años tienes?', 'number', '', 'No', 'Solo números'],
-      ['¿Cuál es tu número de teléfono?', 'phone', '', 'No', 'Incluye código de país si es necesario'],
-      ['¿Qué archivo necesitas adjuntar?', 'file_upload', 'pdf,doc,docx,xlsx', 'Sí', 'Adjunta tu documento en formato PDF o Excel'],
-      ['¿Cómo calificarías estos aspectos?', 'grid', 'Servicio:1-5,Precio:1-5,Calidad:1-5', 'No', 'Evalúa cada aspecto del 1 al 5'],
-      ['¿Qué tan satisfecho estás?', 'rating', '1-10', 'No', 'Escala del 1 (muy insatisfecho) al 10 (muy satisfecho)'],
-      ['¿Cuándo prefieres tu cita?', 'datetime', '', 'Sí', 'Selecciona fecha y hora para tu cita']
+      ['¿Cuál es tu número de teléfono?', 'phone', '', 'Sí', 'Ingresa tu número de contacto'],
+
+      ['¿Qué tan satisfecho estás?', 'rating', '1-10', 'No', 'Escala del 1 (muy insatisfecho) al 10 (muy satisfecho)']
     ];
 
     // Crear hoja de cálculo
@@ -120,7 +113,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
     const columnWidths = [
       { wch: 35 }, // Pregunta
       { wch: 15 }, // Tipo
-      { wch: 40 }, // Opciones
+      { wch: 50 }, // Opciones (ampliado para grid)
       { wch: 10 }, // Requerido
       { wch: 35 }  // Descripción
     ];
@@ -172,10 +165,11 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
                     <span>• email (Correo electrónico)</span>
                     <span>• number (Número)</span>
                     <span>• phone (Teléfono)</span>
-                    <span>• file_upload (Archivo adjunto)</span>
-                    <span>• grid (Cuadrícula)</span>
+          
                     <span>• rating (Calificación)</span>
-                    <span>• datetime (Fecha y hora)</span>
+                  </div>
+                  <div className="text-xs text-gray-600 mt-2">
+          
                   </div>
                 </div>
               </AlertDescription>
@@ -223,7 +217,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
                 {loading ? 'Procesando archivo...' : 'Haz clic para seleccionar archivo'}
               </span>
               <span className="text-sm text-muted">
-                Archivos soportados: .xlsx, .csv (máx. 10MB)
+                Archivos soportados: .xlsx, .csv (máx. 10MB) | Tipos: texto, opción múltiple, casillas, escala, fecha, matriz, calificación
               </span>
             </label>
           </div>

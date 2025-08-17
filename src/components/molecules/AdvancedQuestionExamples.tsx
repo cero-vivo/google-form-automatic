@@ -11,90 +11,30 @@ interface AdvancedQuestionExamplesProps {
 
 export const AdvancedQuestionExamples: React.FC<AdvancedQuestionExamplesProps> = ({ className }) => {
   const examples = [
+
     {
-      type: 'file_upload',
-      title: 'Subir Archivo',
-      description: 'Permite a los usuarios subir archivos como CV, imágenes o documentos.',
+      type: 'linear_scale',
+      title: 'Escala Lineal',
+      description: 'Permite calificar en una escala numérica de 1 a 5 o 1 a 10.',
       example: (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <p className="mt-2 text-sm text-gray-600">Arrastra y suelta o haz clic para subir</p>
-          <p className="text-xs text-gray-500 mt-1">PDF, DOC, DOCX hasta 10MB</p>
-        </div>
-      ),
-      usage: 'CV, facturas, imágenes de productos',
-      validation: 'Formato de archivo, tamaño máximo'
-    },
-    {
-      type: 'grid',
-      title: 'Pregunta de Matriz (Grid)',
-      description: 'Crea tablas con filas y columnas para evaluaciones múltiples.',
-      example: (
-        <div className="space-y-2 text-sm">
-          <div className="grid grid-cols-4 gap-2 font-medium">
-            <span>Producto</span>
-            <span className="text-center">Excelente</span>
-            <span className="text-center">Bueno</span>
-            <span className="text-center">Regular</span>
-          </div>
-          <div className="grid grid-cols-4 gap-2 items-center">
-            <span>Producto A</span>
-            <div className="flex justify-center">
-              <input type="radio" name="grid-example" className="w-4 h-4" />
-            </div>
-            <div className="flex justify-center">
-              <input type="radio" name="grid-example" className="w-4 h-4" />
-            </div>
-            <div className="flex justify-center">
-              <input type="radio" name="grid-example" className="w-4 h-4" />
-            </div>
-          </div>
-        </div>
-      ),
-      usage: 'Evaluaciones de productos, satisfacción por áreas',
-      validation: 'Al menos una opción por fila'
-    },
-    {
-      type: 'rating',
-      title: 'Calificación (Rating)',
-      description: 'Escala numérica para evaluar satisfacción o preferencia.',
-      example: (
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">Malo</span>
-          <div className="flex space-x-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                className="h-8 w-8 text-yellow-400 hover:text-yellow-500 text-lg"
-                type="button"
-              >
-                ⭐
-              </button>
-            ))}
-          </div>
-          <span className="text-sm text-gray-600">Excelente</span>
-        </div>
-      ),
-      usage: 'Satisfacción del cliente, evaluación de servicios',
-      validation: 'Rango configurable (1-5, 1-10)'
-    },
-    {
-      type: 'datetime',
-      title: 'Fecha y Hora',
-      description: 'Selector de fecha y hora completo para citas o eventos.',
-      example: (
-        <div className="space-y-2">
+        <div className="space-y-3 text-sm">
+          <p className="font-medium">¿Qué tan satisfecho estás con el servicio?</p>
           <div className="flex items-center space-x-2">
-            <CalendarIcon className="h-4 w-4 text-gray-500" />
-            <Input type="date" className="w-40" />
-            <Clock className="h-4 w-4 text-gray-500" />
-            <Input type="time" className="w-32" />
+            <span className="text-xs text-gray-600">Muy insatisfecho</span>
+            {[1, 2, 3, 4, 5].map(num => (
+              <label key={num} className="flex flex-col items-center">
+                <input type="radio" name="linear-scale" className="w-4 h-4" />
+                <span className="text-xs mt-1">{num}</span>
+              </label>
+            ))}
+            <span className="text-xs text-gray-600">Muy satisfecho</span>
           </div>
         </div>
       ),
-      usage: 'Citas médicas, reuniones, reservas',
-      validation: 'Fecha futura, horarios laborales'
-    }
+      usage: 'Evaluación de satisfacción, calificaciones de desempeño',
+      validation: 'Selección obligatoria'
+    },
+
   ];
 
   return (

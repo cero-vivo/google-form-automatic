@@ -22,7 +22,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('🚀 Creando formulario:', formData.title);
+    console.log('📋 Datos recibidos:', JSON.stringify(formData, null, 2));
+    
+    if (formData.questions) {
+      formData.questions.forEach((q: any, i: number) => {
+        console.log(`📊 Pregunta ${i + 1}:`, {
+          type: q.type,
+          title: q.title
+        });
+      });
+    }
 
     // Crear el formulario usando el servicio
     const result = await googleFormsService.createForm(formData, accessToken);
@@ -71,4 +80,4 @@ export async function GET() {
     { message: 'API de Google Forms activa' },
     { status: 200 }
   );
-} 
+}

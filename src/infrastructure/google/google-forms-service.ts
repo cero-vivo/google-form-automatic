@@ -65,6 +65,7 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       const auth = this.getAuthClient(accessToken);
       
       console.log('🚀 Creando formulario base:', formData.title);
+      console.log('📋 Datos del formulario recibidos:', JSON.stringify(formData, null, 2));
       console.log('⚙️ Configuraciones recibidas:', formData.settings);
 
       // 1. Crear el formulario básico (título y documentTitle)
@@ -95,6 +96,7 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       // 3. Agregar preguntas si las hay (usando batchUpdate)
       if (formData.questions.length > 0) {
         console.log(`📝 Agregando ${formData.questions.length} preguntas...`);
+        console.log('📋 Procesando preguntas:', JSON.stringify(formData.questions, null, 2));
         await this.addQuestionsToForm(form.formId, formData.questions, accessToken);
       }
 
@@ -161,6 +163,8 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
     
     try {
       const requests = questions.map((question, index) => {
+        console.log(`📋 Procesando pregunta ${index + 1}: ${question.title} (${question.type})`);
+        
         const request = this.createQuestionRequest(question, index);
         console.log(`🔧 Pregunta ${index + 1}:`, JSON.stringify(request, null, 2));
         return request;
@@ -204,10 +208,7 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       'email': QuestionType.EMAIL,
       'number': QuestionType.NUMBER,
       'phone': QuestionType.PHONE,
-      'file_upload': 'file_upload',
-      'grid': 'grid',
       'rating': 'rating',
-      'datetime': 'datetime',
       // Mapeo de tipos españoles
       'texto_corto': QuestionType.SHORT_TEXT,
       'texto_largo': QuestionType.LONG_TEXT,
@@ -220,13 +221,9 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       'correo': QuestionType.EMAIL,
       'numero': QuestionType.NUMBER,
       'telefono': QuestionType.PHONE,
-      'archivo': 'file_upload',
-      'matriz': 'grid',
       'calificacion': 'rating',
-      'fecha_hora': 'datetime',
       'casillas_de_verificacion': QuestionType.CHECKBOXES,
-      'opción_múltiple': QuestionType.MULTIPLE_CHOICE,
-      'fecha_y_hora': QuestionType.DATE
+      'opción_múltiple': QuestionType.MULTIPLE_CHOICE
     };
 
     const normalizedType = typeMapping[question.type] || question.type;
@@ -339,27 +336,7 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
         };
         break;
 
-      case 'file_upload':
-        // TODO: Implementar cuando Google Forms API soporte file upload
-        questionConfig.textQuestion = {
-          paragraph: false
-        };
-        break;
 
-      case 'grid':
-        // Grid questions requieren configuración específica de filas y columnas
-        // Por ahora, convertir a opción múltiple con opciones
-        const gridOptions = question.multipleChoiceConfig?.options || question.options || [];
-        if (gridOptions.length === 0) {
-          throw new Error(`La pregunta "${question.title}" es de tipo matriz/grid pero no tiene opciones. Por favor, proporciona al menos una opción.`);
-        }
-        questionConfig.choiceQuestion = {
-          type: 'RADIO',
-          options: gridOptions.map((option: string) => ({
-            value: option
-          }))
-        };
-        break;
 
       case 'rating':
         // Mapear rating a linear scale
@@ -374,12 +351,6 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
           high: ratingConfig.max,
           lowLabel: '',
           highLabel: ''
-        };
-        break;
-
-      case 'datetime':
-        questionConfig.dateQuestion = {
-          includeTime: true
         };
         break;
 

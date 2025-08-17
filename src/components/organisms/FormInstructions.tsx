@@ -28,11 +28,7 @@ export default function FormInstructions() {
       ['¿Cuál es tu número de teléfono?', 'phone', '', 'No', 'Incluye código de país si es necesario'],
       
       // Ejemplos para tipos avanzados
-      ['Sube tu CV actualizado', 'file_upload', 'pdf,doc,docx', 'Sí', 'Formatos permitidos: PDF, DOC, DOCX'],
-      ['Evalúa estos productos', 'grid', 'Producto 1,Producto 2,Producto 3|Excelente,Bueno,Regular,Malo', 'No', 'Matriz de evaluación'],
       ['¿Qué tan satisfecho estás?', 'rating', '1-10', 'No', 'Escala de satisfacción del 1 al 10'],
-      ['¿Cuándo fue tu última visita?', 'datetime', '', 'No', 'Fecha y hora completa'],
-      ['¿En qué país y ciudad naciste?', 'grid', 'País|Ciudad', 'Sí', 'Matriz de texto corto'],
       ['¿Cuál es tu sitio web?', 'website', '', 'No', 'Ingresa una URL válida'],
       ['¿Cuál es tu código postal?', 'text', '', 'No', 'Código postal de tu domicilio'],
       ['¿Aceptas los términos?', 'yes_no', '', 'Sí', 'Respuesta sí o no']
@@ -128,20 +124,8 @@ export default function FormInstructions() {
               <div className="space-y-2">
                 <h5 className="font-semibold text-xs mb-2">Tipos Avanzados</h5>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">file_upload</Badge>
-                  <span>Carga de archivos</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">grid</Badge>
-                  <span>Matriz de preguntas</span>
-                </div>
-                <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">rating</Badge>
                   <span>Escala de calificación</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">datetime</Badge>
-                  <span>Fecha y hora</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">date</Badge>
@@ -206,11 +190,9 @@ export default function FormInstructions() {
             <h5 className="text-sm font-medium mb-3">💡 Ejemplo de estructura CSV:</h5>
             <code className="text-xs block bg-white dark:bg-slate-800 p-3 rounded border font-mono">
               Pregunta,Tipo,Opciones,Requerido<br/>
-              ¿Cuál es tu nombre?,short_text,,Sí<br/>
-              ¿Cuál es tu color favorito?,multiple_choice,"Rojo,Azul,Verde,Amarillo",No<br/>
-              Sube tu documento,file_upload,"pdf,doc,docx",Sí<br/>
-              Evalúa estos aspectos,grid,"Aspecto 1,Aspecto 2,Aspecto 3|Excelente,Bueno,Regular",No<br/>
-              Comentarios adicionales,long_text,,No
+            ¿Cuál es tu nombre?,short_text,,Sí<br/>
+            ¿Cuál es tu color favorito?,multiple_choice,"Rojo,Azul,Verde,Amarillo",No<br/>
+            Comentarios adicionales,long_text,,No
             </code>
           </div>
           

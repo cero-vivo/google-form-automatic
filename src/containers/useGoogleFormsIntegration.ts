@@ -123,23 +123,38 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
       // Preparar datos del formulario
       const formData: GoogleFormData = {
         title: options.title,
-        description: options.description,
-        questions: options.questions,
-        settings: options.settings
+        description: options.description || '',
+        questions: options.questions.map(q => ({
+          ...q,
+          title: q.title || 'Pregunta sin título',
+          description: q.description || '',
+          required: q.required || false,
+          options: q.options || []
+        })),
+        settings: {
+          collectEmails: options.settings?.collectEmails || false,
+          ...options.settings
+        }
       };
+      
+      console.log('📤 Enviando formData:', JSON.stringify(formData, null, 2));
 
       console.log('🚀 Iniciando creación de formulario:', formData);
 
       // Llamar a la API route
+      const requestBody = JSON.stringify({
+        formData,
+        accessToken
+      });
+      
+      console.log('📤 Request body:', requestBody);
+      
       const response = await fetch('/api/google-forms/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          formData,
-          accessToken
-        })
+        body: requestBody
       });
 
       if (!response.ok) {

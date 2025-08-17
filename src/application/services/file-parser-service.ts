@@ -230,19 +230,12 @@ export class FileParserServiceImpl implements FileParserService {
   private detectQuestionTypeFromText(questionText: string, typeHint?: string): QuestionType {
     const text = questionText.toLowerCase();
     
-    // Detectar archivos por palabras clave en el texto de la pregunta
-    if (text.includes('sube') || text.includes('adjunta') || text.includes('carga') || 
-        text.includes('pdf') || text.includes('cv') || text.includes('documento') || 
-        text.includes('archivo') || text.includes('foto') || text.includes('imagen')) {
-      return QuestionType.FILE_UPLOAD;
-    }
-    
-    // Detectar grid/evaluación por palabras clave
-    if (text.includes('evalúa') || text.includes('evaluar') || text.includes('califica') || 
-        text.includes('rate') || text.includes('puntúa') || text.includes('escala') ||
-        text.includes('del 1 al') || text.includes('del 1-10') || text.includes('del 1 al 10')) {
-      return QuestionType.GRID;
-    }
+    // FILE_UPLOAD ya no es soportado - usar texto corto como fallback
+      if (text.includes('sube') || text.includes('adjunta') || text.includes('carga') || 
+          text.includes('pdf') || text.includes('cv') || text.includes('documento') || 
+          text.includes('archivo') || text.includes('foto') || text.includes('imagen')) {
+        return QuestionType.SHORT_TEXT; // Fallback seguro
+      }
     
     // Detectar email
     if (text.includes('email') || text.includes('correo') || text.includes('@')) {
@@ -258,6 +251,11 @@ export class FileParserServiceImpl implements FileParserService {
     // Detectar fecha
     if (text.includes('fecha') || text.includes('cumpleaños') || text.includes('nacimiento')) {
       return QuestionType.DATE;
+    }
+    
+    // Detectar evaluación por palabras clave
+    if (text.includes('calificar') || text.includes('rate') || text.includes('evaluar')) {
+      return QuestionType.LINEAR_SCALE; // Usar escala como fallback
     }
     
     // Si hay un hint de tipo, usarlo
@@ -435,7 +433,7 @@ export class FileParserServiceImpl implements FileParserService {
     }
     if (tipo.includes('fecha') || tipo.includes('date')) {
       if (tipo.includes('hora') || tipo.includes('time')) {
-        return QuestionType.DATETIME;
+        return QuestionType.DATE; // DATETIME eliminado, usar DATE como fallback
       }
       return QuestionType.DATE;
     }
@@ -450,12 +448,6 @@ export class FileParserServiceImpl implements FileParserService {
     }
     if (tipo.includes('teléfono') || tipo.includes('phone')) {
       return QuestionType.PHONE;
-    }
-    if (tipo.includes('archivo') || tipo.includes('file') || tipo.includes('upload') || tipo.includes('adjuntar') || tipo.includes('sube') || tipo.includes('cargar') || tipo.includes('pdf') || tipo.includes('documento')) {
-      return QuestionType.FILE_UPLOAD;
-    }
-    if (tipo.includes('matriz') || tipo.includes('grid') || tipo.includes('matrix') || tipo.includes('tabla') || tipo.includes('evalúa') || tipo.includes('evaluar') || tipo.includes('calificar') || tipo.includes('rate')) {
-      return QuestionType.GRID;
     }
 
     // Por defecto, usar texto corto
@@ -510,30 +502,8 @@ export class FileParserServiceImpl implements FileParserService {
       'date': QuestionType.DATE,
       'hora': QuestionType.TIME,
       'time': QuestionType.TIME,
-      'fecha_hora': QuestionType.DATETIME,
-      'datetime': QuestionType.DATETIME,
-      'fecha y hora': QuestionType.DATETIME,
       
-      // Archivo
-      'archivo': QuestionType.FILE_UPLOAD,
-      'file_upload': QuestionType.FILE_UPLOAD,
-      'upload': QuestionType.FILE_UPLOAD,
-      'adjuntar': QuestionType.FILE_UPLOAD,
-      'attachment': QuestionType.FILE_UPLOAD,
-      'sube': QuestionType.FILE_UPLOAD,
-      'cargar': QuestionType.FILE_UPLOAD,
-      'pdf': QuestionType.FILE_UPLOAD,
-      'documento': QuestionType.FILE_UPLOAD,
-      
-      // Matriz/Grid
-      'matriz': QuestionType.GRID,
-      'grid': QuestionType.GRID,
-      'tabla': QuestionType.GRID,
-      'matrix': QuestionType.GRID,
-      'evalua': QuestionType.GRID,
-      'evaluar': QuestionType.GRID,
-      'calificar': QuestionType.GRID,
-      'rate': QuestionType.GRID,
+      // FILE_UPLOAD ya no es soportado - se elimina
       
       // Otros
       'email': QuestionType.EMAIL,
@@ -551,8 +521,7 @@ export class FileParserServiceImpl implements FileParserService {
     return [
       QuestionType.MULTIPLE_CHOICE,
       QuestionType.CHECKBOXES,
-      QuestionType.DROPDOWN,
-      QuestionType.GRID
+      QuestionType.DROPDOWN
     ].includes(type);
   }
 

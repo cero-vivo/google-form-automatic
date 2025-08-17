@@ -3,8 +3,7 @@ import {
   QuestionId, 
   ValidationRule, 
   MultipleChoiceConfig, 
-  LinearScaleConfig,
-  DateTimeConfig 
+  LinearScaleConfig
 } from '../types';
 
 export interface Question {
@@ -18,7 +17,6 @@ export interface Question {
   // Configuraciones específicas por tipo
   multipleChoiceConfig?: MultipleChoiceConfig;
   linearScaleConfig?: LinearScaleConfig;
-  dateTimeConfig?: DateTimeConfig;
   
   // Opciones directas para tipos de opción múltiple
   options?: string[];
@@ -41,7 +39,6 @@ export class QuestionEntity implements Question {
     public description?: string,
     public multipleChoiceConfig?: MultipleChoiceConfig,
     public linearScaleConfig?: LinearScaleConfig,
-    public dateTimeConfig?: DateTimeConfig,
     public options?: string[],
     public validation?: ValidationRule[],
     public createdAt: Date = new Date(),
@@ -100,9 +97,7 @@ export class QuestionEntity implements Question {
     if (type !== QuestionType.LINEAR_SCALE) {
       this.linearScaleConfig = undefined;
     }
-    if (type !== QuestionType.DATE && type !== QuestionType.TIME) {
-      this.dateTimeConfig = undefined;
-    }
+
   }
 
   // Validaciones de dominio
@@ -148,7 +143,6 @@ export class QuestionEntity implements Question {
       order: this.order,
       multipleChoiceConfig: this.multipleChoiceConfig,
       linearScaleConfig: this.linearScaleConfig,
-      dateTimeConfig: this.dateTimeConfig,
       options: this.options,
       validation: this.validation,
       createdAt: this.createdAt,
@@ -166,7 +160,6 @@ export class QuestionEntity implements Question {
       data.description,
       data.multipleChoiceConfig,
       data.linearScaleConfig,
-      data.dateTimeConfig,
       data.options,
       data.validation,
       new Date(data.createdAt),
