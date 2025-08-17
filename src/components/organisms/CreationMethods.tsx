@@ -118,22 +118,22 @@ export function CreationMethods({ onQuestionsLoaded, onFormCreated, currentCredi
 
   return (
     <div className={`space-y-6 ${className}`}>
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         {creationMethods.map((method) => (
           <div
             key={method.id}
-            className={`group relative overflow-hidden rounded-lg border ${method.borderColor} ${method.bgColor} shadow-sm transition-all duration-200 hover:shadow-md hover:border-slate-300`}
+            className={`group relative overflow-hidden rounded-xl border ${method.borderColor} ${method.bgColor} shadow-sm transition-all duration-200 hover:shadow-lg hover:border-slate-300 min-h-[auto] lg:min-h-[480px]`}
           >
-            <div className="p-6 space-y-5">
+            <div className="p-6 sm:p-8 space-y-4 sm:space-y-6">
               <div className="flex items-center space-x-4">
-                <div className={`flex-shrink-0 w-12 h-12 rounded-lg ${method.hoverBgColor} flex items-center justify-center transition-colors duration-200`}>
-                  <method.icon className={`h-6 w-6 ${method.colorClass} transition-colors duration-200`} />
+                <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl ${method.hoverBgColor} flex items-center justify-center transition-colors duration-200">
+                  <method.icon className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 ${method.colorClass} transition-colors duration-200`} />
                 </div>
                 <div>
-                  <h3 className={`text-lg font-semibold ${method.colorClass}`}>
+                  <h3 className={`text-lg sm:text-xl font-semibold ${method.colorClass}`}>
                     {method.name}
                   </h3>
-                  <p className="text-sm text-slate-500 mt-1">
+                  <p className="text-sm sm:text-base text-slate-600 mt-1 sm:mt-2">
                     {method.description}
                   </p>
                 </div>
@@ -142,18 +142,18 @@ export function CreationMethods({ onQuestionsLoaded, onFormCreated, currentCredi
               <div className="pt-4 border-t border-slate-100">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-slate-700">Costo</span>
-                  <span className={`px-2.5 py-1 rounded-md ${method.bgColor} ${method.colorClass} text-sm font-medium transition-colors duration-200`}>
+                  <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg ${method.bgColor} ${method.colorClass} text-sm sm:text-base font-medium transition-colors duration-200`}>
                     {method.cost} crédito{method.cost > 1 ? 's' : ''}
                   </span>
                 </div>
 
                 <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-slate-700">Características</h4>
+                  <h4 className="text-sm sm:text-base font-medium text-slate-700">Características</h4>
                   <ul className="space-y-1.5">
                     {method.features.map((feature, index) => (
                       <li key={index} className="flex items-start space-x-2">
-                        <span className={`text-sm mt-0.5 ${method.colorClass} transition-colors duration-200`}>•</span>
-                        <span className="text-sm text-slate-600">{feature}</span>
+                        <span className={`text-sm sm:text-base mt-0.5 ${method.colorClass} transition-colors duration-200`}>•</span>
+                        <span className="text-sm sm:text-base text-slate-600">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -163,7 +163,7 @@ export function CreationMethods({ onQuestionsLoaded, onFormCreated, currentCredi
               <Button
                 onClick={() => setActiveMethod(method.id)}
                 disabled={!canCreateMethod(method.cost)}
-                className={`w-full mt-4 transition-all duration-200 ${
+                className={`w-full mt-4 sm:mt-6 py-2.5 sm:py-3 text-sm sm:text-base transition-all duration-200 ${
                   canCreateMethod(method.cost)
                     ? `bg-white ${method.colorClass} border ${method.borderColor} hover:${method.hoverBgColor} hover:text-white hover:shadow-md`
                     : 'bg-slate-100 text-slate-400 cursor-not-allowed'

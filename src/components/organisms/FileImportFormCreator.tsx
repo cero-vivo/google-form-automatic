@@ -70,17 +70,23 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       const questions = [
         {
           id: 'q1',
-          text: '¿Cuál es tu nombre?',
+          title: '¿Cuál es tu nombre?',
           type: 'short_text',
           required: true,
-          options: []
+          options: [],
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         },
         {
           id: 'q2',
-          text: '¿Cuál es tu edad?',
+          title: '¿Cuál es tu edad?',
           type: 'number',
           required: true,
-          options: []
+          options: [],
+          order: 2,
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ];
       
@@ -93,10 +99,8 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
 
       // Consume credits
       await consumeCredits({
-        type: 'form_creation',
         amount: 1,
-        description: `Importar archivo: ${file.name}`,
-        metadata: { filename: file.name, questionsCount: questions.length }
+        formTitle: file.name
       });
 
     } catch (error) {
