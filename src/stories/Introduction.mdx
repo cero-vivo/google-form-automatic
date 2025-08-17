@@ -1,0 +1,186 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Fast Form/Introducción" />
+
+# 🚀 Sistema de Diseño Fast Form
+
+Bienvenido al sistema de diseño oficial de **Fast Form** - la plataforma líder de generación de formularios con IA.
+
+## 🎯 Filosofía de Diseño
+
+Fast Form combina velocidad, precisión y experiencia de usuario excepcional. Nuestro diseño está construido para:
+
+- **Velocidad**: Crear formularios en segundos, no en horas
+- **Precisión**: Resultados consistentes y profesionales
+- **Accesibilidad**: Diseñado para todos los usuarios
+- **Escalabilidad**: Crece con las necesidades de tu negocio
+
+## 🎨 Identidad Visual
+
+### Colores Principales
+
+| Color | Hex | Uso |
+|-------|-----|-----|
+| **Velocity** | `#FFB830` | Acciones primarias, CTAs |
+| **Forms** | `#5B47A8` | Interfaz principal, navegación |
+| **Excel** | `#1A7F4C` | Éxito, confirmación |
+| **Neutral** | `#FFFFFF` | Fondos, superficies |
+
+### Tipografía
+
+- **Primaria**: Poppins (para títulos y CTAs)
+- **Secundaria**: Inter (para contenido y texto)
+- **Display**: Poppins Black (para impacto visual)
+
+### Espaciado
+
+Basado en un sistema de 8px:
+- **xs**: 4px
+- **sm**: 8px
+- **md**: 16px
+- **lg**: 24px
+- **xl**: 32px
+- **2xl**: 48px
+- **3xl**: 64px
+
+## 📱 Principios Responsive
+
+- **Mobile-first**: Diseñado para móviles primero
+- **Breakpoints**: 768px (tablet), 1024px (desktop)
+- **Touch-friendly**: Mínimo 44px para elementos interactivos
+
+## 🎯 Flujo de Creación de Formularios
+
+### Paso 1: Carga de Archivos
+- **Drag & Drop**: Arrastra y suelta archivos Excel/CSV
+- **Validación**: Verificación de formato y estructura
+- **Preview**: Vista previa de los datos antes de procesar
+- **Progress**: Indicadores de progreso en tiempo real
+
+### Paso 2: Edición Visual
+- **Live Preview**: Vista previa en tiempo real mientras editas
+- **Drag & Drop**: Reorganiza preguntas fácilmente
+- **Question Types**: Soporte para todos los tipos de preguntas
+- **Validation**: Reglas de validación personalizadas
+
+### Paso 3: Publicación
+- **Google Forms**: Publicación directa a Google Forms
+- **MercadoPago**: Integración de pagos para formularios premium
+- **Analytics**: Seguimiento de respuestas y métricas
+- **Sharing**: Opciones de compartir y permisos
+
+## 🎭 Componentes Principales
+
+### Atómicos
+- **Botones**: Primary, Secondary, Ghost variants
+- **Inputs**: Text, Email, Select, Textarea
+- **Cards**: Default, Elevated, Outlined
+- **Badges**: Status, Count, Category
+
+### Moléculas
+- **Hero Section**: Conversión optimizada
+- **Feature Cards**: 4-column grid responsivo
+- **Navigation**: Sticky con glass effect
+- **Form Sections**: Agrupación lógica
+
+### Organismos
+- **Dashboard**: Vista principal de gestión
+- **Form Creator**: Constructor con IA
+- **File Upload**: Importación profesional
+- **Credits Manager**: Gestión de créditos
+
+### 🏢 Plantillas Disponibles
+
+#### Negocios
+- **Satisfacción del Cliente**: Medir la satisfacción del cliente
+- **Feedback de Producto**: Recopilar opiniones sobre productos
+- **Evaluación de Empleados**: Revisiones de desempeño
+
+#### Marketing
+- **Encuestas de Mercado**: Investigación de mercado
+- **Registro de Eventos**: Inscripciones para eventos
+- **Newsletter Signup**: Captación de suscriptores
+
+#### Recursos Humanos
+- **Postulaciones de Empleo**: Formularios de aplicación
+- **Onboarding**: Formularios de incorporación
+- **Evaluaciones**: Formularios de evaluación
+
+#### Salud
+- **Encuestas de Bienestar**: Salud y bienestar
+- **Registro de Pacientes**: Información médica
+- **Satisfacción de Pacientes**: Feedback de servicios médicos
+
+## 🔄 Micro-interacciones
+
+- **Hover**: Escala sutil + transición de color
+- **Focus**: Anillos de enfoque accesibles
+- **Loading**: Skeleton screens sobre spinners
+- **Success**: Animaciones de confirmación
+
+## ♿ Accesibilidad
+
+- **WCAG 2.1 AA**: Cumplimiento total
+- **Contraste**: Mínimo 4.5:1 para texto normal
+- **Navegación**: Soporte completo de teclado
+- **Screen readers**: Etiquetas ARIA semánticas
+
+## 📚 Guías de Uso
+
+1. **Empezar con Mobile**: Diseña primero para móvil
+2. **Usar el Sistema de Espaciado**: Mantener consistencia
+3. **Aplicar Jerarquía Visual**: Guiar la atención del usuario
+4. **Testear Accesibilidad**: Verificar con herramientas
+5. **Optimizar Rendimiento**: WebP, lazy loading, código dividido
+
+### Uso Rápido de Componentes
+
+```tsx
+// Carga de archivos
+import { FileUploadZone } from '@/components/upload/file-upload-zone'
+
+// Editor de formularios
+import { FormEditor } from '@/components/form/form-editor'
+
+// Plantillas
+import { TemplateGallery } from '@/components/templates/template-gallery'
+
+// Analytics
+import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard'
+```
+
+### Ejemplo Completo
+```tsx
+import { FileUploadZone } from '@/components/upload/file-upload-zone'
+import { FormEditor } from '@/components/form/form-editor'
+import { Button } from '@/components/ui/button'
+
+export default function CreateFormPage() {
+  return (
+    <div className="space-y-6">
+      <FileUploadZone 
+        onFileUpload={handleFileUpload}
+        acceptedFormats={['.xlsx', '.csv']}
+        maxSize="10MB"
+      />
+      
+      <FormEditor 
+        questions={questions}
+        onQuestionsChange={setQuestions}
+        template="customer-satisfaction"
+      />
+      
+      <Button 
+        onClick={publishToGoogleForms}
+        className="w-full bg-velocity-500 hover:bg-velocity-600"
+      >
+        Publicar en Google Forms
+      </Button>
+    </div>
+  )
+}
+```
+
+---
+
+¿Listo para crear formularios profesionales? ¡Comencemos! 🚀

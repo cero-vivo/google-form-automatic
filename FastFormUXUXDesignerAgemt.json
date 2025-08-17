@@ -1,0 +1,213 @@
+{
+  "agent_name": "FastForm UX/UI Design Specialist",
+  "version": "1.0.0",
+  "specialization": "UX/UI Design & Visual Identity Expert for FastForm SaaS",
+  "focus_areas": [
+    "Landing Page Optimization",
+    "Visual Identity Consistency",
+    "User Experience Flow",
+    "Component Design System",
+    "Conversion Rate Optimization",
+    "Accessibility Standards",
+    "Mobile-First Design",
+    "Micro-interactions & Animations"
+  ],
+  "brand_identity": {
+    "core_colors": {
+      "velocity": {
+        "primary": "hsl(38, 100%, 62%)",
+        "hover": "hsl(38, 100%, 55%)",
+        "light": "hsl(38, 100%, 95%)",
+        "text": "hsl(38, 100%, 40%)"
+      },
+      "forms": {
+        "primary": "hsl(251, 47%, 48%)",
+        "hover": "hsl(251, 47%, 40%)",
+        "light": "hsl(251, 47%, 95%)"
+      },
+      "excel": {
+        "primary": "hsl(142, 72%, 29%)",
+        "hover": "hsl(142, 72%, 25%)",
+        "light": "hsl(142, 72%, 95%)"
+      },
+      "neutral": {
+        "background": "hsl(0, 0%, 100%)",
+        "surface": "hsl(210, 40%, 98%)",
+        "text_primary": "hsl(220, 13%, 18%)",
+        "text_secondary": "hsl(220, 13%, 40%)",
+        "border": "hsl(220, 13%, 91%)"
+      }
+    },
+    "typography": {
+      "primary_font": "Poppins",
+      "secondary_font": "Inter",
+      "display_font": "Poppins Black",
+      "font_weights": {
+        "regular": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700,
+        "black": 900
+      }
+    },
+    "spacing": {
+      "xs": "0.25rem",
+      "sm": "0.5rem",
+      "md": "1rem",
+      "lg": "1.5rem",
+      "xl": "2rem",
+      "2xl": "3rem",
+      "3xl": "4rem"
+    },
+    "border_radius": {
+      "sm": "0.375rem",
+      "md": "0.5rem",
+      "lg": "0.75rem",
+      "xl": "1rem",
+      "full": "9999px"
+    }
+  },
+  "landing_page_analysis": {
+    "current_strengths": [
+      "Color scheme consistent with brand identity",
+      "Clear value proposition in hero section",
+      "Strong call-to-action buttons",
+      "Trust signals with social proof",
+      "Mobile-responsive design",
+      "Fast loading performance"
+    ],
+    "optimization_opportunities": [
+      "Hero section could benefit from stronger visual hierarchy",
+      "Feature cards need more engaging micro-interactions",
+      "Social proof section could be more prominent",
+      "Pricing section needs clearer value communication",
+      "Footer lacks comprehensive navigation"
+    ],
+    "conversion_elements": [
+      "Primary CTA: 'Probar Gratis' button",
+      "Secondary CTA: 'Ver Demo' button",
+      "Trust badges: Google integration, security mentions",
+      "Social proof: User testimonials and usage stats",
+      "Urgency: Limited-time offers and trial countdowns"
+    ]
+  },
+  "design_system": {
+    "atoms": {
+      "buttons": {
+        "primary": {
+          "background": "velocity.primary",
+          "text": "white",
+          "hover": "velocity.hover",
+          "border_radius": "full",
+          "padding": "lg",
+          "font_weight": "semibold",
+          "shadow": "md"
+        },
+        "secondary": {
+          "border": "2px solid velocity.primary",
+          "text": "velocity.text",
+          "hover": "velocity.light",
+          "border_radius": "full"
+        }
+      },
+      "cards": {
+        "default": {
+          "background": "white",
+          "border": "neutral.border",
+          "border_radius": "lg",
+          "shadow": "sm",
+          "hover": "shadow-md transition-shadow"
+        },
+        "elevated": {
+          "background": "white",
+          "border": "none",
+          "border_radius": "xl",
+          "shadow": "xl"
+        }
+      }
+    },
+    "molecules": {
+      "hero_section": {
+        "layout": "2-column grid",
+        "content_alignment": "left",
+        "image_placement": "right",
+        "cta_priority": "primary then secondary",
+        "mobile_layout": "single column"
+      },
+      "feature_cards": {
+        "layout": "4-column grid",
+        "mobile_layout": "2-column grid",
+        "hover_effect": "scale + shadow elevation",
+        "icon_style": "rounded background with brand color"
+      }
+    }
+  },
+  "ux_patterns": {
+    "navigation": {
+      "type": "sticky header with glass effect",
+      "mobile": "hamburger menu",
+      "cta_placement": "right side",
+      "logo_placement": "left side"
+    },
+    "forms": {
+      "input_style": "rounded with subtle borders",
+      "validation": "inline with helpful messages",
+      "progress": "step indicators for multi-step forms",
+      "error_handling": "friendly error messages with solutions"
+    },
+    "animations": {
+      "page_transitions": "fade in + slide up",
+      "hover_effects": "subtle scale + color transitions",
+      "loading": "skeleton screens over spinners",
+      "micro_interactions": "button press effects, card hover states"
+    }
+  },
+  "accessibility": {
+    "color_contrast": "WCAG 2.1 AA minimum",
+    "keyboard_navigation": "full tab support",
+    "screen_reader": "semantic HTML + ARIA labels",
+    "focus_indicators": "visible focus rings",
+    "font_sizes": "minimum 16px for body text"
+  },
+  "responsive_breakpoints": {
+    "mobile": "max-width: 768px",
+    "tablet": "768px - 1024px",
+    "desktop": "1024px+",
+    "max_width": "1200px container"
+  },
+  "performance_guidelines": {
+    "image_optimization": "WebP format with fallbacks",
+    "lazy_loading": "images below fold",
+    "font_loading": "preload critical fonts",
+    "css_optimization": "purge unused styles",
+    "bundle_size": "code splitting per route"
+  },
+  "testing_checklist": {
+    "visual": [
+      "Consistent spacing throughout",
+      "Proper color contrast ratios",
+      "Responsive layout testing",
+      "Cross-browser compatibility"
+    ],
+    "functional": [
+      "All interactive elements work",
+      "Form validation messages clear",
+      "Loading states present",
+      "Error states handled gracefully"
+    ],
+    "performance": [
+      "Lighthouse score > 90",
+      "First Contentful Paint < 1.5s",
+      "Largest Contentful Paint < 2.5s",
+      "Cumulative Layout Shift < 0.1"
+    ]
+  },
+  "deliverables": [
+    "Figma design file with all components",
+    "Style guide documentation",
+    "Component library in Storybook",
+    "Responsive prototypes",
+    "Accessibility audit report",
+    "Performance optimization guide"
+  ]
+}

@@ -55,16 +55,16 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Modern Brand Colors */
-  .text-velocity { color: #FFAC3B; }
-  .text-excel { color: #22A565; }
-  .text-forms { color: #6A3EBB; }
+  /* Modern Brand Colors - Exact FastForm values */
+  .text-velocity { color: hsl(38, 100%, 62%); }
+  .text-excel { color: hsl(142, 72%, 29%); }
+  .text-forms { color: hsl(251, 47%, 48%); }
   .text-primary { color: hsl(var(--foreground)); }
   .text-muted { color: hsl(var(--muted-foreground)); }
   
-  .bg-velocity { background-color: #FFAC3B; }
-  .bg-excel { background-color: #22A565; }
-  .bg-forms { background-color: #6A3EBB; }
+  .bg-velocity { background-color: hsl(38, 100%, 62%); }
+  .bg-excel { background-color: hsl(142, 72%, 29%); }
+  .bg-forms { background-color: hsl(251, 47%, 48%); }
   
   /* Modern Glass Effects */
   .glass {
