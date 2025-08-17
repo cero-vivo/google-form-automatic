@@ -15,11 +15,11 @@
     --popover-foreground: 220 13% 18%;
     
     /* Brand colors - vibrant and accessible */
-    --primary: 38 100% 62%; /* FLAME - Velocity */
+    --primary: 142 72% 29%; /* EXCEL - Green */
     --primary-foreground: 0 0% 100%;
     --secondary: 251 47% 48%; /* FORMS - Purple */
     --secondary-foreground: 0 0% 100%;
-    --accent: 142 72% 29%; /* EXCEL - Green */
+    --accent: 38 100% 62%; /* FLAME - Velocity */
     --accent-foreground: 0 0% 100%;
     
     /* Neutral system */
@@ -31,13 +31,13 @@
     /* Interface elements */
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 38 100% 62%;
+    --ring: 142 72% 29%;
     --radius: 1rem;
     
     /* Chart colors */
-    --chart-1: 38 100% 62%;
+    --chart-1: 142 72% 29%;
     --chart-2: 251 47% 48%;
-    --chart-3: 142 72% 29%;
+    --chart-3: 38 100% 62%;
     --chart-4: 220 13% 40%;
     --chart-5: 220 13% 18%;
   }
@@ -59,7 +59,7 @@
   .text-velocity { color: hsl(38, 100%, 62%); }
   .text-excel { color: hsl(142, 72%, 29%); }
   .text-forms { color: hsl(251, 47%, 48%); }
-  .text-primary { color: hsl(var(--foreground)); }
+  .text-primary { color: hsl(142, 72%, 29%); }
   .text-muted { color: hsl(var(--muted-foreground)); }
   
   .bg-velocity { background-color: hsl(38, 100%, 62%); }
@@ -120,6 +120,15 @@
     animation: pulse-glow 2s ease-in-out infinite;
   }
   
+  @keyframes pulse-glow-excel {
+    0%, 100% { box-shadow: 0 0 20px rgba(34, 165, 101, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(34, 165, 101, 0.6); }
+  }
+  
+  .animate-pulse-glow-excel {
+    animation: pulse-glow-excel 2s ease-in-out infinite;
+  }
+  
   .animate-slide-up {
     animation: slide-up 0.6s ease-out forwards;
   }
@@ -130,12 +139,12 @@
   
   /* Replace gradient-based button with solid color */
   .btn-modern {
-    @apply relative overflow-hidden transition-all duration-300 transform hover:scale-105 bg-velocity text-white;
-    box-shadow: 0 8px 32px rgba(255, 172, 59, 0.25);
+    @apply relative overflow-hidden transition-all duration-300 transform hover:scale-105 bg-excel text-white;
+    box-shadow: 0 8px 32px rgba(34, 165, 101, 0.25);
   }
   
   .btn-modern:hover {
-    box-shadow: 0 12px 48px rgba(255, 172, 59, 0.35);
+    box-shadow: 0 12px 48px rgba(34, 165, 101, 0.35);
   }
   
   /* Remove shimmer gradient */

@@ -16,7 +16,7 @@ export default meta;
 // Colores de marca - Valores HSL exactos
 const colors = {
   velocity: {
-    primary: 'hsl(38, 100%, 62%)',
+    primary: 'hsl(142, 72%, 29%)',
     hover: 'hsl(38, 100%, 55%)',
     light: 'hsl(38, 100%, 95%)',
     text: 'hsl(38, 100%, 40%)',
