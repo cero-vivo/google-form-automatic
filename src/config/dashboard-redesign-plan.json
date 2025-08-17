@@ -1,0 +1,263 @@
+{
+  "dashboardRedesignPlan": {
+    "version": "2.0.0",
+    "title": "FastForm Dashboard Redesign Plan",
+    "lastUpdated": "2025-08-17",
+    "philosophy": {
+      "primary": "Unify all form creation methods through a single, powerful builder interface",
+      "secondary": "Progressive disclosure: simple entry points, sophisticated editing",
+      "tertiary": "Mobile-first responsive design with desktop enhancements"
+    },
+    "creationMethods": {
+      "1_aiChat": {
+        "name": "Crear con IA",
+        "icon": "Sparkles",
+        "description": "Generar formularios mediante chat inteligente",
+        "cost": 2,
+        "flow": ["Chat input → AI processing → Builder interface → Google Forms → Form submission"],
+        "features": ["Natural language processing"]
+      },
+      "2_fileImport": {
+        "name": "Importar CSV/Excel",
+        "icon": "FileText",
+        "description": "Convertir archivos existentes en formularios",
+        "cost": 1,
+        "flow": ["File upload → Auto-parse → Builder interface → Google Forms → Form submission"],
+        "features": ["Excel/CSV support"]
+      },
+      "3_manualBuilder": {
+        "name": "Constructor Manual",
+        "icon": "LayoutGrid",
+        "description": "Crear formularios desde cero con interfaz visual",
+        "cost": 1,
+        "flow": ["Empty builder → Add questions → Configure options → Google Forms → Form submission"],
+        "features": ["Manual question creation"]
+      }
+    },
+    "unifiedBuilderInterface": {
+      "name": "FormBuilder",
+      "purpose": "Single editing interface for all creation methods",
+      "components": {
+        "header": {
+          "formTitle": "Editable with AI suggestions",
+          "formDescription": "Rich text editor",
+          "settingsPanel": "Collect emails, limit responses, etc."
+        },
+        "questionEditor": {
+          "types": ["texto_corto", "texto_largo", "opcion_multiple", "checkboxes", "dropdown", "escala_lineal", "fecha", "hora", "email", "numero", "archivo", "grid", "escala", "fecha_hora"],
+          "features": ["Drag reorder", "Duplicate", "Delete", "Required toggle", "Validation rules", "Conditional logic"]
+        },
+        "previewPanel": {
+          "livePreview": "Real-time Google Forms preview",
+          "mobilePreview": "Responsive design check",
+          "shareSettings": "Direct Google Forms sharing"
+        }
+      }
+    },
+    "navigationRedesign": {
+      "mobile": {
+        "type": "Bottom navigation bar",
+        "items": [
+          {"icon": "Home", "label": "Dashboard", "href": "/dashboard"},
+          {"icon": "Plus", "label": "Crear", "action": "Open creation modal"},
+          {"icon": "FileText", "label": "Mis Forms", "href": "/dashboard/forms"},
+          {"icon": "User", "label": "Perfil", "href": "/dashboard/profile"},
+          {"icon": "CreditCard", "label": "Créditos", "href": "/dashboard/credits"}
+        ]
+      },
+      "desktop": {
+        "type": "Sidebar navigation",
+        "sections": {
+          "primary": [
+            {"icon": "Home", "label": "Dashboard", "href": "/dashboard"},
+            {"icon": "Sparkles", "label": "Crear con IA", "href": "/dashboard/create/ai"},
+            {"icon": "FileText", "label": "Importar Archivo", "href": "/dashboard/create/import"},
+            {"icon": "LayoutGrid", "label": "Constructor", "href": "/dashboard/create/builder"}
+          ],
+          "secondary": [
+            {"icon": "FileText", "label": "Mis Formularios", "href": "/dashboard/forms"},
+            {"icon": "BarChart3", "label": "Analytics", "href": "/dashboard/analytics"},
+            {"icon": "CreditCard", "label": "Créditos", "href": "/dashboard/credits"},
+            {"icon": "Settings", "label": "Configuración", "href": "/dashboard/settings"}
+          ],
+          "tertiary": [
+            {"icon": "BookOpen", "label": "Documentación", "href": "/docs"},
+            {"icon": "HelpCircle", "label": "Ayuda", "href": "/help"},
+            {"icon": "LogOut", "label": "Cerrar Sesión", "action": "signOut"}
+          ]
+        }
+      }
+    },
+    "dashboardViews": {
+      "home": {
+        "title": "Dashboard Principal",
+        "sections": [
+          {
+            "name": "Quick Actions",
+            "type": "cards",
+            "items": ["Crear con IA", "Importar CSV", "Constructor Manual"]
+          },
+          {
+            "name": "Recent Forms",
+            "type": "list",
+            "items": ["Last 5 forms with status"]
+          },
+          {
+            "name": "Credits Overview",
+            "type": "widget",
+            "items": ["Current balance", "Usage history", "Quick purchase"]
+          }
+        ]
+      },
+      "forms": {
+        "title": "Mis Formularios",
+        "features": ["Grid/list view toggle", "Search/filter", "Bulk actions", "Export data", "Share links"],
+        "actions": ["View", "Edit", "Duplicate", "Delete", "Share", "Analytics"]
+      },
+      "analytics": {
+        "title": "Analytics",
+        "metrics": ["Form views", "Response rates", "Popular questions", "Geographic data", "Device breakdown"]
+      }
+    },
+    "responsiveBreakpoints": {
+      "mobile": "< 768px",
+      "tablet": "768px - 1024px",
+      "desktop": "> 1024px",
+      "ultra": "> 1440px"
+    },
+    "formEditing": {
+      "editModes": {
+        "1_csvPatch": {
+          "name": "Actualizar con CSV/Excel",
+          "description": "Subir un archivo para actualizar preguntas existentes o agregar nuevas",
+          "process": ["Upload file → Compare changes → Preview → Apply patch"],
+          "features": ["Smart diff detection", "Merge conflicts resolution", "Preview changes", "Backup original"]
+        },
+        "2_manualEdit": {
+          "name": "Editar Manualmente",
+          "description": "Usar el constructor visual para modificar el formulario",
+          "process": ["Open builder → Edit questions → Preview → Save changes"],
+          "features": ["Same as creation builder", "Real-time sync with Google Forms", "Version history", "Undo/redo"]
+        },
+        "3_aiEnhance": {
+          "name": "Mejorar con IA",
+          "description": "Usar IA para sugerir mejoras o agregar preguntas",
+          "process": ["Chat with AI → Get suggestions → Preview → Apply selected"],
+          "features": ["Question optimization", "Add missing validations", "Improve wording", "Suggest new questions"]
+        }
+      },
+      "editInterface": {
+        "unifiedBuilder": "Same as creation but with edit mode indicators",
+        "changeTracking": "Visual diff for all modifications",
+        "syncStatus": "Real-time Google Forms sync indicator",
+        "validation": "Pre-save validation with error highlighting"
+      },
+      "permissions": {
+        "owner": "Full edit access",
+        "collaborator": "Limited edit based on Google Forms permissions",
+        "viewer": "Read-only with suggestion mode"
+      }
+    },
+    "technicalImplementation": {
+      "routing": {
+        "structure": "/dashboard/[section]/[action]/[id]?",
+        "examples": [
+          "/dashboard/create/ai",
+          "/dashboard/create/import",
+          "/dashboard/create/builder",
+          "/dashboard/forms",
+          "/dashboard/forms/[id]/edit",
+          "/dashboard/forms/[id]/analytics",
+          "/dashboard/forms/[id]/edit/csv",
+          "/dashboard/forms/[id]/edit/manual",
+          "/dashboard/forms/[id]/edit/ai"
+        ]
+      },
+      "stateManagement": {
+        "formBuilder": "Zustand store for unsaved changes",
+        "navigation": "React Context for mobile/desktop mode",
+        "userData": "React Query for server state"
+      },
+      "animations": {
+        "pageTransitions": "Framer Motion",
+        "microInteractions": "CSS transitions + Framer Motion",
+        "loadingStates": "Skeleton screens + Lottie animations"
+      }
+    },
+    "userExperienceFlow": {
+      "newUser": [
+        "Welcome modal with creation options",
+        "Interactive tutorial for chosen method",
+        "First form creation with guidance",
+        "Credit purchase prompt if needed"
+      ],
+      "returningUser": [
+        "Dashboard with recent forms",
+        "Quick creation shortcuts",
+        "Progress indicators for ongoing forms",
+        "Smart suggestions based on history"
+      ]
+    },
+    "accessibility": {
+      "keyboardNavigation": "Full keyboard support",
+      "screenReaders": "ARIA labels and live regions",
+      "colorContrast": "WCAG 2.1 AA compliance",
+      "reducedMotion": "Respects prefers-reduced-motion"
+    },
+    "googlePermissionsCheck": {
+      "onDashboardFocus": {
+        "check": "Google OAuth token validity and scopes",
+        "scopes": [
+          "https://www.googleapis.com/auth/forms.body",
+          "https://www.googleapis.com/auth/drive.file"
+        ],
+        "actions": [
+          "Verify token expiration",
+          "Check scope permissions",
+          "Validate Google Forms API access"
+        ]
+      },
+      "fallbackSystem": {
+        "draftsCollection": "userDrafts",
+        "storage": "Firebase Firestore",
+        "structure": {
+          "draftId": "string",
+          "userId": "string",
+          "formData": "object",
+          "questions": "array",
+          "settings": "object",
+          "createdAt": "timestamp",
+          "updatedAt": "timestamp",
+          "googleFormId": "string | null",
+          "status": "draft | failed | pending",
+          "errorMessage": "string | null"
+        },
+        "features": [
+          "Auto-save on permission failure",
+          "Retry queue with exponential backoff",
+          "Manual retry button",
+          "Export to CSV/Excel",
+          "Convert draft to Google Form later"
+        ]
+      },
+      "userExperience": {
+        "permissionDenied": {
+          "message": "Google Forms permissions required",
+          "action": "Re-authenticate with Google",
+          "cta": "Renew Google Session"
+        },
+        "draftSaved": {
+          "message": "Form saved as draft - Google upload pending",
+          "action": "View in Drafts section",
+          "autoRetry": "Every 5 minutes"
+        }
+      }
+    },
+    "performanceOptimizations": {
+      "lazyLoading": "Components and routes",
+      "codeSplitting": "By dashboard sections",
+      "imageOptimization": "Next.js Image component",
+      "caching": "React Query + Service Worker"
+    }
+  }
+}
