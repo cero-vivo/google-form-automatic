@@ -76,7 +76,6 @@ export function CreationMethods({ onQuestionsLoaded, onFormCreated, currentCredi
   ];
 
   const handleFormCreated = (formData: any) => {
-    setActiveMethod(null);
     onFormCreated?.(formData);
   };
 
