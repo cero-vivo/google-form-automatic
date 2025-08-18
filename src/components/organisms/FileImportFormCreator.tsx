@@ -23,9 +23,8 @@ interface FileImportFormCreatorProps {
 export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: FileImportFormCreatorProps) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+
+
   const [formTitle, setFormTitle] = useState('');
   const [formDescription, setFormDescription] = useState('');
   const [collectEmail, setCollectEmail] = useState(true);
@@ -33,7 +32,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
   const [createdFormData, setCreatedFormData] = useState<any>(null);
   const [showEditor, setShowEditor] = useState(false);
 
-  const { handleFileSelect: uploadFile, questions: parsedQuestionsFromUpload } = useFileUpload();
+  const { handleFileSelect, questions, loading, progress, error } = useFileUpload();
   const { consumeCredits } = useCredits();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -46,8 +45,8 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       setParsedQuestions([]);
       setFormTitle('');
       setFormDescription('');
-      setProgress(0);
-      setError(null);
+// Remove setProgress line since progress is managed by useFileUpload hook
+      // Remove this line since setError is not defined and error state is managed by the useFileUpload hook
       handleFileUpload(file);
     }
   }, []);
@@ -60,64 +59,64 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
     },
     maxFiles: 1,
-    maxSize: 10 * 1024 * 1024 // 10MB
+    maxSize: 10 * 1024 * 1024, // 10MB
+    disabled: loading
   });
 
   const handleFileUpload = async (file: File) => {
     if (currentCredits < 1) {
-      setError('No tienes suficientes créditos para importar archivos (requiere 1 crédito)');
+      // This will be handled by the hook's error state
       return;
     }
-
-    setIsProcessing(true);
-    setProgress(0);
-
+    
     try {
-      // Use the file upload hook properly
-      await uploadFile(file);
-      
-      // Check if we have questions from the upload
-      if (parsedQuestionsFromUpload && parsedQuestionsFromUpload.length > 0) {
-        setParsedQuestions(parsedQuestionsFromUpload);
-        setFormTitle(`Formulario importado: ${file.name}`);
-        setFormDescription(`Formulario creado desde archivo ${file.name} (${parsedQuestionsFromUpload.length} preguntas)`);
-        setShowEditor(true);
-
-        // Consume credits
-        await consumeCredits({
-          amount: 1,
-          formTitle: file.name
-        });
-      } else {
-        setError('No se encontraron preguntas válidas en el archivo. Verifica el formato.');
-      }
-
+      await handleFileSelect(file);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error al procesar el archivo';
-      setError(errorMessage);
-    } finally {
-      setIsProcessing(false);
-      setProgress(0);
+      // Errors are handled by the hook's error state
+      console.error('Error handling file upload:', error);
     }
   };
 
-  const handleCreateForm = () => {
-    if (parsedQuestions.length > 0) {
-      const formData = {
-        title: formTitle,
-        description: formDescription,
-        questions: parsedQuestions,
-        creationMethod: 'file',
-        formUrl: 'https://forms.google.com/viewform',
-        editUrl: 'https://forms.google.com/edit',
-        createdAt: new Date()
-      };
+  // Update questions when they are parsed
+  React.useEffect(() => {
+    if (loading) return; // Don't process while loading
 
-      setCreatedFormData(formData);
-      setShowSuccessView(true);
+    if (questions && questions.length > 0) {
+      setParsedQuestions(questions);
+      setFormTitle(`Formulario importado: ${uploadedFile?.name || 'Formulario importado'}`);
+      setFormDescription(`Formulario creado desde archivo ${uploadedFile?.name || ''} (${questions.length} preguntas)`);
+      setShowEditor(true);
 
-      onFormCreated?.(formData);
+      // Consume credits after successful parsing
+      consumeCredits({
+        amount: 1,
+        formTitle: uploadedFile?.name || 'Formulario importado'
+      });
     }
+  }, [questions, uploadedFile, consumeCredits, loading]);
+
+
+
+  const handleCreateForm = () => {
+    if (parsedQuestions.length === 0) {
+      handleFileSelect(null, 'No hay preguntas válidas para crear el formulario');
+      return;
+    }
+
+    const formData = {
+      title: formTitle,
+      description: formDescription,
+      questions: parsedQuestions,
+      creationMethod: 'file',
+      formUrl: 'https://forms.google.com/viewform',
+      editUrl: 'https://forms.google.com/edit',
+      createdAt: new Date()
+    };
+
+    setCreatedFormData(formData);
+    setShowSuccessView(true);
+
+    onFormCreated?.(formData);
   };
 
 
@@ -130,8 +129,6 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
     setFormTitle('');
     setFormDescription('');
     setCollectEmail(true);
-    setProgress(0);
-    setError(null);
     setShowEditor(false);
   };
 
@@ -143,11 +140,11 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
         ...q,
         id: Date.now().toString() + Math.random()
       })));
+      setCollectEmail(createdFormData.collectEmail);
       setShowSuccessView(false);
       setCreatedFormData(null);
       setUploadedFile(null);
       setShowEditor(true);
-      setError(null);
     }
   };
 
@@ -393,15 +390,15 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       <div
         {...getRootProps()}
         className={`
-          border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-          ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300'}
-          ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}
-        `}
+            border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+            ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300'}
+            ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+          `}
       >
         <input {...getInputProps()} />
 
         <div className="flex flex-col items-center space-y-4">
-          {isProcessing ? (
+          {loading ? (
             <>
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
               <p className="text-lg font-medium">Procesando archivo...</p>

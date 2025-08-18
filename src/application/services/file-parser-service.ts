@@ -413,27 +413,27 @@ export class FileParserServiceImpl implements FileParserService {
   private mapGoogleFormsType(tipo: string): QuestionType {
     tipo = tipo.toLowerCase().trim();
     
-    if (tipo.includes('respuesta corta') || tipo.includes('short')) {
+    if (tipo.includes('respuesta corta') || tipo.includes('short') || tipo.includes('short_text')) {
       return QuestionType.SHORT_TEXT;
     }
-    if (tipo.includes('respuesta larga') || tipo.includes('long') || tipo.includes('paragraph')) {
+    if (tipo.includes('respuesta larga') || tipo.includes('long') || tipo.includes('paragraph') || tipo.includes('long_text')) {
       return QuestionType.LONG_TEXT;
     }
-    if (tipo.includes('selección múltiple') || tipo.includes('checkbox') || tipo.includes('múltiple')) {
+    if (tipo.includes('checkbox') || tipo.includes('checkboxes')) {
       return QuestionType.CHECKBOXES;
     }
-    if (tipo.includes('opción múltiple') || tipo.includes('radio') || tipo.includes('choice')) {
+    if (tipo.includes('opción múltiple') || tipo.includes('radio') || tipo.includes('choice') || tipo.includes('multiple_choice')) {
       return QuestionType.MULTIPLE_CHOICE;
     }
     if (tipo.includes('dropdown') || tipo.includes('lista') || tipo.includes('desplegable')) {
       return QuestionType.DROPDOWN;
     }
-    if (tipo.includes('escala') || tipo.includes('scale')) {
+    if (tipo.includes('escala') || tipo.includes('scale') || tipo.includes('linear_scale') || tipo.includes('rating')) {
       return QuestionType.LINEAR_SCALE;
     }
     if (tipo.includes('fecha') || tipo.includes('date')) {
       if (tipo.includes('hora') || tipo.includes('time')) {
-        return QuestionType.DATE; // DATETIME eliminado, usar DATE como fallback
+        return QuestionType.DATE;
       }
       return QuestionType.DATE;
     }

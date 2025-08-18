@@ -7,6 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Trash2, Settings, LayoutGrid, Type, List, CheckSquare, Calendar, Mail, Hash, Globe, ChevronDown, ChevronUp } from 'lucide-react';
 import { Question } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
@@ -160,7 +167,7 @@ export function ReusableFormBuilder({
       setLocalQuestion(question);
     }, [question]);
 
-    const handleSave = () => {
+    const handleSave = React.useCallback(() => {
       let questionToSave = { ...localQuestion };
       
       // Validar y agregar opciones por defecto para tipos que las necesitan
@@ -171,7 +178,7 @@ export function ReusableFormBuilder({
       
       onUpdate(question.id, questionToSave);
       setIsEditing(false);
-    };
+    }, [localQuestion, question.id, onUpdate]);
 
     const handleCancel = () => {
       setLocalQuestion(question);
@@ -182,9 +189,12 @@ export function ReusableFormBuilder({
       setIsEditing(true);
     };
 
-    const handleBlur = () => {
-      handleSave();
-    };
+    const handleBlur = React.useCallback(() => {
+      // Use setTimeout to debounce the blur event and prevent React fiber update issues
+      setTimeout(() => {
+        handleSave();
+      }, 100);
+    }, [handleSave]);
 
     // Auto-edición para preguntas nuevas
     React.useEffect(() => {
@@ -254,7 +264,9 @@ export function ReusableFormBuilder({
         onBlur={(e) => {
           // Solo guardar si el clic fue fuera del contenedor
           if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-            handleSave();
+            setTimeout(() => {
+              handleSave();
+            }, 100);
           }
         }}
       >
@@ -298,13 +310,17 @@ export function ReusableFormBuilder({
                   const needsOptions = ['multiple_choice', 'checkboxes', 'dropdown'].includes(newType);
                   const currentOptions = localQuestion.options || [];
                   
-                  setLocalQuestion({ 
+                  console.log('Changing question type from', localQuestion.type, 'to', newType);
+                  
+                  const updatedQuestion = { 
                     ...localQuestion, 
                     type: newType,
                     options: needsOptions && currentOptions.length === 0 ? ['Opción 1', 'Opción 2'] : currentOptions
-                  });
+                  };
+                  
+                  setLocalQuestion(updatedQuestion);
                 }}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 {questionTypes.map(type => (
                   <option key={type.value} value={type.value}>
@@ -505,6 +521,7 @@ export function ReusableFormBuilder({
                     </div>
                     
                     <QuestionEditor
+                      key={question.id}
                       question={question}
                       onUpdate={updateQuestion}
                       onDelete={deleteQuestion}
