@@ -19,14 +19,6 @@ export default function FileImportPage({ searchParams }: FileImportPageProps) {
   const { currentCredits } = useCredits();
   
   const handleFormCreated = (formData: any) => {
-    // Handle form creation success
-    if (searchParams.onFormCreated) {
-      // If callback URL is provided, redirect back
-      router.push(searchParams.onFormCreated);
-    } else {
-      // Default behavior - redirect to dashboard
-      router.push('/dashboard');
-    }
   };
 
   return (

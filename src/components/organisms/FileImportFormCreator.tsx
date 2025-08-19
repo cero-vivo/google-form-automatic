@@ -89,7 +89,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       setFormTitle(`Formulario importado: ${uploadedFile?.name || 'Formulario importado'}`);
       setFormDescription(`Formulario creado desde archivo ${uploadedFile?.name || ''} (${questions.length} preguntas)`);
     }
-  }, [questions?.length, uploadedFile?.name, loading]);
+  }, [questions, uploadedFile?.name, loading]);
 
 
 
