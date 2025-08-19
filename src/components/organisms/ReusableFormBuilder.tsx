@@ -18,6 +18,7 @@ import { Plus, Trash2, Settings, LayoutGrid, Type, List, CheckSquare, Calendar, 
 import { Question } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
+import { FormSuccessView } from './FormSuccessView';
 
 interface ReusableFormBuilderProps {
   initialQuestions?: Question[];
@@ -65,6 +66,8 @@ export function ReusableFormBuilder({
   const [formTitle, setFormTitle] = useState(initialTitle);
   const [formDescription, setFormDescription] = useState(initialDescription);
   const [collectEmail, setCollectEmail] = useState(initialCollectEmail);
+  const [createdFormData, setCreatedFormData] = useState<any>(null);
+  const [showSuccessView, setShowSuccessView] = useState(false);
 
   const updateQuestions = (newQuestions: Question[]) => {
     setQuestions(newQuestions);
@@ -148,6 +151,8 @@ export function ReusableFormBuilder({
           createdAt: new Date()
         };
         
+        setCreatedFormData(formData);
+        setShowSuccessView(true);
         onFormCreated?.(formData);
       }
     } catch (error) {
@@ -396,6 +401,223 @@ export function ReusableFormBuilder({
       </div>
     );
   };
+
+  const handleCreateNewForm = () => {
+    setShowSuccessView(false);
+    setCreatedFormData(null);
+    setFormTitle('');
+    setFormDescription('');
+    setQuestions([]);
+    setCollectEmail(true);
+    setError(null);
+  };
+
+  const handleDuplicateForm = () => {
+    if (createdFormData) {
+      setFormTitle(`${createdFormData.title} - Copia`);
+      setFormDescription(createdFormData.description);
+      setQuestions(createdFormData.questions.map((q: any) => ({
+        ...q,
+        id: Date.now().toString() + Math.random()
+      })));
+      setCollectEmail(createdFormData.collectEmail);
+      setShowSuccessView(false);
+      setCreatedFormData(null);
+      setError(null);
+    }
+  };
+
+  if (showSuccessView && createdFormData) {
+    return (
+      <FormSuccessView
+        formData={{
+          title: createdFormData.title,
+          description: createdFormData.description,
+          questions: createdFormData.questions,
+          formUrl: createdFormData.formUrl,
+          editUrl: createdFormData.editUrl,
+          createdAt: createdFormData.createdAt
+        }}
+        onCreateNewForm={handleCreateNewForm}
+        onDuplicateForm={handleDuplicateForm}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="space-y-6">
+        <Card className="border-slate-200">
+          <CardHeader className="bg-slate-50">
+            <CardTitle className="text-lg text-slate-800">📋 Información del formulario</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-6">
+            <div>
+              <Label htmlFor="form-title" className="text-sm font-semibold text-slate-700">
+                Título del formulario *
+              </Label>
+              <Input
+                id="form-title"
+                value={formTitle}
+                onChange={(e) => {
+                  setFormTitle(e.target.value);
+                  onTitleChange?.(e.target.value);
+                }}
+                placeholder="Ej: Encuesta de satisfacción del cliente"
+                className="mt-1"
+              />
+              <p className="text-xs text-slate-500 mt-1">Este será el título visible en Google Forms</p>
+            </div>
+            <div>
+              <Label htmlFor="form-description" className="text-sm font-semibold text-slate-700">
+                Descripción (opcional)
+              </Label>
+              <Input
+                id="form-description"
+                value={formDescription}
+                onChange={(e) => {
+                  setFormDescription(e.target.value);
+                  onDescriptionChange?.(e.target.value);
+                }}
+                placeholder="Describe brevemente el propósito de este formulario"
+                className="mt-1"
+              />
+              <p className="text-xs text-slate-500 mt-1">Ayuda a los usuarios a entender el objetivo del formulario</p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                id="collect-email"
+                type="checkbox"
+                checked={collectEmail}
+                onChange={(e) => {
+                  const newValue = e.target.checked;
+                  setCollectEmail(newValue);
+                  onCollectEmailChange?.(newValue);
+                }}
+                className="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+              />
+              <Label htmlFor="collect-email" className="text-sm font-medium text-slate-700 cursor-pointer">
+                Recopilar emails de quienes respondan el formulario
+              </Label>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200">
+          <CardHeader className="bg-slate-50">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg text-slate-800">❓ Preguntas</CardTitle>
+                <p className="text-sm text-slate-600 mt-1">
+                  {questions.length === 0 
+                    ? "Comienza agregando tu primera pregunta" 
+                    : `${questions.length} pregunta${questions.length !== 1 ? 's' : ''} agregada${questions.length !== 1 ? 's' : ''}`}
+                </p>
+              </div>
+              <Button
+                onClick={addQuestion}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                size="sm"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar pregunta
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6">
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {googleError && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertDescription>{googleError}</AlertDescription>
+              </Alert>
+            )}
+
+            {questions.length === 0 ? (
+              <div className="text-center py-8 text-slate-500">
+                <LayoutGrid className="w-12 h-12 mx-auto mb-3 text-slate-400" />
+                <p className="text-sm">No hay preguntas aún</p>
+                <p className="text-xs mt-1">Haz clic en "Agregar pregunta" para comenzar</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {questions.map((question, index) => (
+                  <div key={question.id} className="relative">
+                    <div className="absolute -left-6 top-4 flex flex-col space-y-1">
+                      <button
+                        onClick={() => moveQuestion(index, 'up')}
+                        className="p-1 hover:bg-slate-100 rounded"
+                        disabled={index === 0}
+                      >
+                        <ChevronUp className="w-3 h-3" />
+                      </button>
+                      <span className="text-xs text-slate-500 text-center font-medium">
+                        {index + 1}
+                      </span>
+                      <button
+                        onClick={() => moveQuestion(index, 'down')}
+                        className="p-1 hover:bg-slate-100 rounded"
+                        disabled={index === questions.length - 1}
+                      >
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
+                    </div>
+                    
+                    <QuestionEditor
+                      key={question.id}
+                      question={question}
+                      onUpdate={updateQuestion}
+                      onDelete={deleteQuestion}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end space-x-4">
+          {onCancel && (
+            <Button
+              variant="outline"
+              onClick={onCancel}
+              className="border-slate-300 text-slate-700"
+            >
+              Cancelar
+            </Button>
+          )}
+          <Button
+            onClick={handleSubmit}
+            disabled={isCreating || questions.length === 0 || !formTitle.trim()}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+          >
+            {isCreating ? 'Creando...' : submitButtonText}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (showSuccessView && createdFormData) {
+    return (
+      <FormSuccessView
+        formData={{
+          title: createdFormData.title,
+          description: createdFormData.description,
+          questions: createdFormData.questions,
+          formUrl: createdFormData.formUrl,
+          editUrl: createdFormData.editUrl,
+          createdAt: createdFormData.createdAt
+        }}
+        onCreateNewForm={handleCreateNewForm}
+        onDuplicateForm={handleDuplicateForm}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
