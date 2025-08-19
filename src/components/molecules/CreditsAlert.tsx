@@ -9,9 +9,28 @@ import Link from 'next/link';
 interface CreditsAlertProps {
   currentCredits: number;
   threshold?: number;
+  loading?: boolean;
 }
 
-export default function CreditsAlert({ currentCredits, threshold = 3 }: CreditsAlertProps) {
+export default function CreditsAlert({ currentCredits, threshold = 3, loading = false }: CreditsAlertProps) {
+  if (loading) {
+    return (
+      <div className="mb-4 border-l-4 border-gray-300 bg-gray-100 p-4 animate-pulse">
+        <div className="flex items-start space-x-3">
+          <div className="h-5 w-5 rounded-full bg-gray-300" />
+          <div className="flex-1">
+            <div className="h-4 w-32 bg-gray-300 rounded mb-2" />
+            <div className="h-3 w-full bg-gray-300 rounded mb-3" />
+            <div className="flex items-center space-x-3 mt-3">
+              <div className="h-8 w-32 bg-gray-300 rounded" />
+              <div className="h-8 w-28 bg-gray-300 rounded" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Mostrar alerta solo si los créditos están por debajo del umbral
   if (currentCredits >= threshold) {
     return null;
@@ -77,4 +96,4 @@ export default function CreditsAlert({ currentCredits, threshold = 3 }: CreditsA
       </div>
     </Alert>
   );
-} 
+}
