@@ -1,22 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, FileText, LayoutGrid } from 'lucide-react';
-import { AIChatFormCreator } from './AIChatFormCreator';
-import { FileImportFormCreator } from './FileImportFormCreator';
-import { ManualFormBuilder } from './ManualFormBuilder';
+
 
 interface CreationMethodsProps {
   onQuestionsLoaded?: (questions: any[]) => void;
-  onFormCreated?: (formData: any) => void;
   currentCredits?: number;
   className?: string;
 }
 
-export function CreationMethods({ onQuestionsLoaded, onFormCreated, currentCredits = 0, className }: CreationMethodsProps) {
-  const [activeMethod, setActiveMethod] = useState<string | null>(null);
+export function CreationMethods({ onQuestionsLoaded, currentCredits = 0, className }: CreationMethodsProps) {
 
   const creationMethods = [
     {
@@ -75,45 +71,24 @@ export function CreationMethods({ onQuestionsLoaded, onFormCreated, currentCredi
     }
   ];
 
-  const handleFormCreated = (formData: any) => {
-    onFormCreated?.(formData);
-  };
+
 
   const canCreateMethod = (methodCost: number) => {
     return currentCredits >= methodCost;
   };
 
-  if (activeMethod) {
-    return (
-      <div className="space-y-4">
-        <Button
-          variant="outline"
-          onClick={() => setActiveMethod(null)}
-        >
-          ← Volver a métodos
-        </Button>
+  const handleMethodSelect = (methodId: string) => {
+    const routes = {
+      'ai': '/create/ai',
+      'file': '/create/file',
+      'manual': '/create/manual'
+    };
 
-        {activeMethod === 'ai' && (
-          <AIChatFormCreator 
-            onFormCreated={handleFormCreated}
-
-          />
-        )}
-        {activeMethod === 'file' && (
-          <FileImportFormCreator 
-            onFormCreated={handleFormCreated}
-            currentCredits={currentCredits}
-          />
-        )}
-        {activeMethod === 'manual' && (
-          <ManualFormBuilder 
-            onFormCreated={handleFormCreated}
-            currentCredits={currentCredits}
-          />
-        )}
-      </div>
-    );
-  }
+    const route = routes[methodId as keyof typeof routes];
+    if (route) {
+      window.location.href = route;
+    }
+  };
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -160,7 +135,7 @@ export function CreationMethods({ onQuestionsLoaded, onFormCreated, currentCredi
               </div>
 
               <Button
-                onClick={() => setActiveMethod(method.id)}
+                onClick={() => handleMethodSelect(method.id)}
                 disabled={!canCreateMethod(method.cost)}
                 className={`w-full mt-4 sm:mt-6 py-2.5 sm:py-3 text-sm sm:text-base transition-all duration-200 ${
                   canCreateMethod(method.cost)

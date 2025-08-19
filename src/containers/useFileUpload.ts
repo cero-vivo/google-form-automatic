@@ -23,6 +23,7 @@ export interface UseFileUploadReturn {
 
 export const useFileUpload = (): UseFileUploadReturn => {
   const [file, setFile] = useState<File | null>(null);
+  console.log("🚀 ~ useFileUpload ~ file:", file)
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);

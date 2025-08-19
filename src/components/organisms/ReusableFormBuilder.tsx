@@ -34,6 +34,7 @@ interface ReusableFormBuilderProps {
   mode?: 'create' | 'edit';
   submitButtonText?: string;
   collectEmail?: boolean;
+  hideSubmitButton?: boolean;
 }
 
 const questionTypes = [
@@ -60,7 +61,8 @@ export function ReusableFormBuilder({
   onFormCreated,
   onCancel,
   mode = 'create',
-  submitButtonText = 'Crear formulario'
+  submitButtonText = 'Crear formulario',
+  hideSubmitButton = false
 }: ReusableFormBuilderProps) {
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [formTitle, setFormTitle] = useState(initialTitle);
@@ -69,6 +71,23 @@ export function ReusableFormBuilder({
   const [createdFormData, setCreatedFormData] = useState<any>(null);
   const [showSuccessView, setShowSuccessView] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Update questions when initialQuestions changes
+  React.useEffect(() => {
+    setQuestions(initialQuestions);
+  }, [initialQuestions]);
+
+  React.useEffect(() => {
+    setFormTitle(initialTitle);
+  }, [initialTitle]);
+
+  React.useEffect(() => {
+    setFormDescription(initialDescription);
+  }, [initialDescription]);
+
+  React.useEffect(() => {
+    setCollectEmail(initialCollectEmail);
+  }, [initialCollectEmail]);
 
   const updateQuestions = (newQuestions: Question[]) => {
     setQuestions(newQuestions);
@@ -598,24 +617,26 @@ export function ReusableFormBuilder({
           </CardContent>
         </Card>
 
-        <div className="flex justify-end space-x-4">
-          {onCancel && (
+        {!hideSubmitButton && (
+          <div className="flex justify-end space-x-4">
+            {onCancel && (
+              <Button
+                variant="outline"
+                onClick={onCancel}
+                className="border-slate-300 text-slate-700"
+              >
+                Cancelar
+              </Button>
+            )}
             <Button
-              variant="outline"
-              onClick={onCancel}
-              className="border-slate-300 text-slate-700"
+              onClick={handleSubmit}
+              disabled={isCreating || questions.length === 0 || !formTitle.trim()}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8"
             >
-              Cancelar
+              {isCreating ? 'Creando...' : submitButtonText}
             </Button>
-          )}
-          <Button
-            onClick={handleSubmit}
-            disabled={isCreating || questions.length === 0 || !formTitle.trim()}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8"
-          >
-            {isCreating ? 'Creando...' : submitButtonText}
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -634,6 +655,18 @@ export function ReusableFormBuilder({
         onCreateNewForm={handleCreateNewForm}
         onDuplicateForm={handleDuplicateForm}
       />
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="text-lg font-medium text-slate-700">Creando formulario...</p>
+          <p className="text-sm text-slate-500">Por favor espera, esto puede tomar unos segundos</p>
+        </div>
+      </div>
     );
   }
 

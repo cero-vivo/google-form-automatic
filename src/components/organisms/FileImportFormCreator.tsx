@@ -24,6 +24,7 @@ interface FileImportFormCreatorProps {
 export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: FileImportFormCreatorProps) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
+  console.log("🚀 ~ FileImportFormCreator ~ parsedQuestions:", parsedQuestions)
 
 
   const [formTitle, setFormTitle] = useState('');
@@ -34,7 +35,6 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
   const [showEditor, setShowEditor] = useState(false);
 
   const { handleFileSelect, questions, loading, progress, error } = useFileUpload();
-  const { consumeCredits } = useCredits();
   const { createGoogleForm, isCreating: creatingForm, error: formError } = useGoogleFormsIntegration();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -87,15 +87,8 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       setParsedQuestions(questions);
       setFormTitle(`Formulario importado: ${uploadedFile?.name || 'Formulario importado'}`);
       setFormDescription(`Formulario creado desde archivo ${uploadedFile?.name || ''} (${questions.length} preguntas)`);
-      setShowEditor(true);
-
-      // Consume credits after successful parsing
-      consumeCredits({
-        amount: 1,
-        formTitle: uploadedFile?.name || 'Formulario importado'
-      });
     }
-  }, [questions, uploadedFile, consumeCredits, loading]);
+  }, [questions?.length, uploadedFile, loading]);
 
 
 
@@ -273,14 +266,21 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
             <CardTitle className="text-lg">Formulario importado</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <ReusableFormBuilder
-              initialQuestions={parsedQuestions}
-              initialTitle={formTitle}
-              initialDescription={formDescription}
-              onQuestionsChange={setParsedQuestions}
-              onTitleChange={setFormTitle}
-              onDescriptionChange={setFormDescription}
-            />
+            <div className="space-y-6">
+              <ReusableFormBuilder
+                initialQuestions={parsedQuestions}
+                initialTitle={formTitle}
+                initialDescription={formDescription}
+                initialCollectEmail={collectEmail}
+                onQuestionsChange={setParsedQuestions}
+                onTitleChange={setFormTitle}
+                onDescriptionChange={setFormDescription}
+                onCollectEmailChange={setCollectEmail}
+                onFormCreated={handleCreateForm}
+                mode="create"
+                hideSubmitButton={true}
+              />
+            </div>
           </CardContent>
         </Card>
       )}
