@@ -281,22 +281,6 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
               onTitleChange={setFormTitle}
               onDescriptionChange={setFormDescription}
             />
-            <div className="pt-4 border-t border-border">
-              <Button
-                onClick={handleCreateForm}
-                disabled={parsedQuestions.length === 0 || creatingForm}
-                className="w-full bg-excel hover:bg-excel/90 text-white"
-              >
-                {creatingForm ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creando formulario...
-                  </>
-                ) : (
-                  'Crear formulario en Google Forms'
-                )}
-              </Button>
-            </div>
           </CardContent>
         </Card>
       )}

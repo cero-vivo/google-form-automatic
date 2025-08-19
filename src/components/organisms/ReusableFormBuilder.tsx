@@ -68,6 +68,7 @@ export function ReusableFormBuilder({
   const [collectEmail, setCollectEmail] = useState(initialCollectEmail);
   const [createdFormData, setCreatedFormData] = useState<any>(null);
   const [showSuccessView, setShowSuccessView] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const updateQuestions = (newQuestions: Question[]) => {
     setQuestions(newQuestions);
@@ -128,6 +129,9 @@ export function ReusableFormBuilder({
       return;
     }
 
+    setIsLoading(true);
+    setError(null);
+
     try {
       const result = await createGoogleForm({
         title: formTitle,
@@ -157,6 +161,8 @@ export function ReusableFormBuilder({
       }
     } catch (error) {
       setError('Error al crear el formulario');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -441,6 +447,18 @@ export function ReusableFormBuilder({
         onCreateNewForm={handleCreateNewForm}
         onDuplicateForm={handleDuplicateForm}
       />
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="text-lg font-medium text-slate-700">Creando formulario...</p>
+          <p className="text-sm text-slate-500">Por favor espera, esto puede tomar unos segundos</p>
+        </div>
+      </div>
     );
   }
 
