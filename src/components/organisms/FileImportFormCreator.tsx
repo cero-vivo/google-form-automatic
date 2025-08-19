@@ -23,6 +23,7 @@ interface FileImportFormCreatorProps {
 
 export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: FileImportFormCreatorProps) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  console.log("🚀 ~ FileImportFormCreator ~ uploadedFile:", uploadedFile)
   const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
   console.log("🚀 ~ FileImportFormCreator ~ parsedQuestions:", parsedQuestions)
 
@@ -88,7 +89,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       setFormTitle(`Formulario importado: ${uploadedFile?.name || 'Formulario importado'}`);
       setFormDescription(`Formulario creado desde archivo ${uploadedFile?.name || ''} (${questions.length} preguntas)`);
     }
-  }, [questions?.length, uploadedFile, loading]);
+  }, [questions?.length, uploadedFile?.name, loading]);
 
 
 
@@ -278,7 +279,6 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
                 onCollectEmailChange={setCollectEmail}
                 onFormCreated={handleCreateForm}
                 mode="create"
-                hideSubmitButton={true}
               />
             </div>
           </CardContent>
