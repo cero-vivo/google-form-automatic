@@ -75,9 +75,6 @@ export function FormsListModal({ isOpen, onClose, isLoading, forms }: FormsListM
                         </p>
                         <div className="flex items-center gap-6 text-sm text-gray-500">
                           <span className="flex items-center gap-1">
-                            📊 <strong>{form.responseCount || 0}</strong> respuestas
-                          </span>
-                          <span className="flex items-center gap-1">
                             📅 Creado {form.createdAt ? new Date(form.createdAt).toLocaleDateString() : 'hace poco'}
                           </span>
                           <span className="flex items-center gap-1">

@@ -583,50 +583,16 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       const files = driveResponse.data.files || [];
       console.log(`✅ ${files.length} formularios encontrados`);
 
-      const userForms: UserForm[] = [];
-
-      // Para cada formulario, obtener información adicional
-      for (const file of files) {
-        if (file.id && file.name) {
-          try {
-            // Obtener información del formulario desde Forms API
-            const formResponse = await this.formsAPI.forms.get({
-              auth,
-              formId: file.id
-            });
-
-            const form = formResponse.data;
-            const responseCount = await this.getFormResponseCount(file.id, accessToken);
-
-            const userForm: UserForm = {
-              id: file.id,
-              title: form.info?.title || file.name,
-              description: form.info?.description || file.description || undefined,
-              googleFormUrl: `https://docs.google.com/forms/d/${file.id}/viewform`,
-              editUrl: `https://docs.google.com/forms/d/${file.id}/edit`,
-              responseCount,
-              createdAt: file.createdTime ? new Date(file.createdTime) : new Date(),
-              modifiedAt: file.modifiedTime ? new Date(file.modifiedTime) : new Date()
-            };
-
-            userForms.push(userForm);
-          } catch (formError) {
-            console.warn(`⚠️ Error obteniendo detalles del formulario ${file.id}:`, formError);
-            // Agregar formulario con información básica si no se pueden obtener los detalles
-            const userForm: UserForm = {
-              id: file.id,
-              title: file.name,
-              description: file.description || undefined,
-              googleFormUrl: `https://docs.google.com/forms/d/${file.id}/viewform`,
-              editUrl: `https://docs.google.com/forms/d/${file.id}/edit`,
-              responseCount: 0,
-              createdAt: file.createdTime ? new Date(file.createdTime) : new Date(),
-              modifiedAt: file.modifiedTime ? new Date(file.modifiedTime) : new Date()
-            };
-            userForms.push(userForm);
-          }
-        }
-      }
+      const userForms: UserForm[] = files.map((file) => ({
+        id: file.id || '',
+        title: file.name || '',
+        description: file.description || undefined,
+        googleFormUrl: file.webViewLink || '',
+        editUrl: file.webViewLink || '',
+        responseCount: 0,
+        createdAt: file.createdTime ? new Date(file.createdTime) : new Date(),
+        modifiedAt: file.modifiedTime ? new Date(file.modifiedTime) : new Date()
+      }));
 
       console.log(`✅ ${userForms.length} formularios procesados exitosamente`);
       return userForms;
