@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { GoogleAuthProvider } from "@/providers/GoogleAuthProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -120,7 +121,9 @@ export default function RootLayout({
           }}
         />
         <AuthProvider>
-          {children}
+          <GoogleAuthProvider autoCheck={false}>
+            {children}
+          </GoogleAuthProvider>
         </AuthProvider>
       </body>
     </html>

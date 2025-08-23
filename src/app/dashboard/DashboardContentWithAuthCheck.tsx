@@ -13,7 +13,7 @@ import { FormsListModal } from '@/components/dashboard/FormsListModal';
 import { DashboardWelcome } from '@/components/dashboard/DashboardWelcome';
 import CreditsAlert from '@/components/molecules/CreditsAlert';
 import { useGoogleAuthCheckContext } from '@/providers/GoogleAuthCheckProvider';
-
+import { Loader2 } from 'lucide-react';
 
 /**
  * Dashboard con verificación silenciosa de autenticación
@@ -64,7 +64,7 @@ function DashboardContent() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
           <p className="text-muted-foreground">
             {authCheckLoading ? 'Verificando permisos...' : 'Cargando...'}
           </p>
@@ -84,7 +84,7 @@ function DashboardContent() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-muted-foreground mb-4">Redirigiendo a inicio de sesión...</p>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
         </div>
       </div>
     );
@@ -128,7 +128,7 @@ function DashboardContent() {
   );
 }
 
-export default function DashboardPage() {
+export default function DashboardPageWithAuthCheck() {
   return (
     <GoogleAuthCheckProvider>
       <DashboardContent />
