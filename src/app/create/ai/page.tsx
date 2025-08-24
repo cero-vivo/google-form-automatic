@@ -17,8 +17,6 @@ export default function AIChatPage() {
     const onFormCreated = searchParams.get('onFormCreated');
     if (onFormCreated) {
       router.push(onFormCreated);
-    } else {
-      router.push('/dashboard');
     }
   };
 
