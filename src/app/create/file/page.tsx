@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import { FileImportFormCreator } from '@/components/organisms/FileImportFormCreator';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -14,10 +15,14 @@ interface FileImportPageProps {
   }>;
 }
 
-export default async function FileImportPage({ searchParams }: FileImportPageProps) {
-  const resolvedSearchParams = await searchParams;
+export default function FileImportPage({ searchParams }: FileImportPageProps) {
+  const [resolvedSearchParams, setResolvedSearchParams] = useState<{ onFormCreated?: string }>({});
   const router = useRouter();
   const { currentCredits } = useCredits();
+
+  React.useEffect(() => {
+    searchParams.then(setResolvedSearchParams);
+  }, [searchParams]);
   
   const handleFormCreated = (formData: any) => {
     if (resolvedSearchParams.onFormCreated) {

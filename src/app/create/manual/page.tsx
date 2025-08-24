@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import { ManualFormBuilder } from '@/components/organisms/ManualFormBuilder';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -14,10 +15,14 @@ interface ManualBuilderPageProps {
   }>;
 }
 
-export default async function ManualBuilderPage({ searchParams }: ManualBuilderPageProps) {
-  const resolvedSearchParams = await searchParams;
+export default function ManualBuilderPage({ searchParams }: ManualBuilderPageProps) {
+  const [resolvedSearchParams, setResolvedSearchParams] = useState<{ onFormCreated?: string }>({});
   const router = useRouter();
   const { currentCredits } = useCredits();
+
+  React.useEffect(() => {
+    searchParams.then(setResolvedSearchParams);
+  }, [searchParams]);
   
   const handleFormCreated = (formData: any) => {
     // Handle form creation success
