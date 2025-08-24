@@ -6,7 +6,7 @@ const openAIFormService = new OpenAIFormService();
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, userId } = await request.json();
+    const { message, userId, existingForm } = await request.json();
 
     if (!userId) {
       return NextResponse.json(
@@ -45,7 +45,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate form structure with AI
-    const result = await openAIFormService.processChatMessage(userId, message, []);
+    let conversation = [];
+    if (existingForm) {
+      conversation.push({
+        role: 'system',
+        content: `Tienes un formulario existente con título: "${existingForm.title}" y ${existingForm.questions?.length || 0} preguntas. El usuario quiere agregar más preguntas o mejorar el formulario.`
+      });
+    }
+    
+    const result = await openAIFormService.processChatMessage(userId, message, conversation);
     const formStructure = result.formPreview;
 
     if (!formStructure) {
@@ -81,13 +89,29 @@ export async function POST(request: NextRequest) {
       // Continuar aunque falle la deducción, pero loggear el error
     }
 
-    return NextResponse.json({
-      success: true,
-      form: {
+    let finalForm;
+    if (existingForm && formStructure) {
+      // Combinar formulario existente con nuevas preguntas
+      const existingQuestions = existingForm.questions || [];
+      const newQuestions = formStructure.questions || [];
+      
+      finalForm = {
+        title: existingForm.title || formStructure.title,
+        description: existingForm.description || formStructure.description || 'Formulario generado con IA',
+        questions: [...existingQuestions, ...newQuestions]
+      };
+    } else {
+      finalForm = {
         title: formStructure.title,
         description: formStructure.description || 'Formulario generado con IA',
         questions: formStructure.questions
-      }
+      };
+    }
+
+    return NextResponse.json({
+      success: true,
+      form: finalForm,
+      isUpdate: !!existingForm
     });
 
   } catch (error) {

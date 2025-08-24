@@ -37,7 +37,7 @@ const DashboardWithAuthCheck = () => {
       
       {status === 'error' && (
         <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-red-800">❌ Error: {typeof error === 'string' ? error : error?.toString()}</p>
+          <p className="text-red-800">❌ Error: {typeof error === 'string' ? error : error && typeof error === 'object' && 'message' in error ? (error as Error).message : 'Error desconocido'}</p>
         </div>
       )}
       

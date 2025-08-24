@@ -9,16 +9,22 @@ import { Logo } from '@/components/ui/logo';
 import Link from 'next/link';
 
 interface FileImportPageProps {
-  searchParams: {
+  searchParams: Promise<{
     onFormCreated?: string;
-  };
+  }>;
 }
 
-export default function FileImportPage({ searchParams }: FileImportPageProps) {
+export default async function FileImportPage({ searchParams }: FileImportPageProps) {
+  const resolvedSearchParams = await searchParams;
   const router = useRouter();
   const { currentCredits } = useCredits();
   
   const handleFormCreated = (formData: any) => {
+    if (resolvedSearchParams.onFormCreated) {
+      router.push(resolvedSearchParams.onFormCreated);
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   return (

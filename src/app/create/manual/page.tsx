@@ -9,20 +9,21 @@ import { Logo } from '@/components/ui/logo';
 import Link from 'next/link';
 
 interface ManualBuilderPageProps {
-  searchParams: {
+  searchParams: Promise<{
     onFormCreated?: string;
-  };
+  }>;
 }
 
-export default function ManualBuilderPage({ searchParams }: ManualBuilderPageProps) {
+export default async function ManualBuilderPage({ searchParams }: ManualBuilderPageProps) {
+  const resolvedSearchParams = await searchParams;
   const router = useRouter();
   const { currentCredits } = useCredits();
   
   const handleFormCreated = (formData: any) => {
     // Handle form creation success
-    if (searchParams.onFormCreated) {
+    if (resolvedSearchParams.onFormCreated) {
       // If callback URL is provided, redirect back
-      router.push(searchParams.onFormCreated);
+      router.push(resolvedSearchParams.onFormCreated);
     } else {
       // Default behavior - redirect to dashboard
       router.push('/dashboard');
