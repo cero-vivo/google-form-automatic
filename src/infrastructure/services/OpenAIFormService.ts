@@ -52,23 +52,23 @@ ${OPENAI_CONFIG.userPromptSuffix}`
             }
           ],
           max_completion_tokens: OPENAI_CONFIG.maxCompletionTokens,
-          temperature: OPENAI_CONFIG.temperature,
+          //temperature: OPENAI_CONFIG.temperature,
         }),
       });
 
       const data = await response.json();
-      
+
       if (data.choices && data.choices[0] && data.choices[0].message) {
         const content = data.choices[0].message.content;
         const aiResponse = JSON.parse(content);
-        
+
         // Convert AI response format to domain Question format
         const questions = aiResponse.questions.map((aiQuestion: AIQuestion, index: number) => {
           const questionType = this.mapAIQuestionTypeToDomain(
             aiQuestion.questionType || aiQuestion.type || 'short_text'
           );
           const questionText = aiQuestion.questionText || aiQuestion.title || 'Pregunta sin título';
-          
+
           const question = new QuestionEntity(
             `q${index + 1}`,
             questionType,
@@ -76,13 +76,13 @@ ${OPENAI_CONFIG.userPromptSuffix}`
             aiQuestion.required || false,
             index
           );
-          
+
           if (aiQuestion.options && aiQuestion.options.length > 0) {
             question.multipleChoiceConfig = {
               options: aiQuestion.options
             };
           }
-          
+
           return question;
         });
 
@@ -114,7 +114,7 @@ ${OPENAI_CONFIG.userPromptSuffix}`
       'dropdown': QuestionType.DROPDOWN,
       'time': QuestionType.TIME,
       'phone': QuestionType.PHONE,
-      
+
       // Spanish mappings
       'texto_corto': QuestionType.SHORT_TEXT,
       'texto_largo': QuestionType.LONG_TEXT,
@@ -131,7 +131,7 @@ ${OPENAI_CONFIG.userPromptSuffix}`
       'telefono': QuestionType.PHONE,
       'teléfono': QuestionType.PHONE
     };
-    
+
     return typeMap[aiType.toLowerCase()] || QuestionType.SHORT_TEXT;
   }
 
@@ -141,23 +141,23 @@ ${OPENAI_CONFIG.userPromptSuffix}`
       'restaurante': {
         title: 'Encuesta de Satisfacción - Restaurante',
         description: 'Ayúdanos a mejorar nuestro servicio compartiendo tu experiencia',
-          questions: [
-            new QuestionEntity('q1', QuestionType.SHORT_TEXT, '¿Cuál es tu nombre completo?', false, 0),
-            new QuestionEntity('q2', QuestionType.DATE, '¿Qué día visitaste nuestro restaurante?', false, 1),
-            new QuestionEntity('q3', QuestionType.LINEAR_SCALE, '¿Cómo calificarías la calidad de la comida?', false, 2),
-            new QuestionEntity('q4', QuestionType.SHORT_TEXT, '¿Qué plato ordenaste?', false, 3),
-            (() => {
-              const q5 = new QuestionEntity('q5', QuestionType.MULTIPLE_CHOICE, '¿Cómo fue la atención del personal?', false, 4);
-              q5.multipleChoiceConfig = { options: ['Excelente', 'Buena', 'Regular', 'Mala'] };
-              return q5;
-            })(),
-            (() => {
-              const q6 = new QuestionEntity('q6', QuestionType.MULTIPLE_CHOICE, '¿Recomendarías nuestro restaurante?', false, 5);
-              q6.multipleChoiceConfig = { options: ['Sí definitivamente', 'Probablemente', 'No estoy seguro', 'No'] };
-              return q6;
-            })(),
-            new QuestionEntity('q7', QuestionType.LONG_TEXT, '¿Algún comentario adicional?', false, 6)
-          ]
+        questions: [
+          new QuestionEntity('q1', QuestionType.SHORT_TEXT, '¿Cuál es tu nombre completo?', false, 0),
+          new QuestionEntity('q2', QuestionType.DATE, '¿Qué día visitaste nuestro restaurante?', false, 1),
+          new QuestionEntity('q3', QuestionType.LINEAR_SCALE, '¿Cómo calificarías la calidad de la comida?', false, 2),
+          new QuestionEntity('q4', QuestionType.SHORT_TEXT, '¿Qué plato ordenaste?', false, 3),
+          (() => {
+            const q5 = new QuestionEntity('q5', QuestionType.MULTIPLE_CHOICE, '¿Cómo fue la atención del personal?', false, 4);
+            q5.multipleChoiceConfig = { options: ['Excelente', 'Buena', 'Regular', 'Mala'] };
+            return q5;
+          })(),
+          (() => {
+            const q6 = new QuestionEntity('q6', QuestionType.MULTIPLE_CHOICE, '¿Recomendarías nuestro restaurante?', false, 5);
+            q6.multipleChoiceConfig = { options: ['Sí definitivamente', 'Probablemente', 'No estoy seguro', 'No'] };
+            return q6;
+          })(),
+          new QuestionEntity('q7', QuestionType.LONG_TEXT, '¿Algún comentario adicional?', false, 6)
+        ]
       },
       'evento': {
         title: 'Registro de Evento Corporativo',
@@ -195,7 +195,7 @@ ${OPENAI_CONFIG.userPromptSuffix}`
 
     // Determine which mock form to use based on prompt
     const promptLower = prompt.toLowerCase();
-    
+
     if (promptLower.includes('restaurante') || promptLower.includes('comida')) {
       return mockForms.restaurante;
     } else if (promptLower.includes('evento') || promptLower.includes('registro')) {

@@ -41,8 +41,8 @@ export const CONFIG = {
 } as const;
 
 export const OPENAI_CONFIG = {
-  model: 'gpt-4o',
-  temperature: 0.2,
+  model: "o3-mini"/* 'gpt-3.5-turbo' */,
+  //temperature: 0.2,
   maxCompletionTokens: 4000,
   systemPrompt: `Eres un experto en crear formularios de Google Forms. Genera estructuras de formularios completas basadas en las solicitudes del usuario.
 

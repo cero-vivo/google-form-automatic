@@ -28,6 +28,18 @@ interface FormPreviewData {
   }>;
 }
 
+interface FormContext {
+  type: string;
+  objective?: string;
+  targetAudience?: string;
+  previousQuestions: string[];
+  metadata: {
+    totalQuestions: number;
+    questionTypes: string[];
+    lastUpdate: Date;
+  };
+}
+
 export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData: FormPreviewData) => void }) {
   const { user } = useAuth();
   const { currentCredits, refreshCredits, consumeCredits } = useCredits();
@@ -43,6 +55,17 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
   const [creditsUsed, setCreditsUsed] = useState(0);
   const [totalMessages, setTotalMessages] = useState(0);
   const [showCostWarning, setShowCostWarning] = useState(false);
+  const [formContext, setFormContext] = useState<FormContext>({
+    type: 'encuesta',
+    objective: undefined,
+    targetAudience: undefined,
+    previousQuestions: [],
+    metadata: {
+      totalQuestions: 0,
+      questionTypes: [],
+      lastUpdate: new Date()
+    }
+  });
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -57,6 +80,19 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    // Actualizar contexto cuando el formulario cambia
+    setFormContext(prev => ({
+      ...prev,
+      previousQuestions: formPreview.questions.map(q => q.label),
+      metadata: {
+        totalQuestions: formPreview.questions.length,
+        questionTypes: [...new Set(formPreview.questions.map(q => q.type))],
+        lastUpdate: new Date()
+      }
+    }));
+  }, [formPreview]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || !user) return;
@@ -116,12 +152,32 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
       }
 
       // Determinar si es una solicitud para agregar preguntas o crear nuevo
-      const isAddingQuestions = formPreview.questions.length > 0 && 
-        (inputValue.toLowerCase().includes('agregar') || 
-         inputValue.toLowerCase().includes('añadir') ||
-         inputValue.toLowerCase().includes('más') ||
-         inputValue.toLowerCase().includes('extra') ||
-         inputValue.toLowerCase().includes('adicional'));
+      const lowerInput = inputValue.toLowerCase();
+      const hasActiveForm = formPreview.questions.length > 0 && formPreview.title;
+      
+      // SIEMPRE agregar preguntas si hay un formulario activo, nunca crear nuevo
+      const isAddingQuestions = hasActiveForm || (
+        formPreview.questions.length > 0 && (
+          lowerInput.includes('agregar') || 
+          lowerInput.includes('añadir') ||
+          lowerInput.includes('más') ||
+          lowerInput.includes('mas') ||
+          lowerInput.includes('extra') ||
+          lowerInput.includes('adicional') ||
+          lowerInput.includes('otra') ||
+          lowerInput.includes('nueva') ||
+          lowerInput.includes('editar') ||
+          lowerInput.includes('modificar') ||
+          lowerInput.includes('cambiar') ||
+          lowerInput.includes('borrar') ||
+          lowerInput.includes('eliminar') ||
+          /\d+\s*(más|mas|pregunta|preguntas)/.test(lowerInput) ||
+          /(agrega|añade|pon|suma|edita|modifica|borra|elimina)\s*\d*/.test(lowerInput)
+        )
+      );
+
+      // Preservar contexto del formulario - SIEMPRE cuando hay un formulario activo
+      const preserveFormContext = hasActiveForm || (formPreview.questions.length > 0 && formPreview.title);
 
       const response = await fetch('/api/ai-chat/generate-form', {
         method: 'POST',
@@ -133,9 +189,17 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
           userId: user.id,
           conversation,
           systemPrompt: isAddingQuestions 
-            ? getSystemPrompt() + "\n\nIMPORTANTE: El usuario ya tiene un formulario existente. En lugar de crear uno nuevo, DEBES agregar preguntas adicionales al formulario actual. Mantén las preguntas existentes y agrega las nuevas."
-            : getSystemPrompt(),
-          existingForm: isAddingQuestions ? formPreview : null
+            ? getSystemPrompt(formContext) + "\n\nIMPORTANTE: El usuario ya tiene un formulario existente. En lugar de crear uno nuevo, DEBES agregar preguntas adicionales al formulario actual. Mantén las preguntas existentes y agrega las nuevas."
+            : getSystemPrompt(formContext),
+          existingForm: isAddingQuestions ? formPreview : null,
+          formContext: {
+            ...formContext,
+            objective: extractObjectiveFromMessage(inputValue) || formContext.objective,
+            targetAudience: extractTargetAudienceFromMessage(inputValue) || formContext.targetAudience,
+            type: determineFormType(inputValue, formContext.type)
+          },
+          preserveTitle: preserveFormContext ? formPreview.title : null,
+          preserveDescription: preserveFormContext ? formPreview.description : null
         }),
       });
 
@@ -146,9 +210,11 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
       }
 
       let assistantContent = '';
-      if (isAddingQuestions) {
+      if (hasActiveForm) {
         const newQuestions = data.form.questions.slice(formPreview.questions.length);
-        assistantContent = `He agregado ${newQuestions.length} nueva${newQuestions.length !== 1 ? 's' : ''} pregunta${newQuestions.length !== 1 ? 's' : ''} a tu formulario. Ahora tiene ${data.form.questions.length} preguntas en total.`;
+        const originalTitle = formPreview.title || 'tu formulario';
+        const action = lowerInput.includes('borrar') || lowerInput.includes('eliminar') ? 'modificado' : 'agregado';
+        assistantContent = `He ${action} tu formulario "${originalTitle}". Ahora tiene ${data.form.questions.length} preguntas en total.`;
       } else {
         assistantContent = `He creado un nuevo formulario llamado "${data.form.title}" con ${data.form.questions.length} preguntas.`;
       }
@@ -250,6 +316,22 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
   };
 
   const isFastFormRelevant = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase().trim();
+    
+    // Si hay un formulario activo, cualquier solicitud de agregar más es relevante
+    if (formPreview.questions.length > 0) {
+      const addMorePatterns = [
+        /\d+\s*(más|más|extra|adicional|nueva|nuevas)/,
+        /(agregar|añadir|agrega|añade)\s*(\d+)?/,
+        /(más|otra|nueva)\s*pregunta/,
+        /pregunta\s*(más|adicional|extra)/
+      ];
+      
+      if (addMorePatterns.some(pattern => pattern.test(lowerMessage))) {
+        return true;
+      }
+    }
+    
     const fastFormKeywords = [
       'formulario', 'form', 'encuesta', 'pregunta', 'respuesta', 'google forms',
       'fastform', 'fast form', 'crear', 'generar', 'diseñar', 'plantilla',
@@ -257,11 +339,15 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
       'fecha', 'archivo', 'upload', 'importar', 'exportar', 'dashboard'
     ];
     
-    const lowerMessage = message.toLowerCase();
     return fastFormKeywords.some(keyword => lowerMessage.includes(keyword));
   };
 
   const getRedirectMessage = (message: string): string => {
+    // Si hay un formulario activo, no mostrar mensaje de redirección
+    if (formPreview.questions.length > 0) {
+      return ''; // No redirigir, permitir que fluya normalmente
+    }
+    
     return `Hola! Soy tu asistente de FastForm
 
 Entiendo que mencionaste "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}", pero estoy especializado en ayudarte a crear formularios profesionales con FastForm.
@@ -275,7 +361,7 @@ Entiendo que mencionaste "${message.substring(0, 50)}${message.length > 50 ? '..
 Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para mis clientes" o "Necesito un formulario de registro para un evento"`;
   };
 
-  const getSystemPrompt = (): string => {
+  const getSystemPrompt = (context: FormContext): string => {
     return `Eres el asistente oficial de FastForm, una plataforma inteligente para crear formularios de Google Forms. Tu personalidad es:
 
 🎯 MISION: Ayudar a los usuarios a crear formularios profesionales y efectivos
@@ -289,33 +375,78 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 4. Explica brevemente las ventajas de cada tipo de pregunta
 5. Mantén las respuestas concisas pero completas
 6. Si el usuario parece perdido, ofrece ejemplos concretos
+7. **IMPORTANTE**: Usa el CONTEXTO proporcionado para personalizar tus respuestas
+
+🧠 CONTEXTO A UTILIZAR:
+  - Tipo de formulario: ${context.type}
+  - Objetivo: ${context.objective || 'Por definir'}
+  - Audiencia: ${context.targetAudience || 'General'}
+  - Preguntas existentes: ${context.previousQuestions.length}
+  - Tipos de preguntas: ${context.metadata.questionTypes.join(', ')}
 
 🚫 EVITA:
 - Temas fuera del alcance de FastForm
 - Respuestas demasiado técnicas
 - Sugerencias genéricas sin contexto
 
-💡 EJEMPLOS DE RESPUESTAS:
-Usuario: "Quiero crear una encuesta"
-Tú: "¡Perfecto! 🎉 Para crear tu encuesta, necesito saber: ¿Cuál es el objetivo principal? Por ejemplo: satisfacción del cliente, feedback de un evento, o investigación de mercado."
+💡 EJEMPLOS DE RESPUESTAS CONTEXTUALES:
+  Usuario: "Quiero crear una encuesta"
+  Tú: "¡Perfecto! 🎉 Veo que estás trabajando en una encuesta. ¿Podrías decirme el objetivo específico? Por ejemplo: satisfacción del cliente, feedback de un evento, o investigación de mercado."
 
-Usuario: "No sé qué preguntas poner"
-Tú: "¡Te ayudo! Para un formulario de satisfacción, te sugiero:
-1. ¿Cómo calificarías tu experiencia? (escala 1-5)
-2. ¿Qué fue lo que más te gustó? (texto corto)
-3. ¿Qué mejorarías? (texto largo)
-4. ¿Recomendarías nuestro servicio? (sí/no)
+  Usuario: "Agrega más preguntas"
+  Tú: "¡Claro! 📊 Tu formulario actual tiene ${context.previousQuestions.length} preguntas enfocadas en ${context.type}. ¿Qué aspecto adicional te gustaría cubrir?`;
+  }
 
-¿Te gustaría que prepare un formulario con estas preguntas?"`;
+  const extractObjectiveFromMessage = (message: string): string | undefined => {
+    const objectives = [
+      'satisfacción', 'feedback', 'evaluación', 'registro', 'contacto', 
+      'encuesta', 'cuestionario', 'sondeo', 'opinión', 'experiencia',
+      'servicio', 'producto', 'evento', 'curso', 'capacitación',
+      'suscripción', 'solicitud', 'información', 'consulta'
+    ];
+    
+    const lowerMessage = message.toLowerCase();
+    const found = objectives.find(obj => lowerMessage.includes(obj));
+    return found;
+  };
+
+  const extractTargetAudienceFromMessage = (message: string): string | undefined => {
+    const audiences = [
+      'clientes', 'empleados', 'estudiantes', 'profesores', 'visitantes',
+      'usuarios', 'participantes', 'invitados', 'colaboradores', 'equipo',
+      'alumnos', 'docentes', 'gerentes', 'cliente', 'empleado'
+    ];
+    
+    const lowerMessage = message.toLowerCase();
+    const found = audiences.find(aud => lowerMessage.includes(aud));
+    return found;
+  };
+
+  const determineFormType = (message: string, currentType: string): string => {
+    const typeKeywords: Record<string, string[]> = {
+      'encuesta': ['encuesta', 'satisfacción', 'opinión', 'feedback', 'evaluar'],
+      'registro': ['registro', 'inscripción', 'formulario', 'aplicación', 'apuntarse'],
+      'contacto': ['contacto', 'información', 'consulta', 'soporte', 'ayuda'],
+      'evaluación': ['evaluación', 'examen', 'prueba', 'calificación', 'test'],
+      'evento': ['evento', 'reunión', 'conferencia', 'taller', 'seminario']
+    };
+
+    const lowerMessage = message.toLowerCase();
+    for (const [type, keywords] of Object.entries(typeKeywords)) {
+      if (keywords.some(keyword => lowerMessage.includes(keyword))) {
+        return type;
+      }
+    }
+    return currentType;
   };
 
 
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-gray-50">
+    <div className="flex h-[calc(100vh-4rem)] bg-gray-50 overflow-hidden">
       {/* Chat Panel - Fixed width */}
-      <div className="w-96 flex flex-col bg-white border-r border-gray-200">
-        <div className="p-4 border-b border-gray-200">
+      <div className="w-96 flex flex-col bg-white border-r border-gray-200 flex-shrink-0">
+        <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <h1 className="text-lg font-bold mb-1">Asistente IA</h1>
           <p className="text-sm text-gray-600">
             Conversación continua para mejorar tu formulario
@@ -328,7 +459,7 @@ Tú: "¡Te ayudo! Para un formulario de satisfacción, te sugiero:
             </div>
             {credits !== null && credits < 10 && (
               <div className="ml-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md flex items-center">
-                <AlertCircle className="h-3 w-3 text-yellow-600 mr-1" />
+                <AlertCircle className="h-3 w-3 text-yellow-600 mr-1 flex-shrink-0" />
                 <span className="text-xs text-yellow-800">
                   Pocos créditos
                 </span>
@@ -337,7 +468,7 @@ Tú: "¡Te ayudo! Para un formulario de satisfacción, te sugiero:
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-h-0">
           <div className="flex-1 p-4 overflow-y-auto">
             <div className="space-y-3">
               {messages.map((message) => (
@@ -346,13 +477,13 @@ Tú: "¡Te ayudo! Para un formulario de satisfacción, te sugiero:
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] px-3 py-2 rounded-lg text-sm ${
+                    className={`max-w-[85%] px-3 py-2 rounded-lg text-sm break-words ${
                       message.role === 'user'
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-100'
                     }`}
                   >
-                    <p>{message.content}</p>
+                    <p className="break-words">{message.content}</p>
                     <p className="text-xs opacity-70 mt-1">
                       {message.timestamp.toLocaleTimeString()}
                     </p>
@@ -369,7 +500,7 @@ Tú: "¡Te ayudo! Para un formulario de satisfacción, te sugiero:
             </div>
           </div>
 
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-gray-200 flex-shrink-0">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-gray-500">
                 {getCreditWarning()}
@@ -384,12 +515,12 @@ Tú: "¡Te ayudo! Para un formulario de satisfacción, te sugiero:
                 onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
                 placeholder="Agregar más preguntas o mejorar el formulario..."
                 disabled={isLoading || credits <= 0}
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-0"
               />
               <button
                 onClick={handleSendMessage}
                 disabled={isLoading || !inputValue.trim() || credits <= 0}
-                className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex-shrink-0"
               >
                 <Send className="h-4 w-4" />
               </button>
@@ -399,10 +530,10 @@ Tú: "¡Te ayudo! Para un formulario de satisfacción, te sugiero:
       </div>
 
       {/* Builder Panel - Always visible */}
-      <div className="flex-1 flex flex-col">
-        <div className="p-4 border-b border-gray-200 bg-white">
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="min-w-0">
               <h2 className="text-lg font-bold">Editor Visual</h2>
               <p className="text-sm text-gray-600">
                 Formulario actualizado en tiempo real
@@ -411,7 +542,7 @@ Tú: "¡Te ayudo! Para un formulario de satisfacción, te sugiero:
             <button
               onClick={handlePublishForm}
               disabled={!user || !canAfford(calculateCost('ai_generation')) || formPreview.questions.length === 0}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 flex-shrink-0 ml-4"
             >
               Publicar formulario ({calculateCost('ai_generation')} créditos)
             </button>
@@ -461,15 +592,15 @@ Tú: "¡Te ayudo! Para un formulario de satisfacción, te sugiero:
             
             {publishStatus === 'success' && (
               <div className="flex items-center gap-2 text-green-600 mb-4">
-                <CheckCircle className="w-5 h-5" />
-                <span>Formulario publicado con éxito</span>
+                <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                <span className="break-words">Formulario publicado con éxito</span>
               </div>
             )}
 
             {publishStatus === 'error' && (
               <div className="flex items-center gap-2 text-red-600 mb-4">
-                <AlertCircle className="w-4 h-4" />
-                <span>No se pudo publicar el formulario. Verifica tu conexión y vuelve a intentarlo.</span>
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span className="break-words">No se pudo publicar el formulario. Verifica tu conexión y vuelve a intentarlo.</span>
               </div>
             )}
 

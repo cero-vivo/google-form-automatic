@@ -6,7 +6,7 @@ const openAIFormService = new OpenAIFormService();
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, userId, existingForm } = await request.json();
+    const { message, userId, existingForm, preserveTitle, preserveDescription } = await request.json();
 
     if (!userId) {
       return NextResponse.json(
@@ -96,14 +96,14 @@ export async function POST(request: NextRequest) {
       const newQuestions = formStructure.questions || [];
       
       finalForm = {
-        title: existingForm.title || formStructure.title,
-        description: existingForm.description || formStructure.description || 'Formulario generado con IA',
+        title: preserveTitle || existingForm.title || formStructure.title,
+        description: preserveDescription || existingForm.description || formStructure.description || 'Formulario generado con IA',
         questions: [...existingQuestions, ...newQuestions]
       };
     } else {
       finalForm = {
-        title: formStructure.title,
-        description: formStructure.description || 'Formulario generado con IA',
+        title: preserveTitle || formStructure.title,
+        description: preserveDescription || formStructure.description || 'Formulario generado con IA',
         questions: formStructure.questions
       };
     }
