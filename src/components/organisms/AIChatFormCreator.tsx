@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FormPreview } from '@/components/molecules/FormPreview';
 import { CreditDisplay } from '@/components/molecules/CreditDisplay';
 import { ReusableFormBuilder } from './ReusableFormBuilder';
@@ -50,9 +50,8 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
   const [isLoading, setIsLoading] = useState(false);
   const [formPreview, setFormPreview] = useState<FormPreviewData>({ title: '', questions: [] });
 
-  const [showPublishDialog, setShowPublishDialog] = useState(false);
-  const [publishStatus, setPublishStatus] = useState<'idle' | 'publishing' | 'success' | 'error'>('idle');
   const [creditsUsed, setCreditsUsed] = useState(0);
+  const builderRef = useRef<any>(null);
   const [totalMessages, setTotalMessages] = useState(0);
   const [showCostWarning, setShowCostWarning] = useState(false);
   const [formContext, setFormContext] = useState<FormContext>({
@@ -254,19 +253,26 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
       return;
     }
 
-    setShowPublishDialog(true);
-    setPublishStatus('publishing');
+    // Delegar al ReusableFormBuilder para usar su lógica de envío
+    if (builderRef.current && builderRef.current.handleSubmit) {
+      builderRef.current.handleSubmit();
+    }
+  };
 
+
+
+  const handleBuilderSubmit = async (formData: any) => {
+    const generationCost = calculateCost('ai_generation');
+    
     try {
       await consumeCredits({
         amount: generationCost,
-        formTitle: formPreview?.title || 'Formulario generado por IA',
+        formTitle: formData.title || 'Formulario generado por IA',
         formId: 'ai-form-' + Date.now()
       });
-      setPublishStatus('success');
       
-      if (onFormCreated && formPreview) {
-        onFormCreated(formPreview);
+      if (onFormCreated) {
+        onFormCreated(formData);
       }
       
       // Limpiar formulario para permitir nueva creación
@@ -278,16 +284,7 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
       
       refreshCredits();
     } catch (error) {
-      console.error('Error al publicar formulario:', error);
-      setPublishStatus('error');
-    }
-  };
-
-
-
-  const handleBuilderSubmit = async (formData: any) => {
-    if (onFormCreated) {
-      onFormCreated(formData);
+      console.error('Error al consumir créditos:', error);
     }
   };
 
@@ -551,6 +548,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 
         <div className="flex-1 overflow-y-auto p-4">
           <ReusableFormBuilder
+            ref={builderRef}
             initialTitle={formPreview.title}
             initialDescription={formPreview.description || ''}
             initialQuestions={convertToBuilderFormat(formPreview)}
@@ -573,54 +571,11 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
                 }))
               }));
             }}
-            hideSubmitButton={true}
           />
         </div>
       </div>
 
-      {showPublishDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-4">
-            <h3 className="text-lg font-semibold mb-2">
-              {publishStatus === 'success' ? '¡Formulario creado!' : 'Publicando formulario'}
-            </h3>
-            <p className="text-gray-600 mb-4">
-              {publishStatus === 'publishing' && 'Creando tu formulario en Google Forms...'}
-              {publishStatus === 'success' && 'Tu formulario ha sido creado exitosamente.'}
-              {publishStatus === 'error' && 'Hubo un error al crear el formulario. Por favor, intenta de nuevo.'}
-            </p>
-            
-            {publishStatus === 'success' && (
-              <div className="flex items-center gap-2 text-green-600 mb-4">
-                <CheckCircle className="w-5 h-5 flex-shrink-0" />
-                <span className="break-words">Formulario publicado con éxito</span>
-              </div>
-            )}
 
-            {publishStatus === 'error' && (
-              <div className="flex items-center gap-2 text-red-600 mb-4">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span className="break-words">No se pudo publicar el formulario. Verifica tu conexión y vuelve a intentarlo.</span>
-              </div>
-            )}
-
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={() => {
-                  setShowPublishDialog(false);
-                  if (publishStatus === 'success') {
-                    setFormPreview({ title: '', questions: [] });
-                    setMessages([]);
-                  }
-                }}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-              >
-                {publishStatus === 'success' ? 'Cerrar' : 'Cancelar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
