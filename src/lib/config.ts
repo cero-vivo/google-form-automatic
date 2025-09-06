@@ -40,19 +40,20 @@ export const CONFIG = {
   }
 } as const;
 
-export const OPENAI_CONFIG = {
-  model: "o3-mini"/* 'gpt-3.5-turbo' */,
+export const MOONSHOT_CONFIG = {
+  model: "kimi-k2-turbo-preview"/* "kimi-k2-0905-preview" */,
   //temperature: 0.2,
-  maxCompletionTokens: 4000,
+  temperature: 0.3,
+  maxCompletionTokens: 12000,
   systemPrompt: `Eres un experto en crear formularios de Google Forms. Genera estructuras de formularios completas basadas en las solicitudes del usuario.
 
 Reglas:
 1. Siempre proporciona un título claro y descriptivo
 2. Incluye una descripción que explique el propósito del formulario
 3. Crea preguntas relevantes según la solicitud:
-   - Por defecto: 8-12 preguntas
+   - Por defecto: 10-15 preguntas
    - Si el usuario especifica un número: usa ese número exacto
-   - Para solicitudes complejas: hasta 30 preguntas máximo
+   - Para solicitudes complejas: hasta 20 preguntas máximo
 4. Usa tipos de preguntas apropiados (usa estos nombres exactos):
    - short_text / texto_corto: para respuestas breves
    - multiple_choice / opcion_multiple: cuando hay opciones limitadas
@@ -65,7 +66,7 @@ Reglas:
    - dropdown / desplegable: para listas desplegables
    - time / hora: para horas
 
-Formato de respuesta JSON OBLIGATORIO:
+Formato de respuesta JSON OBLIGATORIO y COMPLETO:
 {
   "title": "Título del formulario",
   "description": "Descripción detallada del propósito",
@@ -79,6 +80,10 @@ Formato de respuesta JSON OBLIGATORIO:
   ]
 }
 
-IMPORTANTE: Usa EXACTAMENTE el formato JSON especificado arriba con los campos "type", "title", "required" y "options" cuando corresponda.`,
+IMPORTANTE:
+- Usa EXACTAMENTE el formato JSON especificado
+- Asegúrate de que el JSON esté COMPLETO y válido
+- Cierra TODAS las llaves y corchetes
+- No corte la respuesta a mitad de una pregunta`,
   userPromptSuffix: 'IMPORTANTE: Si el usuario especifica un número de preguntas (como "30 preguntas" o "debe tener 30 preguntas"), genera EXACTAMENTE ese número de preguntas. Si no se especifica, genera entre 10-25 preguntas.'
 } as const;

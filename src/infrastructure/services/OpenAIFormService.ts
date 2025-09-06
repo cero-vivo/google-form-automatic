@@ -1,6 +1,6 @@
 import { QuestionEntity } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
-import { OPENAI_CONFIG } from '@/lib/config';
+import { MOONSHOT_CONFIG } from '@/lib/config';
 
 interface FormStructure {
   title: string;
@@ -21,7 +21,7 @@ export class OpenAIFormService {
   private apiKey: string;
 
   constructor() {
-    this.apiKey = process.env.OPENAI_API_KEY || '';
+    this.apiKey = process.env.MOONSHOT_API_KEY || process.env.OPENAI_API_KEY || '';
   }
 
   async generateFormFromPrompt(prompt: string): Promise<FormStructure | null> {
@@ -31,28 +31,29 @@ export class OpenAIFormService {
     }
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: OPENAI_CONFIG.model,
+          model: MOONSHOT_CONFIG.model,
+          temperature: MOONSHOT_CONFIG.temperature,
           messages: [
             {
               role: 'system',
-              content: OPENAI_CONFIG.systemPrompt
+              content: MOONSHOT_CONFIG.systemPrompt
             },
             {
               role: 'user',
               content: `${prompt}
 
-${OPENAI_CONFIG.userPromptSuffix}`
+${MOONSHOT_CONFIG.userPromptSuffix}`
             }
           ],
-          max_completion_tokens: OPENAI_CONFIG.maxCompletionTokens,
-          //temperature: OPENAI_CONFIG.temperature,
+          max_completion_tokens: MOONSHOT_CONFIG.maxCompletionTokens,
+          //temperature: MOONSHOT_CONFIG.temperature,
         }),
       });
 

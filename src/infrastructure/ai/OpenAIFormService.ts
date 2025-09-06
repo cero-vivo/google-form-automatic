@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import { z } from 'zod';
 import { CreditsService } from '../firebase/credits-service';
 import { FirebaseRepository } from '@/infrastructure/firebase/FirebaseRepository';
-import { OPENAI_CONFIG } from '@/lib/config';
+import { MOONSHOT_CONFIG } from '@/lib/config';
 
 const questionSchema = z.object({
   type: z.enum([
@@ -29,12 +29,13 @@ export class OpenAIFormService {
   private openai: OpenAI;
 
   constructor() {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.MOONSHOT_API_KEY || process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      console.error('❌ OPENAI_API_KEY no está configurada. Por favor, configura la variable de entorno.');
+      console.error('❌ MOONSHOT_API_KEY u OPENAI_API_KEY no está configurada. Por favor, configura la variable de entorno.');
     }
     this.openai = new OpenAI({
       apiKey: apiKey,
+      baseURL: 'https://api.moonshot.ai/v1',
       dangerouslyAllowBrowser: true
     });
   }
@@ -52,6 +53,31 @@ export class OpenAIFormService {
     - Usa español para los títulos y descripciones
     - Sé conciso y claro en las preguntas
     - Siempre retorna el formulario COMPLETO con todas las preguntas (existentes + nuevas)`;
+  }
+
+  private repairIncompleteJson(incompleteJson: string): string | null {
+    try {
+      // Buscar el último objeto de pregunta incompleto
+      const questionsMatch = incompleteJson.match(/"questions":\s*\[([^\]]*)$/);
+      if (questionsMatch) {
+        const questionsPart = questionsMatch[1];
+        
+        // Contar llaves abiertas y cerradas
+        const openBraces = (questionsPart.match(/\{/g) || []).length;
+        const closeBraces = (questionsPart.match(/\}/g) || []).length;
+        
+        if (openBraces > closeBraces) {
+          // Agregar cierre necesario
+          const missingBraces = ']\n}\n}';
+          return incompleteJson + missingBraces;
+        }
+      }
+      
+      // Si no podemos reparar, retornar null
+      return null;
+    } catch {
+      return null;
+    }
   }
 
   async processChatMessage(userId: string, message: string, conversation: any[]): Promise<{
@@ -152,22 +178,32 @@ export class OpenAIFormService {
       };
 
       const response = await this.openai.chat.completions.create({
-        model: OPENAI_CONFIG.model,
+        model: MOONSHOT_CONFIG.model,
         messages: enhancedMessages,
-        //temperature: OPENAI_CONFIG.temperature,
-        max_completion_tokens: OPENAI_CONFIG.maxCompletionTokens
+        max_completion_tokens: MOONSHOT_CONFIG.maxCompletionTokens
       });
 
-      
       const aiResponse = response.choices[0]?.message?.content || '';
       console.log('Respuesta raw de OpenAI:', aiResponse);
       
       // Intentar parsear JSON del response
       let formPreview = null;
       try {
+        // Intentar extraer JSON completo con múltiples estrategias
+        let jsonStr = '';
+        
+        // 1. Buscar JSON con llaves balanceadas
         const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
-          const formData = JSON.parse(jsonMatch[0]);
+          jsonStr = jsonMatch[0];
+        } else {
+          // 2. Si no hay match, usar toda la respuesta
+          jsonStr = aiResponse;
+        }
+        
+        // 3. Intentar reparar JSON incompleto
+        try {
+          const formData = JSON.parse(jsonStr);
           const validatedForm = formSchema.parse(formData);
           
           // Normalize questions to use 'label' field consistently
@@ -181,70 +217,30 @@ export class OpenAIFormService {
             ...validatedForm,
             questions: normalizedQuestions
           };
-        } else {
-          // Check if the original message is already valid JSON
-          try {
-            const userJson = JSON.parse(message);
-            const validatedUserForm = formSchema.parse(userJson);
+        } catch (parseError) {
+          console.log('JSON incompleto detectado, intentando reparar...');
+          // 4. Si falla, intentar reparar JSON truncado
+          const repairedJson = this.repairIncompleteJson(jsonStr);
+          if (repairedJson) {
+            const formData = JSON.parse(repairedJson);
+            const validatedForm = formSchema.parse(formData);
             
-            const normalizedQuestions = validatedUserForm.questions.map(q => ({
+            const normalizedQuestions = validatedForm.questions.map(q => ({
               ...q,
               label: q.label || q.title || 'Pregunta sin título',
               title: undefined
             }));
             
             formPreview = {
-              ...validatedUserForm,
+              ...validatedForm,
               questions: normalizedQuestions
             };
-          } catch {
-            // If no JSON found and message isn't JSON, create intelligent structure
-            console.log('No se encontró JSON válido, creando estructura inteligente');
-            
-            // Analyze message to create relevant questions
-            const messageLower = message.toLowerCase();
-            let questions = [];
-            
-            if (messageLower.includes('encuesta') || messageLower.includes('satisfacción')) {
-              questions = [
-                { type: 'texto_corto', label: 'Nombre', required: true },
-                { type: 'email', label: 'Correo electrónico', required: true },
-                { type: 'escala_lineal', label: '¿Qué tan satisfecho estás con nuestro servicio?', required: true },
-                { type: 'texto_largo', label: '¿Qué podríamos mejorar?', required: false }
-              ];
-            } else if (messageLower.includes('registro') || messageLower.includes('evento')) {
-              questions = [
-                { type: 'texto_corto', label: 'Nombre completo', required: true },
-                { type: 'email', label: 'Correo electrónico', required: true },
-                { type: 'texto_corto', label: 'Teléfono', required: true },
-                { type: 'texto_largo', label: 'Comentarios adicionales', required: false }
-              ];
-            } else if (messageLower.includes('contacto') || messageLower.includes('información')) {
-              questions = [
-                { type: 'texto_corto', label: 'Nombre', required: true },
-                { type: 'email', label: 'Correo electrónico', required: true },
-                { type: 'texto_largo', label: 'Mensaje', required: true }
-              ];
-            } else {
-              // Default intelligent structure based on message content
-              questions = [
-                { type: 'texto_corto', label: 'Nombre', required: true },
-                { type: 'email', label: 'Correo electrónico', required: true },
-                { type: 'texto_largo', label: 'Detalles sobre tu solicitud', required: true }
-              ];
-            }
-            
-            formPreview = {
-              title: `Formulario: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
-              description: `Formulario generado para: ${message}`,
-              questions: questions
-            };
+          } else {
+            throw parseError;
           }
         }
-      } catch (error: any) {
-        console.log('Error parsing JSON, creando estructura de respuesta inteligente');
-        
-        // Try to parse the original message as JSON
+      } catch (error) {
+        // Check if the original message is already valid JSON
         try {
           const userJson = JSON.parse(message);
           const validatedUserForm = formSchema.parse(userJson);
@@ -260,7 +256,10 @@ export class OpenAIFormService {
             questions: normalizedQuestions
           };
         } catch {
-          // If everything fails, create an intelligent structure based on message
+          // If no JSON found and message isn't JSON, create intelligent structure
+          console.log('No se encontró JSON válido, creando estructura inteligente');
+          
+          // Analyze message to create relevant questions
           const messageLower = message.toLowerCase();
           let questions = [];
           
@@ -268,26 +267,34 @@ export class OpenAIFormService {
             questions = [
               { type: 'texto_corto', label: 'Nombre', required: true },
               { type: 'email', label: 'Correo electrónico', required: true },
-              { type: 'escala_lineal', label: '¿Qué tan satisfecho estás?', required: true },
-              { type: 'texto_largo', label: 'Comentarios', required: false }
+              { type: 'escala_lineal', label: '¿Qué tan satisfecho estás con nuestro servicio?', required: true },
+              { type: 'texto_largo', label: '¿Qué podríamos mejorar?', required: false }
             ];
           } else if (messageLower.includes('registro') || messageLower.includes('evento')) {
             questions = [
               { type: 'texto_corto', label: 'Nombre completo', required: true },
               { type: 'email', label: 'Correo electrónico', required: true },
-              { type: 'texto_corto', label: 'Teléfono', required: true }
+              { type: 'texto_corto', label: 'Teléfono', required: true },
+              { type: 'texto_largo', label: 'Comentarios adicionales', required: false }
             ];
-          } else {
+          } else if (messageLower.includes('contacto') || messageLower.includes('información')) {
             questions = [
               { type: 'texto_corto', label: 'Nombre', required: true },
               { type: 'email', label: 'Correo electrónico', required: true },
-              { type: 'texto_largo', label: 'Detalles', required: true }
+              { type: 'texto_largo', label: 'Mensaje', required: true }
+            ];
+          } else {
+            // Default intelligent structure based on message content
+            questions = [
+              { type: 'texto_corto', label: 'Nombre', required: true },
+              { type: 'email', label: 'Correo electrónico', required: true },
+              { type: 'texto_largo', label: 'Detalles sobre tu solicitud', required: true }
             ];
           }
           
           formPreview = {
-            title: `Formulario: ${message.substring(0, 30)}${message.length > 30 ? '...' : ''}`,
-            description: `Formulario generado para tu solicitud`,
+            title: `Formulario: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+            description: `Formulario generado para: ${message}`,
             questions: questions
           };
         }
