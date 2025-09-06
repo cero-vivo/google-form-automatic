@@ -176,7 +176,7 @@ export default function LoginPage() {
               🔒 Seguro
             </Badge>
             <p className="text-xs text-muted-foreground">
-              Integración oficial con Google
+              Integración con Google
             </p>
           </div>
         </div>

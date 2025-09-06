@@ -23,10 +23,7 @@ interface FileImportFormCreatorProps {
 
 export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: FileImportFormCreatorProps) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  console.log("🚀 ~ FileImportFormCreator ~ uploadedFile:", uploadedFile)
   const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
-  console.log("🚀 ~ FileImportFormCreator ~ parsedQuestions:", parsedQuestions)
-
 
   const [formTitle, setFormTitle] = useState('');
   const [formDescription, setFormDescription] = useState('');
@@ -34,6 +31,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
   const [showSuccessView, setShowSuccessView] = useState(false);
   const [createdFormData, setCreatedFormData] = useState<any>(null);
   const [showEditor, setShowEditor] = useState(false);
+  const [fileProcessed, setFileProcessed] = useState(false);
 
   const { handleFileSelect, questions, loading, progress, error } = useFileUpload();
   const { createGoogleForm, isCreating: creatingForm, error: formError } = useGoogleFormsIntegration();
@@ -48,8 +46,8 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       setParsedQuestions([]);
       setFormTitle('');
       setFormDescription('');
-// Remove setProgress line since progress is managed by useFileUpload hook
-      // Remove this line since setError is not defined and error state is managed by the useFileUpload hook
+      setFileProcessed(false);
+      setShowEditor(true);
       handleFileUpload(file);
     }
   }, []);
@@ -88,8 +86,9 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       setParsedQuestions(questions);
       setFormTitle(`Formulario importado: ${uploadedFile?.name || 'Formulario importado'}`);
       setFormDescription(`Formulario creado desde archivo ${uploadedFile?.name || ''} (${questions.length} preguntas)`);
+      setFileProcessed(true);
     }
-  }, [questions, uploadedFile?.name, loading]);
+  }, [questions, uploadedFile?.name, loading, showEditor]);
 
 
 
@@ -154,6 +153,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
     setFormDescription('');
     setCollectEmail(true);
     setShowEditor(false);
+    setFileProcessed(false);
   };
 
   const handleDuplicateForm = () => {
@@ -169,6 +169,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
       setCreatedFormData(null);
       setUploadedFile(null);
       setShowEditor(true);
+      setFileProcessed(true);
     }
   };
 
@@ -234,12 +235,22 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
               <p className="text-lg font-medium">Procesando archivo...</p>
               <Progress value={progress} className="w-full max-w-xs" />
+              <p className="text-sm text-muted-foreground mt-2">
+                {progress < 50 ? 'Validando formato...' : 
+                 progress < 80 ? 'Analizando preguntas...' : 
+                 'Preparando formulario...'}
+              </p>
             </>
           ) : uploadedFile ? (
             <>
               <CheckCircle className="h-12 w-12 text-green-500" />
-              <p className="text-lg font-medium">Archivo cargado: {uploadedFile.name}</p>
+              <p className="text-lg font-medium">Archivo procesado: {uploadedFile.name}</p>
               <Badge variant="secondary">{uploadedFile.type}</Badge>
+              {parsedQuestions.length > 0 && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  {parsedQuestions.length} preguntas detectadas - Listo para editar
+                </p>
+              )}
             </>
           ) : (
             <>
@@ -261,7 +272,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
         </Alert>
       )}
 
-      {parsedQuestions.length > 0 && (
+      {(fileProcessed) && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Formulario importado</CardTitle>
@@ -269,6 +280,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
           <CardContent className="space-y-4">
             <div className="space-y-6">
               <ReusableFormBuilder
+                key={uploadedFile?.name || 'form-builder'}
                 initialQuestions={parsedQuestions}
                 initialTitle={formTitle}
                 initialDescription={formDescription}

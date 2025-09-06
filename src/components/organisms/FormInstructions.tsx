@@ -56,7 +56,7 @@ export default function FormInstructions() {
   };
 
   return (
-    <Card className="max-w-4xl mx-auto w-full">
+    <Card className="mx-100">
       <CardHeader>
         <CardTitle>Cómo crear tu formulario</CardTitle>
         <CardDescription>
