@@ -59,7 +59,7 @@ export default function AIChatPage() {
               Asistente Inteligente para Formularios
             </h1>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Describe en lenguaje natural el formulario que necesitas y nuestra IA te ayudará a crearlo paso a paso. 
+              Describe en el chat el formulario que necesitas y nuestra IA te ayudará a crearlo paso a paso. 
               Los primeros 15 mensajes son gratuitos, luego se cobran 2 créditos adicionales.
             </p>
           </div>

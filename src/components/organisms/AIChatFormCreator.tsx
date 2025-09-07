@@ -504,16 +504,21 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 							</span>
 						</div>
 
-						<div className="flex space-x-2">
-							<input
-								type="text"
-								value={inputValue}
-								onChange={(e) => setInputValue(e.target.value)}
-								onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
-								placeholder="Agregar más preguntas o mejorar el formulario..."
-								disabled={isLoading || credits <= 0}
-								className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-0"
-							/>
+						<div className="flex space-x-2 items-end">
+							<textarea
+									value={inputValue}
+									onChange={(e) => setInputValue(e.target.value)}
+									placeholder="Agregar más preguntas o mejorar el formulario..."
+									disabled={isLoading || credits <= 0}
+									rows={1}
+									className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-0 resize-none overflow-hidden"
+									style={{ minHeight: '40px', maxHeight: '120px' }}
+									onInput={(e) => {
+										const target = e.target as HTMLTextAreaElement;
+										target.style.height = 'auto';
+										target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
+									}}
+								/>
 							<button
 								onClick={handleSendMessage}
 								disabled={isLoading || !inputValue.trim() || credits <= 0}
