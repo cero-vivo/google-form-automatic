@@ -6,6 +6,7 @@ import { Send, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/containers/useAuth';
 import { useCredits } from '@/containers/useCredits';
 import { useCostManager } from '@/application/services/CostManager';
+import { QuestionType } from '@/domain/types';
 
 interface Message {
 	id: string;
@@ -286,17 +287,112 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
 	};
 
 	const convertToBuilderFormat = (preview: FormPreviewData) => {
-		return preview.questions.map((q, index) => ({
-			id: `ai-question-${index}`,
-			title: q.label,
-			description: '',
-			type: q.type as any,
-			required: false,
-			options: q.options || [],
-			order: index,
-			createdAt: new Date(),
-			updatedAt: new Date()
-		}));
+		return preview.questions.map((q, index) => {
+			// Mapear tipos de string a enum válido
+			let mappedType: QuestionType;
+			switch (q.type?.toLowerCase()) {
+				case 'multiple_choice':
+				case 'multiple choice':
+				case 'opción múltiple':
+				case 'opcion multiple':
+					mappedType = QuestionType.MULTIPLE_CHOICE;
+					break;
+				case 'checkbox':
+				case 'checkboxes':
+				case 'casillas':
+					mappedType = QuestionType.CHECKBOXES;
+					break;
+				case 'dropdown':
+				case 'desplegable':
+					mappedType = QuestionType.DROPDOWN;
+					break;
+				case 'short_text':
+				case 'short text':
+				case 'texto corto':
+				case 'text':
+				case 'texto':
+					mappedType = QuestionType.SHORT_TEXT;
+					break;
+				case 'long_text':
+				case 'long text':
+				case 'texto largo':
+					mappedType = QuestionType.LONG_TEXT;
+					break;
+				case 'date':
+				case 'fecha':
+					mappedType = QuestionType.DATE;
+					break;
+				case 'time':
+				case 'hora':
+					mappedType = QuestionType.TIME;
+					break;
+				case 'email':
+				case 'correo':
+				case 'email address':
+					mappedType = QuestionType.EMAIL;
+					break;
+				case 'number':
+				case 'número':
+				case 'numero':
+					mappedType = QuestionType.NUMBER;
+					break;
+				case 'file_upload':
+				case 'file upload':
+				case 'archivo':
+				case 'upload':
+					mappedType = QuestionType.FILE_UPLOAD;
+					break;
+				case 'linear_scale':
+				case 'linear scale':
+				case 'escala':
+				case 'rating':
+					mappedType = QuestionType.LINEAR_SCALE;
+					break;
+				default:
+					mappedType = QuestionType.SHORT_TEXT;
+			}
+
+			// Asegurar que las opciones estén presentes para tipos que las necesitan
+			let options = q.options || [];
+			
+			// Si no hay opciones y es un tipo que las necesita, crear opciones por defecto
+			if ((mappedType === QuestionType.MULTIPLE_CHOICE || 
+				 mappedType === QuestionType.CHECKBOXES || 
+				 mappedType === QuestionType.DROPDOWN) && 
+				(!options || options.length === 0)) {
+				
+				// Intentar extraer opciones de la descripción o usar valores por defecto
+				const defaultOptions = ['Opción 1', 'Opción 2', 'Opción 3'];
+				
+				// Si la descripción contiene opciones separadas por comas, usarlas
+				if (q.description && q.description.includes(',')) {
+					const extractedOptions = q.description
+						.split(',')
+						.map(opt => opt.trim())
+						.filter(opt => opt.length > 0);
+					
+					if (extractedOptions.length > 1) {
+						options = extractedOptions;
+					} else {
+						options = defaultOptions;
+					}
+				} else {
+					options = defaultOptions;
+				}
+			}
+
+			return {
+				id: `ai-question-${index}`,
+				title: q.label,
+				description: q.description || '',
+				type: mappedType,
+				required: false,
+				options: options,
+				order: index,
+				createdAt: new Date(),
+				updatedAt: new Date()
+			};
+		});
 	};
 
 	const getCreditWarning = () => {

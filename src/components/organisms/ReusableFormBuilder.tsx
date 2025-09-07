@@ -36,11 +36,62 @@ const questionTypes = [
   { value: 'multiple_choice' as QuestionType, label: 'Opción múltiple', icon: List, description: 'Seleccionar una opción de varias' },
   { value: 'checkboxes' as QuestionType, label: 'Casillas', icon: CheckSquare, description: 'Seleccionar varias opciones' },
   { value: 'dropdown' as QuestionType, label: 'Lista desplegable', icon: List, description: 'Seleccionar de un menú desplegable' },
+  { value: 'linear_scale' as QuestionType, label: 'Escala lineal', icon: LayoutGrid, description: 'Calificación en escala numérica' },
   { value: 'number' as QuestionType, label: 'Número', icon: Hash, description: 'Solo acepta números' },
   { value: 'email' as QuestionType, label: 'Email', icon: Mail, description: 'Valida formato de correo electrónico' },
   { value: 'date' as QuestionType, label: 'Fecha', icon: Calendar, description: 'Selector de fecha calendario' },
   { value: 'url' as QuestionType, label: 'URL', icon: Globe, description: 'Valida formato de sitio web' }
 ];
+
+const mapQuestionType = (type: string | undefined): QuestionType => {
+    if (!type) return QuestionType.SHORT_TEXT;
+    
+    const typeStr = type.toLowerCase().trim();
+    
+    switch (typeStr) {
+      case 'short_text':
+      case 'short':
+      case 'texto_corto':
+        return QuestionType.SHORT_TEXT;
+      case 'long_text':
+      case 'long':
+      case 'texto_largo':
+        return QuestionType.LONG_TEXT;
+      case 'multiple_choice':
+      case 'multiple choice':
+      case 'opcion_multiple':
+      case 'choice':
+        return QuestionType.MULTIPLE_CHOICE;
+      case 'checkboxes':
+      case 'checkbox':
+      case 'casillas':
+        return QuestionType.CHECKBOXES;
+      case 'dropdown':
+      case 'lista_desplegable':
+      case 'list':
+        return QuestionType.DROPDOWN;
+      case 'linear_scale':
+      case 'linear scale':
+      case 'escala_lineal':
+      case 'scale':
+        return QuestionType.LINEAR_SCALE;
+      case 'number':
+      case 'numero':
+        return QuestionType.NUMBER;
+      case 'email':
+      case 'correo':
+        return QuestionType.EMAIL;
+      case 'date':
+      case 'fecha':
+        return QuestionType.DATE;
+      case 'url':
+      case 'website':
+      case 'sitio':
+        return QuestionType.URL;
+      default:
+        return QuestionType.SHORT_TEXT;
+    }
+  };
 
 
 
@@ -67,9 +118,89 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   const [showSuccessView, setShowSuccessView] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Update questions when initialQuestions changes
+  // Update questions when initialQuestions changes with better type mapping
   React.useEffect(() => {
-    setQuestions(initialQuestions);
+    const mappedQuestions = initialQuestions.map(q => {
+      // Ensure correct type mapping from string to enum
+      let mappedType: QuestionType;
+      switch (q.type?.toLowerCase()) {
+        case 'multiple_choice':
+        case 'opcion_multiple':
+        case 'multiple choice':
+        case 'choice':
+          mappedType = QuestionType.MULTIPLE_CHOICE;
+          break;
+        case 'checkboxes':
+        case 'checkbox':
+        case 'casillas':
+          mappedType = QuestionType.CHECKBOXES;
+          break;
+        case 'dropdown':
+        case 'lista_desplegable':
+        case 'list':
+          mappedType = QuestionType.DROPDOWN;
+          break;
+        case 'short_text':
+        case 'texto_corto':
+        case 'short':
+        case 'text':
+          mappedType = QuestionType.SHORT_TEXT;
+          break;
+        case 'long_text':
+        case 'texto_largo':
+        case 'long':
+        case 'paragraph':
+          mappedType = QuestionType.LONG_TEXT;
+          break;
+        case 'number':
+        case 'número':
+          mappedType = QuestionType.NUMBER;
+          break;
+        case 'email':
+        case 'correo':
+          mappedType = QuestionType.EMAIL;
+          break;
+        case 'date':
+        case 'fecha':
+          mappedType = QuestionType.DATE;
+          break;
+        case 'url':
+        case 'website':
+        case 'sitio_web':
+          mappedType = QuestionType.URL;
+          break;
+        default:
+          mappedType = q.type as QuestionType || QuestionType.SHORT_TEXT;
+      }
+
+      // Ensure options for types that need them
+      const needsOptions = [QuestionType.MULTIPLE_CHOICE, QuestionType.CHECKBOXES, QuestionType.DROPDOWN].includes(mappedType);
+      let options = q.options || [];
+      
+      if (needsOptions && (!options || options.length === 0)) {
+        // Try to extract options from description or use defaults
+        if (q.description && q.description.includes('|')) {
+          options = q.description.split('|').map(opt => opt.trim()).filter(opt => opt);
+        } else if (q.description && q.description.includes(',')) {
+          options = q.description.split(',').map(opt => opt.trim()).filter(opt => opt);
+        } else {
+          options = ['Opción 1', 'Opción 2'];
+        }
+      }
+
+      return {
+        ...q,
+        type: mappedType,
+        options: needsOptions ? options : [],
+        title: q.title || q.label || 'Nueva pregunta',
+        required: Boolean(q.required),
+        order: q.order !== undefined ? q.order : questions.length,
+        createdAt: q.createdAt || new Date(),
+        updatedAt: q.updatedAt || new Date()
+      };
+    });
+    
+    setQuestions(mappedQuestions);
   }, [initialQuestions]);
 
   React.useEffect(() => {
@@ -109,9 +240,50 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
     setEditingQuestion(newQuestion.id);
   };
 
+  const validateQuestion = (q: any): Question => {
+      const baseQuestion = {
+        id: q.id || `q_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        title: q.title || q.text || 'Nueva pregunta',
+        type: mapQuestionType(q.type),
+        required: q.required || false,
+        order: q.order || 0,
+        createdAt: q.createdAt || new Date(),
+        updatedAt: q.updatedAt || new Date()
+      };
+  
+      // Configuración específica para escala lineal
+      if (baseQuestion.type === 'linear_scale') {
+        return {
+          ...baseQuestion,
+          linearScaleConfig: {
+            min: q.linearScaleConfig?.min || 1,
+            max: q.linearScaleConfig?.max || 5,
+            minLabel: q.linearScaleConfig?.minLabel || '',
+            maxLabel: q.linearScaleConfig?.maxLabel || ''
+          }
+        };
+      }
+  
+      // Manejo de opciones para otros tipos
+      if (['multiple_choice', 'checkboxes', 'dropdown'].includes(baseQuestion.type)) {
+        return {
+          ...baseQuestion,
+          options: Array.isArray(q.options) 
+            ? q.options 
+            : extractOptionsFromDescription(q.description || q.text || '') || [
+                { id: `opt_${Date.now()}_1`, text: 'Opción 1' },
+                { id: `opt_${Date.now()}_2`, text: 'Opción 2' }
+              ]
+        };
+      }
+  
+      return baseQuestion;
+    };
+
   const updateQuestion = (id: string, updates: Partial<Question>) => {
-    updateQuestions(questions.map(q =>
-      q.id === id ? { ...q, ...updates } : q
+    const validatedUpdates = validateQuestion({ ...updates, id });
+    updateQuestions(questions.map(q => 
+      q.id === id ? { ...q, ...validatedUpdates } : q
     ));
   };
 
@@ -420,6 +592,86 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
             </div>
           )}
 
+          {/* Configuración para escala lineal */}
+          {localQuestion.type === 'linear_scale' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Mínimo</Label>
+                  <Input
+                    type="number"
+                    value={localQuestion.linearScaleConfig?.min || 1}
+                    onChange={(e) => {
+                      const min = parseInt(e.target.value) || 1;
+                      const max = localQuestion.linearScaleConfig?.max || 5;
+                      setLocalQuestion({
+                        ...localQuestion,
+                        linearScaleConfig: {
+                          ...localQuestion.linearScaleConfig,
+                          min: Math.min(min, max - 1),
+                          max: max
+                        }
+                      });
+                    }}
+                    min={0}
+                    max={10}
+                  />
+                </div>
+                <div>
+                  <Label>Máximo</Label>
+                  <Input
+                    type="number"
+                    value={localQuestion.linearScaleConfig?.max || 5}
+                    onChange={(e) => {
+                      const max = parseInt(e.target.value) || 5;
+                      const min = localQuestion.linearScaleConfig?.min || 1;
+                      setLocalQuestion({
+                        ...localQuestion,
+                        linearScaleConfig: {
+                          ...localQuestion.linearScaleConfig,
+                          min: min,
+                          max: Math.max(max, min + 1)
+                        }
+                      });
+                    }}
+                    min={2}
+                    max={10}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Etiqueta mínima</Label>
+                  <Input
+                    value={localQuestion.linearScaleConfig?.minLabel || ''}
+                    onChange={(e) => setLocalQuestion({
+                      ...localQuestion,
+                      linearScaleConfig: {
+                        ...localQuestion.linearScaleConfig,
+                        minLabel: e.target.value
+                      }
+                    })}
+                    placeholder="Ej: Muy malo"
+                  />
+                </div>
+                <div>
+                  <Label>Etiqueta máxima</Label>
+                  <Input
+                    value={localQuestion.linearScaleConfig?.maxLabel || ''}
+                    onChange={(e) => setLocalQuestion({
+                      ...localQuestion,
+                      linearScaleConfig: {
+                        ...localQuestion.linearScaleConfig,
+                        maxLabel: e.target.value
+                      }
+                    })}
+                    placeholder="Ej: Excelente"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex space-x-2">
             <Button size="sm" onClick={handleSave}>Guardar</Button>
             <Button size="sm" variant="outline" onClick={handleCancel}>Cancelar</Button>
@@ -644,3 +896,25 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   );
 
 });
+
+const extractOptionsFromDescription = (description: string): Option[] | null => {
+    if (!description) return null;
+    
+    // Buscar opciones separadas por | o ,
+    let options: string[] = [];
+    
+    if (description.includes('|')) {
+      options = description.split('|').map(opt => opt.trim()).filter(opt => opt);
+    } else if (description.includes(',')) {
+      options = description.split(',').map(opt => opt.trim()).filter(opt => opt);
+    }
+    
+    if (options.length > 1) {
+      return options.map((opt, index) => ({
+        id: `opt_${Date.now()}_${index + 1}`,
+        text: opt
+      }));
+    }
+    
+    return null;
+  };
