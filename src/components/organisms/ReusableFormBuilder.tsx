@@ -200,7 +200,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
         ...q,
         type: mappedType,
         options: needsOptions ? options : [],
-        title: q.title || q.label || 'Nueva pregunta',
+        title: q.title || 'Nueva pregunta',
         required: Boolean(q.required),
         order: q.order !== undefined ? q.order : questions.length,
         createdAt: q.createdAt || new Date(),
@@ -918,50 +918,54 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
         </Card>
 
         {!hideSubmitButton && (
-          <div className="flex justify-end space-x-4">
-            <DraftModal 
-              onLoadDraft={handleLoadDraft}
-              trigger={
-                <Button variant="outline" className="border-slate-300 text-slate-700">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Ver Borradores
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <DraftModal 
+                onLoadDraft={handleLoadDraft}
+                trigger={
+                  <Button variant="outline" className="border-slate-300 text-slate-700 w-full sm:w-auto justify-center">
+                    <FileText className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span className="truncate">Ver Borradores</span>
+                  </Button>
+                }
+              />
+              {onCancel && (
+                <Button
+                  variant="outline"
+                  onClick={onCancel}
+                  className="border-slate-300 text-slate-700 w-full sm:w-auto"
+                >
+                  Cancelar
                 </Button>
-              }
-            />
-            {onCancel && (
+              )}
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Button
                 variant="outline"
-                onClick={onCancel}
-                className="border-slate-300 text-slate-700"
+                onClick={handleSaveDraft}
+                disabled={isSavingDraft || !formTitle.trim()}
+                className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full sm:w-auto justify-center"
               >
-                Cancelar
+                {isSavingDraft ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin flex-shrink-0" />
+                    <span className="truncate">Guardando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span className="truncate">Guardar Borrador</span>
+                  </>
+                )}
               </Button>
-            )}
-            <Button
-              variant="outline"
-              onClick={handleSaveDraft}
-              disabled={isSavingDraft || !formTitle.trim()}
-              className="border-blue-600 text-blue-600 hover:bg-blue-50"
-            >
-              {isSavingDraft ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Guardando...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Guardar Borrador
-                </>
-              )}
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={isCreating || questions.length === 0 || !formTitle.trim()}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8"
-            >
-              {isCreating ? 'Creando...' : submitButtonText}
-            </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={isCreating || questions.length === 0 || !formTitle.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto justify-center"
+              >
+                <span className="truncate">{isCreating ? 'Creando...' : submitButtonText}</span>
+              </Button>
+            </div>
           </div>
         )}
       </div>

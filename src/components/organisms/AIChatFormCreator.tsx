@@ -65,6 +65,7 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
 	});
 
 	const scrollAreaRef = useRef<HTMLDivElement>(null);
+	const [showMobileBuilder, setShowMobileBuilder] = useState(false);
 
 	useEffect(() => {
 		refreshCredits();
@@ -526,9 +527,9 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 
 
 	return (
-		<div className="flex h-[calc(100vh-4rem)] bg-gray-50 overflow-hidden">
-			{/* Chat Panel - Fixed width */}
-			<div className="w-96 flex flex-col bg-white border-r border-gray-200 flex-shrink-0">
+		<div className="flex h-screen bg-gray-50 w-full">
+			{/* Chat Panel - Responsive width */}
+			<div className="w-full md:w-96 flex flex-col bg-white border-r border-gray-200 flex-shrink-1">
 				<div className="p-4 border-b border-gray-200 flex-shrink-0">
 					<h1 className="text-lg font-bold mb-1">Asistente IA</h1>
 					<p className="text-sm text-gray-600">
@@ -563,8 +564,8 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 										className={`max-w-[85%] px-3 py-2 rounded-lg text-sm break-words ${message.role === 'user'
 												? 'bg-blue-600 text-white'
 												: 'bg-gray-100'
-											}`}
-									>
+										}`}
+								>
 										<p className="break-words">{message.content}</p>
 										<p className="text-xs opacity-70 mt-1">
 											{message.timestamp.toLocaleTimeString()}
@@ -616,8 +617,8 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 				</div>
 			</div>
 
-			{/* Builder Panel - Always visible */}
-			<div className="flex-1 flex flex-col min-h-0">
+			{/* Builder Panel - Responsive visibility */}
+			<div className="hidden md:flex flex-1 flex-col min-h-0">
 				<div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
 					<div className="flex items-center justify-between">
 						<div className="min-w-0">
@@ -666,7 +667,65 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 				</div>
 			</div>
 
+			{/* Mobile Builder Toggle */}
+			<div className="md:hidden fixed bottom-4 right-4 z-50">
+				<button
+					onClick={() => setShowMobileBuilder(!showMobileBuilder)}
+					className="px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700"
+				>
+					{showMobileBuilder ? 'Chat' : 'Editor'}
+				</button>
+			</div>
 
+			{/* Mobile Builder Panel */}
+			{showMobileBuilder && (
+				<div className="md:hidden fixed inset-0 bg-white z-40 flex flex-col">
+					<div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
+						<div className="flex items-center justify-between">
+							<div className="min-w-0">
+								<h2 className="text-lg font-bold">Editor Visual</h2>
+								<p className="text-sm text-gray-600">
+									Formulario actualizado en tiempo real
+								</p>
+							</div>
+							<button
+								onClick={() => setShowMobileBuilder(false)}
+								className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+							>
+								Cerrar
+							</button>
+						</div>
+					</div>
+
+					<div className="flex-1 overflow-y-auto p-4">
+						<ReusableFormBuilder
+							ref={builderRef}
+							creationMethod="ai"
+							initialTitle={formPreview.title}
+							initialDescription={formPreview.description || ''}
+							initialQuestions={convertToBuilderFormat(formPreview)}
+							onFormCreated={handleBuilderSubmit}
+							submitButtonText="Publicar formulario"
+							onTitleChange={(title: string) => {
+								setFormPreview(prev => ({ ...prev, title }));
+							}}
+							onDescriptionChange={(description: string) => {
+								setFormPreview(prev => ({ ...prev, description }));
+							}}
+							onQuestionsChange={(questions: any[]) => {
+								setFormPreview(prev => ({
+									...prev,
+									questions: questions.map(q => ({
+										type: q.type,
+										label: q.title,
+										options: q.options || [],
+										range: q.type === 'escala_lineal' ? [1, 5] : undefined
+									}))
+								}));
+							}}
+						/>
+					</div>
+				</div>
+			)}
 		</div>
 	);
-}
