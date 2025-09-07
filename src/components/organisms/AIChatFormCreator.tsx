@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FormPreview } from '@/components/molecules/FormPreview';
-import { CreditDisplay } from '@/components/molecules/CreditDisplay';
 import { ReusableFormBuilder } from './ReusableFormBuilder';
-import { Send, Bot, User, AlertCircle, CheckCircle, Edit3 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Send, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/containers/useAuth';
 import { useCredits } from '@/containers/useCredits';
 import { useCostManager } from '@/application/services/CostManager';
@@ -53,7 +50,6 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
 	const [creditsUsed, setCreditsUsed] = useState(0);
 	const builderRef = useRef<any>(null);
 	const [totalMessages, setTotalMessages] = useState(0);
-	const [showCostWarning, setShowCostWarning] = useState(false);
 	const [formContext, setFormContext] = useState<FormContext>({
 		type: 'encuesta',
 		objective: undefined,

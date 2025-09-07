@@ -110,7 +110,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   };
 
   const updateQuestion = (id: string, updates: Partial<Question>) => {
-    updateQuestions(questions.map(q => 
+    updateQuestions(questions.map(q =>
       q.id === id ? { ...q, ...updates } : q
     ));
   };
@@ -125,9 +125,9 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   const moveQuestion = (index: number, direction: 'up' | 'down') => {
     const newQuestions = [...questions];
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    
+
     if (newIndex < 0 || newIndex >= questions.length) return;
-    
+
     [newQuestions[index], newQuestions[newIndex]] = [newQuestions[newIndex], newQuestions[index]];
     updateQuestions(newQuestions);
   };
@@ -168,7 +168,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
           editUrl: result.editUrl,
           createdAt: new Date()
         };
-        
+
         setCreatedFormData(formData);
         setShowSuccessView(true);
         onFormCreated?.(formData);
@@ -184,8 +184,8 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
     handleSubmit
   }));
 
-  const QuestionEditor = ({ question, onUpdate, onDelete }: { 
-    question: Question; 
+  const QuestionEditor = ({ question, onUpdate, onDelete }: {
+    question: Question;
     onUpdate: (id: string, updates: Partial<Question>) => void;
     onDelete: (id: string) => void;
   }) => {
@@ -198,13 +198,13 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
     const handleSave = React.useCallback(() => {
       let questionToSave = { ...localQuestion };
-      
+
       // Validar y agregar opciones por defecto para tipos que las necesitan
-      if ((questionToSave.type === 'multiple_choice' || questionToSave.type === 'checkboxes' || questionToSave.type === 'dropdown') && 
-          (!questionToSave.options || questionToSave.options.length === 0)) {
+      if ((questionToSave.type === 'multiple_choice' || questionToSave.type === 'checkboxes' || questionToSave.type === 'dropdown') &&
+        (!questionToSave.options || questionToSave.options.length === 0)) {
         questionToSave.options = ['Opción 1', 'Opción 2'];
       }
-      
+
       onUpdate(question.id, questionToSave);
       setIsEditing(false);
     }, [localQuestion, question.id, onUpdate]);
@@ -215,7 +215,10 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
     };
 
     const handleFocus = () => {
-      setIsEditing(true);
+      setTimeout(() => {
+        setIsEditing(true);
+
+      }, 300);
     };
 
     const handleBlur = React.useCallback(() => {
@@ -235,7 +238,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
     if (!isEditing) {
       return (
-        <div 
+        <div
           className="p-4 border rounded-lg bg-white cursor-pointer hover:border-blue-300 transition-colors"
           onClick={() => setIsEditing(true)}
           tabIndex={0}
@@ -288,7 +291,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
     }
 
     return (
-      <div 
+      <div
         className="p-4 border rounded-lg bg-white border-blue-300"
         onBlur={(e) => {
           // Solo guardar si el clic fue fuera del contenedor
@@ -314,7 +317,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               autoFocus
             />
           </div>
-          
+
           <div>
             <Label>Descripción (opcional)</Label>
             <Input
@@ -338,15 +341,15 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                   const newType = e.target.value as QuestionType;
                   const needsOptions = ['multiple_choice', 'checkboxes', 'dropdown'].includes(newType);
                   const currentOptions = localQuestion.options || [];
-                  
+
                   console.log('Changing question type from', localQuestion.type, 'to', newType);
-                  
-                  const updatedQuestion = { 
-                    ...localQuestion, 
+
+                  const updatedQuestion = {
+                    ...localQuestion,
                     type: newType,
                     options: needsOptions && currentOptions.length === 0 ? ['Opción 1', 'Opción 2'] : currentOptions
                   };
-                  
+
                   setLocalQuestion(updatedQuestion);
                 }}
                 className="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -358,7 +361,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                 ))}
               </select>
             </div>
-            
+
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -418,9 +421,9 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
           )}
 
           <div className="flex space-x-2">
-              <Button size="sm" onClick={handleSave}>Guardar</Button>
-              <Button size="sm" variant="outline" onClick={handleCancel}>Cancelar</Button>
-            </div>
+            <Button size="sm" onClick={handleSave}>Guardar</Button>
+            <Button size="sm" variant="outline" onClick={handleCancel}>Cancelar</Button>
+          </div>
         </div>
       </div>
     );
@@ -545,8 +548,8 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               <div>
                 <CardTitle className="text-lg text-slate-800">❓ Preguntas</CardTitle>
                 <p className="text-sm text-slate-600 mt-1">
-                  {questions.length === 0 
-                    ? "Comienza agregando tu primera pregunta" 
+                  {questions.length === 0
+                    ? "Comienza agregando tu primera pregunta"
                     : `${questions.length} pregunta${questions.length !== 1 ? 's' : ''} agregada${questions.length !== 1 ? 's' : ''}`}
                 </p>
               </div>
@@ -602,7 +605,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                         <ChevronDown className="w-3 h-3" />
                       </button>
                     </div>
-                    
+
                     <QuestionEditor
                       key={question.id}
                       question={question}
