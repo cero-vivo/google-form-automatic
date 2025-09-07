@@ -11,7 +11,8 @@ export enum QuestionType {
   EMAIL = 'email',
   NUMBER = 'number',
   PHONE = 'phone',
-  RATING = 'rating'
+  RATING = 'rating',
+  URL = 'url'
 }
 
 export enum FormStatus {

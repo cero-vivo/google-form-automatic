@@ -116,6 +116,7 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualF
       )}
 
       <ReusableFormBuilder
+        creationMethod="manual"
         initialQuestions={questions}
         initialTitle={formTitle}
         initialDescription={formDescription}

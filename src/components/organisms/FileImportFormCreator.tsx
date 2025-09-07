@@ -280,6 +280,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
           <CardContent className="space-y-4">
             <div className="space-y-6">
               <ReusableFormBuilder
+                creationMethod="excel"
                 key={uploadedFile?.name || 'form-builder'}
                 initialQuestions={parsedQuestions}
                 initialTitle={formTitle}

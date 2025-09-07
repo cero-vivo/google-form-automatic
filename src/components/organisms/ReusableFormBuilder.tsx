@@ -7,10 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
-import { Plus, Trash2, LayoutGrid, Type, List, CheckSquare, Calendar, Mail, Hash, Globe, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, LayoutGrid, Type, List, CheckSquare, Calendar, Mail, Hash, Globe, ChevronDown, ChevronUp, Save, Loader2, FileText } from 'lucide-react';
 import { Question } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
+import { useAuth } from '@/containers/useAuth';
+import { DraftService } from '@/infrastructure/firebase/DraftService';
+import { DraftModal } from './DraftModal';
 import { FormSuccessView } from './FormSuccessView';
 
 interface ReusableFormBuilderProps {
@@ -28,6 +31,7 @@ interface ReusableFormBuilderProps {
   submitButtonText?: string;
   collectEmail?: boolean;
   hideSubmitButton?: boolean;
+  creationMethod: 'ai' | 'manual' | 'excel';
 }
 
 const questionTypes = [
@@ -108,7 +112,8 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   onCancel,
   mode = 'create',
   submitButtonText = 'Crear formulario',
-  hideSubmitButton = false
+  hideSubmitButton = false,
+  creationMethod
 }: ReusableFormBuilderProps, ref) {
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [formTitle, setFormTitle] = useState(initialTitle);
@@ -117,6 +122,9 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   const [createdFormData, setCreatedFormData] = useState<any>(null);
   const [showSuccessView, setShowSuccessView] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [showDraftModal, setShowDraftModal] = useState(false);
+  const { user } = useAuth();
 
   // Update questions when initialQuestions changes with better type mapping
   React.useEffect(() => {
@@ -334,7 +342,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
           description: formDescription,
           questions: questions,
           collectEmail: collectEmail,
-          creationMethod: mode,
+          creationMethod: creationMethod,
           formId: result.formId,
           formUrl: result.formUrl,
           editUrl: result.editUrl,
@@ -350,6 +358,52 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSaveDraft = async () => {
+    if (!user) {
+      setError('Debes iniciar sesión para guardar borradores');
+      return;
+    }
+
+    if (!formTitle.trim()) {
+      setError('Debes agregar un título al formulario antes de guardar');
+      return;
+    }
+
+    setIsSavingDraft(true);
+    setError(null);
+
+    try {
+      await DraftService.saveDraft(user.id, {
+        title: formTitle,
+        description: formDescription,
+        questions: questions,
+        collectEmail: collectEmail,
+        creationMethod: creationMethod
+      });
+
+      // Show success feedback
+      alert('¡Borrador guardado exitosamente!');
+    } catch (error) {
+      setError('Error al guardar el borrador');
+      console.error('Error saving draft:', error);
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  const handleLoadDraft = (draft: any) => {
+    setFormTitle(draft.title);
+    setFormDescription(draft.description);
+    setQuestions(draft.questions);
+    setCollectEmail(draft.collectEmail);
+    
+    // Notify parent components
+    onTitleChange?.(draft.title);
+    onDescriptionChange?.(draft.description);
+    onQuestionsChange?.(draft.questions);
+    onCollectEmailChange?.(draft.collectEmail);
   };
 
   useImperativeHandle(ref, () => ({
@@ -645,11 +699,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                   <Input
                     value={localQuestion.linearScaleConfig?.minLabel || ''}
                     onChange={(e) => setLocalQuestion({
-                      ...localQuestion,
-                      linearScaleConfig: {
-                        ...localQuestion.linearScaleConfig,
-                        minLabel: e.target.value
-                      }
+                      ...localQuestion
                     })}
                     placeholder="Ej: Muy malo"
                   />
@@ -660,10 +710,6 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                     value={localQuestion.linearScaleConfig?.maxLabel || ''}
                     onChange={(e) => setLocalQuestion({
                       ...localQuestion,
-                      linearScaleConfig: {
-                        ...localQuestion.linearScaleConfig,
-                        maxLabel: e.target.value
-                      }
                     })}
                     placeholder="Ej: Excelente"
                   />
@@ -873,6 +919,15 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
         {!hideSubmitButton && (
           <div className="flex justify-end space-x-4">
+            <DraftModal 
+              onLoadDraft={handleLoadDraft}
+              trigger={
+                <Button variant="outline" className="border-slate-300 text-slate-700">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Ver Borradores
+                </Button>
+              }
+            />
             {onCancel && (
               <Button
                 variant="outline"
@@ -882,6 +937,24 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                 Cancelar
               </Button>
             )}
+            <Button
+              variant="outline"
+              onClick={handleSaveDraft}
+              disabled={isSavingDraft || !formTitle.trim()}
+              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+            >
+              {isSavingDraft ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Guardar Borrador
+                </>
+              )}
+            </Button>
             <Button
               onClick={handleSubmit}
               disabled={isCreating || questions.length === 0 || !formTitle.trim()}
@@ -897,7 +970,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
 });
 
-const extractOptionsFromDescription = (description: string): Option[] | null => {
+const extractOptionsFromDescription = (description: string): any[] | null => {
     if (!description) return null;
     
     // Buscar opciones separadas por | o ,

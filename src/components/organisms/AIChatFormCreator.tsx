@@ -639,6 +639,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 				<div className="flex-1 overflow-y-auto p-4">
 					<ReusableFormBuilder
 						ref={builderRef}
+						creationMethod="ai"
 						initialTitle={formPreview.title}
 						initialDescription={formPreview.description || ''}
 						initialQuestions={convertToBuilderFormat(formPreview)}
