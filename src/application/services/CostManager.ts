@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useCredits } from '@/containers/useCredits';
+import { CONFIG } from '@/lib/config';
 
 export interface CostRule {
   type: 'ai_message' | 'form_creation' | 'ai_generation';
@@ -35,7 +36,7 @@ export class CostManager {
       type: 'ai_message',
       cost: 0,
       description: 'Mensajes iniciales de IA (gratis)',
-      limit: 15
+      limit: CONFIG.CREDITS.CHAT.FREE_MESSAGES
     });
 
     this.rules.set('ai_generation', {
@@ -46,8 +47,14 @@ export class CostManager {
 
     this.rules.set('ai_message_exceeded', {
       type: 'ai_message',
-      cost: 2,
-      description: 'Mensajes adicionales después del límite (2 créditos)'
+      cost: CONFIG.CREDITS.CHAT.COST_PER_MESSAGE_AFTER_FREE,
+      description: `Mensajes adicionales después del límite (${CONFIG.CREDITS.CHAT.COST_PER_MESSAGE_AFTER_FREE} créditos)`
+    });
+
+    this.rules.set('ai_questions_pack', {
+      type: 'ai_questions_pack',
+      cost: CONFIG.CREDITS.CHAT.COST_PER_10_QUESTIONS,
+      description: `Paquete de 10 preguntas adicionales (${CONFIG.CREDITS.CHAT.COST_PER_10_QUESTIONS} créditos)`
     });
   }
 
@@ -56,8 +63,8 @@ export class CostManager {
     if (!rule) return 0;
 
     // Handle AI message cost calculation
-    if (type === 'ai_message' && context?.messageCount > 15) {
-      return this.rules.get('ai_message_exceeded')?.cost || 2;
+    if (type === 'ai_message' && context?.messageCount > CONFIG.CREDITS.CHAT.FREE_MESSAGES) {
+      return this.rules.get('ai_message_exceeded')?.cost || CONFIG.CREDITS.CHAT.COST_PER_MESSAGE_AFTER_FREE;
     }
 
     return rule.cost;
@@ -67,22 +74,22 @@ export class CostManager {
     const warnings: CostWarning[] = [];
 
     // AI message limit warning
-    if (currentCount === 14) {
+    if (currentCount === CONFIG.CREDITS.CHAT.FREE_MESSAGES - 1) {
       warnings.push({
         type: 'approaching_limit',
-        message: '⚠️ Te queda 1 mensaje gratis antes de cobrar 2 créditos adicionales',
-        threshold: 15
+        message: `⚠️ Te queda 1 mensaje gratis antes de cobrar ${CONFIG.CREDITS.CHAT.COST_PER_MESSAGE_AFTER_FREE} créditos adicionales`,
+        threshold: CONFIG.CREDITS.CHAT.FREE_MESSAGES
       });
     }
 
-    if (currentCount >= 15) {
+    if (currentCount >= CONFIG.CREDITS.CHAT.FREE_MESSAGES) {
       warnings.push({
         type: 'limit_reached',
-        message: '📊 Has superado el límite de mensajes gratuitos. Cada mensaje adicional cuesta 2 créditos.'
+        message: `📊 Has superado el límite de ${CONFIG.CREDITS.CHAT.FREE_MESSAGES} mensajes gratuitos. Cada mensaje adicional cuesta ${CONFIG.CREDITS.CHAT.COST_PER_MESSAGE_AFTER_FREE} créditos.`
       });
     }
 
-    if (availableCredits < 2) {
+    if (availableCredits < CONFIG.CREDITS.CHAT.COST_PER_MESSAGE_AFTER_FREE) {
       warnings.push({
         type: 'insufficient_credits',
         message: '💳 No tienes suficientes créditos para continuar. Por favor recarga tu cuenta.'

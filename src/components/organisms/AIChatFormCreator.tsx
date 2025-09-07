@@ -7,6 +7,7 @@ import { useAuth } from '@/containers/useAuth';
 import { useCredits } from '@/containers/useCredits';
 import { useCostManager } from '@/application/services/CostManager';
 import { QuestionType } from '@/domain/types';
+import { CONFIG } from '@/lib/config';
 
 interface Message {
 	id: string;
@@ -107,8 +108,9 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
 			return;
 		}
 
-		// Calculate cost for this message
+		// Calculate cost for this message - only charge after free messages are used
 		const messageCost = calculateCost('ai_message', { messageCount: totalMessages + 1 });
+		console.log("🚀 ~ handleSendMessage ~ messageCost:", messageCost)
 		if (messageCost > 0 && !canAfford(messageCost)) {
 			const errorMessage: Message = {
 				id: Date.now().toString(),
@@ -136,16 +138,6 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
 				role: msg.role,
 				content: msg.content
 			}));
-
-			// Consume credits if needed
-			const messageCost = calculateCost('ai_message', { messageCount: totalMessages + 1 });
-			if (messageCost > 0) {
-				await consumeCredits({
-					amount: messageCost,
-					formTitle: 'Mensaje de chat IA',
-					formId: 'ai-chat-' + Date.now()
-				});
-			}
 
 			// Determinar si es una solicitud para agregar preguntas o crear nuevo
 			const lowerInput = inputValue.toLowerCase();
@@ -195,7 +187,8 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
 						type: determineFormType(inputValue, formContext.type)
 					},
 					preserveTitle: preserveFormContext ? formPreview.title : null,
-					preserveDescription: preserveFormContext ? formPreview.description : null
+					preserveDescription: preserveFormContext ? formPreview.description : null,
+					chargeCredits: messageCost
 				}),
 			});
 
@@ -225,8 +218,8 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
 
 			setMessages(prev => [...prev, assistantMessage]);
 			setFormPreview(data.form);
-			setCreditsUsed(2); // API consumes 2 credits per form generation
-			setTotalMessages(messages.length + 1);
+			// Los mensajes de chat son gratuitos, no consumen créditos
+			setTotalMessages(prev => prev + 1);
 
 			refreshCredits();
 		} catch (error) {
@@ -401,7 +394,7 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
 			return warnings[0].message;
 		}
 
-		const remainingFree = Math.max(0, 15 - totalMessages);
+		const remainingFree = Math.max(0, CONFIG.CREDITS.CHAT.FREE_MESSAGES - totalMessages);
 		return `Te quedan ${remainingFree} mensaje${remainingFree !== 1 ? 's' : ''} gratis antes de cobrar créditos adicionales`;
 	};
 

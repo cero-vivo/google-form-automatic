@@ -1,6 +1,11 @@
 export const CONFIG = {
   CREDITS: {
     SIGNUP_BONUS: 5,
+    CHAT: {
+      FREE_MESSAGES: 10,
+      COST_PER_10_QUESTIONS: 3,
+      COST_PER_MESSAGE_AFTER_FREE: 2
+    },
     PLANS: {
       FREE: {
         maxForms: 5,

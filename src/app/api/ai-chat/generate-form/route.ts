@@ -6,7 +6,7 @@ const openAIFormService = new OpenAIFormService();
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, userId, existingForm, preserveTitle, preserveDescription } = await request.json();
+    const { message, userId, existingForm, preserveTitle, preserveDescription, chargeCredits } = await request.json();
 
     if (!userId) {
       return NextResponse.json(
@@ -17,8 +17,8 @@ export async function POST(request: NextRequest) {
 
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return NextResponse.json(
-        { 
-          error: 'Por favor proporciona una descripción para tu formulario' 
+        {
+          error: 'Por favor proporciona una descripción para tu formulario'
         },
         { status: 400 }
       );
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     let userCredits = await CreditsService.getUserCredits(userId);
     let creditBalance = userCredits?.balance || 0;
     console.log(`User ${userId} has ${creditBalance} credits`);
-    
+
     // Initialize credits if user doesn't exist
     if (!userCredits) {
       console.log(`Initializing credits for user ${userId}`);
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       creditBalance = initializedCredits.balance;
       console.log(`After initialization, user ${userId} has ${creditBalance} credits`);
     }
-    
+
     if (creditBalance < 2) {
       return NextResponse.json(
         { success: false, error: `Créditos insuficientes. Necesitas al menos 2 créditos. Tienes: ${creditBalance}` },
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         content: `Tienes un formulario existente con título: "${existingForm.title}" y ${existingForm.questions?.length || 0} preguntas. El usuario quiere agregar más preguntas o mejorar el formulario.`
       });
     }
-    
+
     const result = await openAIFormService.processChatMessage(userId, message, conversation);
     const formStructure = result.formPreview;
 
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
           }
         ]
       };
-      
+
       return NextResponse.json({
         success: true,
         form: basicForm,
@@ -78,23 +78,26 @@ export async function POST(request: NextRequest) {
     }
 
     // Consume credits for form generation (2 credits)
-    try {
-      await CreditsService.consumeCredits(userId, {
-        amount: 2,
-        formTitle: formStructure.title || 'Formulario sin título'
-      });
-      console.log(`✅ Consumidos 2 créditos del usuario ${userId} por generación de formulario`);
-    } catch (creditError) {
-      console.error('Error consumiendo créditos:', creditError);
-      // Continuar aunque falle la deducción, pero loggear el error
+    if (chargeCredits > 0) {
+      try {
+        await CreditsService.consumeCredits(userId, {
+          amount: chargeCredits,
+          formTitle: formStructure.title || 'Formulario sin título'
+        });
+        console.log(`✅ Consumidos ${chargeCredits} créditos del usuario ${userId} por generación de formulario`);
+      } catch (creditError) {
+        console.error('Error consumiendo créditos:', creditError);
+        // Continuar aunque falle la deducción, pero loggear el error
+      }
     }
+
 
     let finalForm;
     if (existingForm && formStructure) {
       // Combinar formulario existente con nuevas preguntas
       const existingQuestions = existingForm.questions || [];
       const newQuestions = formStructure.questions || [];
-      
+
       finalForm = {
         title: preserveTitle || existingForm.title || formStructure.title,
         description: preserveDescription || existingForm.description || formStructure.description || 'Formulario generado con IA',
@@ -116,9 +119,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error generating form with AI:', error);
-    
+
     let errorMessage = 'Error al procesar tu solicitud';
-    
+
     if (error instanceof Error) {
       if (error.message.includes('OpenAI')) {
         errorMessage = 'Error de conexión con el servicio de IA. Intenta nuevamente.';
