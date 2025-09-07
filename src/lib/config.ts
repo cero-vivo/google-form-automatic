@@ -43,47 +43,32 @@ export const CONFIG = {
 export const MOONSHOT_CONFIG = {
   model: "kimi-k2-turbo-preview"/* "kimi-k2-0905-preview" */,
   //temperature: 0.2,
-  temperature: 0.3,
-  maxCompletionTokens: 12000,
-  systemPrompt: `Eres un experto en crear formularios de Google Forms. Genera estructuras de formularios completas basadas en las solicitudes del usuario.
+  temperature: 0.1,
+  maxCompletionTokens: 15000,
+  systemPrompt: `Eres un experto en crear formularios de Google Forms. Genera estructuras de formularios COMPLETAS y CONCISAS basadas en las solicitudes del usuario.
 
-Reglas:
-1. Siempre proporciona un título claro y descriptivo
-2. Incluye una descripción que explique el propósito del formulario
-3. Crea preguntas relevantes según la solicitud:
-   - Por defecto: 10-15 preguntas
-   - Si el usuario especifica un número: usa ese número exacto
-   - Para solicitudes complejas: hasta 20 preguntas máximo
-4. Usa tipos de preguntas apropiados (usa estos nombres exactos):
-   - short_text / texto_corto: para respuestas breves
-   - multiple_choice / opcion_multiple: cuando hay opciones limitadas
-   - checkboxes / casillas: para selección múltiple
-   - linear_scale / escala_lineal: para calificaciones
-   - date / fecha: para fechas
-   - email / correo: para correos electrónicos
-   - number / numero: para cantidades
-   - long_text / texto_largo: para respuestas extensas
-   - dropdown / desplegable: para listas desplegables
-   - time / hora: para horas
+Reglas CRÍTICAS:
+1. Título corto y descriptivo (máx 50 caracteres)
+2. Descripción breve (máx 100 caracteres)
+3. Número de preguntas:
+   - Por defecto: 8-12 preguntas (no más)
+   - Si el usuario especifica: usa ese número exacto
+   - MÁXIMO: 15 preguntas para respuestas largas
+4. Tipos de preguntas (usa estos nombres exactos):
+   - short_text: respuestas breves
+   - multiple_choice: opciones limitadas
+   - checkboxes: selección múltiple
+   - linear_scale: calificaciones 1-5 o 1-10
+   - long_text: solo cuando sea absolutamente necesario
 
-Formato de respuesta JSON OBLIGATORIO y COMPLETO:
-{
-  "title": "Título del formulario",
-  "description": "Descripción detallada del propósito",
-  "questions": [
-    {
-      "type": "short_text",
-      "title": "Texto de la pregunta",
-      "required": false,
-      "options": ["opción1", "opción2"] // solo para multiple_choice, checkboxes y dropdown
-    }
-  ]
-}
+FORMATO JSON OBLIGATORIO - RESPUESTA COMPLETA:
+{"title":"Título corto","description":"Descripción breve","questions":[{"type":"short_text","title":"Pregunta","required":true},{"type":"multiple_choice","title":"Pregunta","options":["Opc1","Opc2"],"required":false}]}
 
-IMPORTANTE:
-- Usa EXACTAMENTE el formato JSON especificado
-- Asegúrate de que el JSON esté COMPLETO y válido
-- Cierra TODAS las llaves y corchetes
-- No corte la respuesta a mitad de una pregunta`,
-  userPromptSuffix: 'IMPORTANTE: Si el usuario especifica un número de preguntas (como "30 preguntas" o "debe tener 30 preguntas"), genera EXACTAMENTE ese número de preguntas. Si no se especifica, genera entre 10-25 preguntas.'
+RESTRICCIONES IMPORTANTES:
+- Usa opciones cortas (máx 15 caracteres)
+- Evita descripciones largas en preguntas
+- Combina preguntas similares
+- Usa linear_scale para calificaciones en lugar de texto largo
+- MANTÉN las respuestas CONCISAS para evitar truncamiento`,
+  userPromptSuffix: 'IMPORTANTE: Mantén las respuestas CONCISAS. Si no se especifica número de preguntas, genera entre 8-12 preguntas máximo. Usa textos cortos y opciones breves.'
 } as const;
