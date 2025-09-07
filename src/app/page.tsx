@@ -80,35 +80,55 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero Section - Solid colors, high conversion */}
+      {/* Hero Section - 3 Creation Methods */}
       <section className="relative py-24 px-6 bg-light-gray overflow-hidden">
         <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-center">
           {/* Left: Copy + CTAs + Social Proof */}
           <div>
             <Badge className="mb-6 bg-velocity/10 text-velocity border-velocity/30 px-4 py-2 font-semibold">
-              Convierte Excel/CSV a Google Forms
+              3 Formas de Crear Google Forms
             </Badge>
             <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight text-primary">
-              Crea Google Forms desde Excel en segundos
+              Crea formularios profesionales en segundos
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl leading-relaxed">
-              Sube tu archivo y obtén un formulario profesional listo para usar. Velocidad, precisión y cero complicaciones.
+              Tres métodos poderosos para crear formularios: importa archivos, construye manualmente o usa IA. Tu flujo, tu elección.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            
+            {/* 3 Methods Preview */}
+            <div className="grid sm:grid-cols-3 gap-4 mb-8">
+              <div className="bg-white p-4 rounded-xl border border-gray-200">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+                  <FileSpreadsheet className="h-4 w-4" />
+                </div>
+                <h4 className="font-semibold text-sm text-primary mb-1">Importar Archivos</h4>
+                <p className="text-xs text-muted-foreground">Excel y CSV</p>
+              </div>
+              <div className="bg-white p-4 rounded-xl border border-gray-200">
+                <div className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mb-2">
+                  <FormInput className="h-4 w-4" />
+                </div>
+                <h4 className="font-semibold text-sm text-primary mb-1">Constructor</h4>
+                <p className="text-xs text-muted-foreground">Manual y plantillas</p>
+              </div>
+              <div className="bg-white p-4 rounded-xl border border-gray-200">
+                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-2">
+                  <Sparkles className="h-4 w-4" />
+                </div>
+                <h4 className="font-semibold text-sm text-primary mb-1">Asistente IA</h4>
+                <p className="text-xs text-muted-foreground">Inteligente y rápido</p>
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" className="btn-modern text-white font-bold text-lg px-8 py-5">
                 <Link href="/dashboard" className="flex items-center">
                   <Upload className="mr-3 h-6 w-6" />
-                  Probar Gratis
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-2 border-primary/30 text-primary hover:border-velocity hover:text-velocity hover:bg-velocity/5 text-lg px-8 py-5">
-                <Link href="#upload" className="flex items-center">
-                  <Target className="mr-3 h-5 w-5" />
-                  Ver Demo
+                  Comenzar Gratis
                 </Link>
               </Button>
             </div>
-            <div className="flex flex-wrap gap-6 text-sm">
+            <div className="flex flex-wrap gap-6 text-sm mt-6">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-excel" />
                 <span className="font-semibold text-primary">Gratis</span>
@@ -120,8 +140,8 @@ export default function HomePage() {
           <div className="relative max-w-xl w-full mx-auto">
             <div className="relative">
               <Image
-                src="/images/image1.png"
-                alt="Importar Excel y CSV"
+                src="/images/image2.png"
+                alt="3 métodos de creación de formularios"
                 width={680}
                 height={420}
                 className="rounded-2xl shadow-xl border border-gray-200 bg-white"
@@ -132,86 +152,98 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features Section - 3 Creation Methods */}
       <section id="features" className="py-24 px-6 bg-white">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-velocity/10 text-velocity border-velocity/30 px-4 py-2 font-semibold">
-              Características
+              3 Formas de Crear
             </Badge>
             <h2 className="text-4xl md:text-5xl font-black mb-4 text-primary">
-              Crea y ve formularios en segundos
+              Elige cómo crear tu formulario
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Convierte tus hojas de cálculo en formularios listos para usar y accede a ellos desde tu panel. Rápido, simple y confiable.
+              Tres métodos diseñados para adaptarse a tu flujo de trabajo. Desde archivos hasta IA, crea formularios como prefieras.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="border border-gray-200">
-              <CardContent className="p-6">
-                <div className="w-10 h-10 rounded-lg bg-velocity/10 text-velocity flex items-center justify-center mb-4">
-                  <Sparkles className="h-6 w-6" />
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* File Upload Method */}
+            <Card className="border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-6 mx-auto">
+                  <FileSpreadsheet className="h-8 w-8" />
                 </div>
-                <h3 className="font-semibold text-primary mb-2">Crea en segundos</h3>
-                <p className="text-sm text-muted-foreground">Sube tu archivo y genera un Google Form al instante, sin pasos complicados.</p>
+                <h3 className="text-xl font-bold text-primary mb-3 text-center">Importar Archivos</h3>
+                <p className="text-sm text-muted-foreground text-center mb-6">
+                  Sube Excel o CSV y convierte tus columnas en preguntas automáticamente
+                </p>
+                <ul className="space-y-2 text-sm text-primary mb-6">
+                  <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-excel flex-shrink-0" /> Excel (.xlsx) y CSV</li>
+                  <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-excel flex-shrink-0" /> Detección automática de tipos</li>
+                  <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-excel flex-shrink-0" /> Mapeo inteligente de preguntas</li>
+                </ul>
+                <Button className="w-full" variant="outline" asChild>
+                  <Link href="/create/file" className="flex items-center justify-center">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Importar Archivo
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="border border-gray-200">
-              <CardContent className="p-6">
-                <div className="w-10 h-10 rounded-lg bg-velocity/10 text-velocity flex items-center justify-center mb-4">
-                  <FileSpreadsheet className="h-6 w-6" />
+            {/* Manual Builder Method */}
+            <Card className="border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 rounded-xl bg-green-100 text-green-600 flex items-center justify-center mb-6 mx-auto">
+                  <FormInput className="h-8 w-8" />
                 </div>
-                <h3 className="font-semibold text-primary mb-2">Excel y CSV</h3>
-                <p className="text-sm text-muted-foreground">Compatibilidad con .xlsx y .csv, con detección automática de tipos de preguntas.</p>
+                <h3 className="text-xl font-bold text-primary mb-3 text-center">Constructor Manual</h3>
+                <p className="text-sm text-muted-foreground text-center mb-6">
+                  Crea formularios desde cero con nuestro editor intuitivo y plantillas predefinidas
+                </p>
+                <ul className="space-y-2 text-sm text-primary mb-6">
+                  <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-excel flex-shrink-0" /> Editor drag & drop</li>
+                  <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-excel flex-shrink-0" /> Plantillas profesionales</li>
+                  <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-excel flex-shrink-0" /> Validación en tiempo real</li>
+                </ul>
+                <Button className="w-full" variant="outline" asChild>
+                  <Link href="/create/manual" className="flex items-center justify-center">
+                    <Target className="mr-2 h-4 w-4" />
+                    Crear Manualmente
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
 
-            <Card className="border border-gray-200">
-              <CardContent className="p-6">
-                <div className="w-10 h-10 rounded-lg bg-velocity/10 text-velocity flex items-center justify-center mb-4">
-                  <FormInput className="h-6 w-6" />
+            {/* AI Assistant Method */}
+            <Card className="border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+              <CardContent className="p-8">
+                <div className="w-16 h-16 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-6 mx-auto">
+                  <Sparkles className="h-8 w-8" />
                 </div>
-                <h3 className="font-semibold text-primary mb-2">Vista previa inteligente</h3>
-                <p className="text-sm text-muted-foreground">Revisa las preguntas detectadas antes de crear el formulario definitivo.</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-gray-200">
-              <CardContent className="p-6">
-                <div className="w-10 h-10 rounded-lg bg-velocity/10 text-velocity flex items-center justify-center mb-4">
-                  <Clock className="h-6 w-6" />
-                </div>
-                <h3 className="font-semibold text-primary mb-2">Acceso inmediato</h3>
-                <p className="text-sm text-muted-foreground">Ve y gestiona tus formularios desde el dashboard en cualquier momento.</p>
+                <h3 className="text-xl font-bold text-primary mb-3 text-center">Asistente IA</h3>
+                <p className="text-sm text-muted-foreground text-center mb-6">
+                  Describe lo que necesitas y nuestra IA crea el formulario completo con inteligencia
+                </p>
+                <ul className="space-y-2 text-sm text-primary mb-6">
+                  <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-excel flex-shrink-0" /> Conversación natural</li>
+                  <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-excel flex-shrink-0" /> Optimización automática</li>
+                  <li className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-excel flex-shrink-0" /> Mejora continua</li>
+                </ul>
+                <Button className="w-full" variant="outline" asChild>
+                  <Link href="/create/ai" className="flex items-center justify-center">
+                    <Zap className="mr-2 h-4 w-4" />
+                    Usar IA
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* Upload Section - Immediate conversion */}
-      <section id="upload" className="py-24 px-6 bg-white">
-        <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-start">
-          <div>
-            <h2 className="text-4xl md:text-5xl font-black mb-4 text-primary">
-              Sube tu archivo y genera tu formulario ahora
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-xl">
-              Arrastra tu Excel o CSV y en segundos tendrás un Google Form listo para publicar.
-            </p>
-            <ul className="space-y-3 text-primary">
-              <li className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-excel" /> Soporta .xlsx y .csv</li>
-              <li className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-excel" /> Detección automática de tipos de preguntas</li>
-              <li className="flex items-center gap-2"><CheckCircle className="h-5 w-5 text-excel" /> Exportación directa a Google Forms</li>
-            </ul>
-          </div>
-          <div>
-            <FileUploadCard className="max-w-xl w-full mx-auto" />
-          </div>
-        </div>
-      </section>
+
 
       {/* CTA Section */}
       <section className="py-20 px-6 bg-velocity-light">
