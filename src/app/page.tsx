@@ -279,11 +279,11 @@ export default function HomePage() {
           </div>
           
           <p className="text-muted-foreground mb-8 text-lg max-w-2xl mx-auto">
-            La forma más rápida de crear Google Forms desde Excel y CSV, con precisión y sin complicaciones.
+            La forma más inteligente y rápida de crear formularios profesionales con Google Forms.
           </p>
           
           <div className="pt-8 border-t border-primary/10 text-muted-foreground">
-            <p className="font-medium">© {new Date().getFullYear()} FastForm. El futuro es ahora.</p>
+            <p className="font-medium">© {new Date().getFullYear()} FastForm.</p>
           </div>
         </div>
       </footer>
