@@ -40,7 +40,7 @@ export default function PricingPage() {
 
   // CONFIGURACIÓN CENTRALIZADA DE PRECIOS - CAMBIAR AQUÍ PARA ACTUALIZAR TODOS
   const PRICING_CONFIG = {
-    unitPrice: 1, // ARS por formulario individual
+    unitPrice: 500, // ARS por formulario individual
     additionalIncrementPercent: 3, // 2.5% por formulario adicional (solo para cantidad personalizada)
     packs: {
       pack20: {
@@ -116,6 +116,7 @@ export default function PricingPage() {
 
   // Seleccionar pack predefinido
   const selectPack = (pack: PricingPack) => {
+    console.log("🚀 ~ selectPack ~ pack:", pack)
     setSelectedPack(pack);
     setQuantity(pack.packSize);
   };
@@ -231,8 +232,14 @@ export default function PricingPage() {
             Créditos de Formularios
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Compra la cantidad exacta de formularios que necesitas. Precio base de ${PRICING_CONFIG.unitPrice} ARS por formulario, 
-            con descuentos especiales en packs grandes.
+            Sistema flexible de créditos: usa tus créditos según el tipo de formulario que quieras crear.
+            <span className="block mt-2">
+              <span className="font-semibold text-blue-600">• Formularios con IA: 2 créditos</span> | 
+              <span className="font-semibold text-green-600">• Formularios tradicionales: 1 crédito</span>
+            </span>
+            <span className="block mt-2 text-base">
+              Precio base de ${PRICING_CONFIG.unitPrice} ARS por crédito con descuentos especiales en packs grandes.
+            </span>
           </p>
         </div>
 
@@ -268,11 +275,11 @@ export default function PricingPage() {
                   {pack.packSize === 100 && <Crown className="w-6 h-6" />}
                 </div>
                 
-                <CardTitle className="text-2xl font-bold">{pack.packSize} Formularios</CardTitle>
+                <CardTitle className="text-2xl font-bold">{pack.packSize} Créditos</CardTitle>
                 <div className="space-y-2">
                   <div className="flex items-baseline justify-center">
                     <span className="text-4xl font-bold text-primary">
-                      ${pack.discountedPrice.toLocaleString()}
+                      ${pack.discountedPrice.toLocaleString()} ARS
                     </span>
                   </div>
                   
@@ -291,7 +298,7 @@ export default function PricingPage() {
               
               <CardContent className="text-center">
                 <p className="text-sm text-muted-foreground mb-4">
-                  ${Math.round(pack.discountedPrice / pack.packSize)} por formulario
+                  ${Math.round(pack.discountedPrice / pack.packSize)} por crédito
                 </p>
                 
                 <Button 
@@ -319,7 +326,7 @@ export default function PricingPage() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Cantidad Personalizada</CardTitle>
               <CardDescription>
-                Elige exactamente cuántos formularios necesitas
+                Elige exactamente cuántos créditos necesitas
               </CardDescription>
             </CardHeader>
             
@@ -344,7 +351,7 @@ export default function PricingPage() {
                     min="1"
                     className="w-24 text-center text-2xl font-bold border-0 bg-transparent"
                   />
-                  <p className="text-sm text-muted-foreground">formularios</p>
+                  <p className="text-sm text-muted-foreground">créditos</p>
                 </div>
                 
                 <Button
@@ -393,7 +400,7 @@ export default function PricingPage() {
                 
                 {!selectedPack && quantity > 1 && (
                   <div className="text-sm text-muted-foreground">
-                    ${Math.round(currentPrice / quantity)} por formulario
+                    ${Math.round(currentPrice / quantity)} por crédito
                   </div>
                 )}
               </div>
@@ -418,7 +425,7 @@ export default function PricingPage() {
                 ) : (
                   <>
                     <ShoppingCart className="h-5 w-5 mr-2" />
-                    Comprar {quantity} Formulario{quantity !== 1 ? 's' : ''}
+                    Comprar {quantity} Crédito{quantity !== 1 ? 's' : ''}
                   </>
                 )}
               </Button>
@@ -430,28 +437,23 @@ export default function PricingPage() {
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Características incluidas */}
           <div className="bg-white rounded-2xl p-8 text-center">
-            <h3 className="text-2xl font-bold mb-6">Todos los créditos incluyen</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto">
-                  <FileText className="w-6 h-6 text-blue-600" />
+            <h3 className="text-2xl font-bold mb-6">Sistema de Créditos</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <div className="bg-blue-50 rounded-xl p-6">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-6 h-6 text-blue-600" />
                 </div>
-                <h4 className="font-semibold">Creación desde Excel/CSV</h4>
-                <p className="text-sm text-muted-foreground">Sube tus archivos y convierte automáticamente</p>
+                <h4 className="font-semibold text-lg mb-2">Formularios con IA</h4>
+                <p className="text-3xl font-bold text-blue-600 mb-2">2 créditos</p>
+                <p className="text-sm text-muted-foreground">Crea formularios inteligentes con asistencia de IA</p>
               </div>
-              <div className="space-y-2">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto">
-                  <Check className="w-6 h-6 text-green-600" />
+              <div className="bg-green-50 rounded-xl p-6">
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <FileText className="w-6 h-6 text-green-600" />
                 </div>
-                <h4 className="font-semibold">Todos los tipos de preguntas</h4>
-                <p className="text-sm text-muted-foreground">Texto, múltiple opción, escalas, fechas y más</p>
-              </div>
-              <div className="space-y-2">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto">
-                  <Zap className="w-6 h-6 text-purple-600" />
-                </div>
-                <h4 className="font-semibold">Exportación a Google Forms</h4>
-                <p className="text-sm text-muted-foreground">Formularios listos en tu cuenta de Google</p>
+                <h4 className="font-semibold text-lg mb-2">Formularios Tradicionales</h4>
+                <p className="text-3xl font-bold text-green-600 mb-2">1 crédito</p>
+                <p className="text-sm text-muted-foreground">Crea desde cero, Excel/CSV o plantillas</p>
               </div>
             </div>
           </div>
