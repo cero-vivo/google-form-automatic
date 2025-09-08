@@ -289,6 +289,7 @@ export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData
 				case 'multiple choice':
 				case 'opción múltiple':
 				case 'opcion multiple':
+				case 'opcion_multiple':
 					mappedType = QuestionType.MULTIPLE_CHOICE;
 					break;
 				case 'checkbox':
@@ -668,7 +669,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 			</div>
 
 			{/* Mobile Builder Toggle */}
-			<div className="md:hidden fixed bottom-4 right-4 z-50">
+			<div className="md:hidden fixed bottom-6 right-4 z-50">
 				<button
 					onClick={() => setShowMobileBuilder(!showMobileBuilder)}
 					className="px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700"

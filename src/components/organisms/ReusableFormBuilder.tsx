@@ -63,6 +63,8 @@ const mapQuestionType = (type: string | undefined): QuestionType => {
         return QuestionType.LONG_TEXT;
       case 'multiple_choice':
       case 'multiple choice':
+      case 'opción múltiple':
+      case 'opcion multiple':
       case 'opcion_multiple':
       case 'choice':
         return QuestionType.MULTIPLE_CHOICE;
@@ -129,15 +131,17 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   // Update questions when initialQuestions changes with better type mapping
   React.useEffect(() => {
     const mappedQuestions = initialQuestions.map(q => {
-      // Ensure correct type mapping from string to enum
-      let mappedType: QuestionType;
-      switch (q.type?.toLowerCase()) {
-        case 'multiple_choice':
-        case 'opcion_multiple':
-        case 'multiple choice':
-        case 'choice':
-          mappedType = QuestionType.MULTIPLE_CHOICE;
-          break;
+        // Ensure correct type mapping from string to enum
+        let mappedType: QuestionType;
+        switch (q.type?.toLowerCase()) {
+          case 'multiple_choice':
+          case 'opcion_multiple':
+          case 'opcion multiple':
+          case 'opción múltiple':
+          case 'multiple choice':
+          case 'choice':
+            mappedType = QuestionType.MULTIPLE_CHOICE;
+            break;
         case 'checkboxes':
         case 'checkbox':
         case 'casillas':

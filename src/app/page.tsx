@@ -140,7 +140,7 @@ export default function HomePage() {
           <div className="relative max-w-xl w-full mx-auto">
             <div className="relative">
               <Image
-                src="/images/heroimage1.png"
+                src="/images/heroimage2.png"
                 alt="3 métodos de creación de formularios"
                 width={680}
                 height={420}
