@@ -1,5 +1,5 @@
 import { db, COLLECTIONS } from './config';
-import { doc, setDoc, getDocs, collection, query, where, orderBy, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDocs, getDoc, collection, query, where, orderBy, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { Question } from '@/domain/entities/question';
 
 export interface FormDraft {
@@ -96,6 +96,25 @@ export class DraftService {
     } catch (error) {
       console.error('Error updating draft:', error);
       throw new Error('No se pudo actualizar el borrador');
+    }
+  }
+
+  static async getDraftById(userId: string, draftId: string): Promise<FormDraft | null> {
+    try {
+      const draftDoc = doc(db, this.DRAFTS_COLLECTION, draftId);
+      const snapshot = await getDoc(draftDoc);
+      
+      if (snapshot.exists() && snapshot.data().userId === userId) {
+        return {
+          id: snapshot.id,
+          ...snapshot.data()
+        } as FormDraft;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error getting draft by ID:', error);
+      throw new Error('No se pudo obtener el borrador');
     }
   }
 }

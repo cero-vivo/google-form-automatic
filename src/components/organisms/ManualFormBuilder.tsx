@@ -18,6 +18,7 @@ import { ReusableFormBuilder } from './ReusableFormBuilder';
 interface ManualFormBuilderProps {
   onFormCreated?: (formData: any) => void;
   currentCredits?: number;
+  draftId?: string;
 }
 
 const questionTypes = [
@@ -32,7 +33,7 @@ const questionTypes = [
   { value: 'url' as QuestionType, label: 'URL', icon: Globe, description: 'Valida formato de sitio web' }
 ];
 
-export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualFormBuilderProps) {
+export function ManualFormBuilder({ onFormCreated, currentCredits = 0, draftId }: ManualFormBuilderProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [formTitle, setFormTitle] = useState('');
   const [formDescription, setFormDescription] = useState('');
@@ -128,6 +129,7 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0 }: ManualF
         onFormCreated={handleCreateForm}
         mode="create"
         submitButtonText="Crear formulario"
+        draftId={draftId}
       />
     </div>
   );

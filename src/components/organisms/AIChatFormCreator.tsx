@@ -39,7 +39,7 @@ interface FormContext {
 	};
 }
 
-export function AIChatFormCreator({ onFormCreated }: { onFormCreated?: (formData: FormPreviewData) => void }) {
+export function AIChatFormCreator({ onFormCreated, draftId }: { onFormCreated?: (formData: FormPreviewData) => void, draftId?: string }) {
 	const { user } = useAuth();
 	const { currentCredits, refreshCredits, consumeCredits } = useCredits();
 	const credits = currentCredits;
@@ -647,6 +647,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 						initialQuestions={convertToBuilderFormat(formPreview)}
 						onFormCreated={handleBuilderSubmit}
 						submitButtonText="Publicar formulario"
+						draftId={draftId}
 						onTitleChange={(title: string) => {
 							setFormPreview(prev => ({ ...prev, title }));
 						}}
@@ -707,6 +708,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 							initialQuestions={convertToBuilderFormat(formPreview)}
 							onFormCreated={handleBuilderSubmit}
 							submitButtonText="Publicar formulario"
+							draftId={draftId}
 							onTitleChange={(title: string) => {
 								setFormPreview(prev => ({ ...prev, title }));
 							}}

@@ -12,11 +12,12 @@ import Link from 'next/link';
 interface FileImportPageProps {
   searchParams: Promise<{
     onFormCreated?: string;
+    draftId?: string;
   }>;
 }
 
 export default function FileImportPage({ searchParams }: FileImportPageProps) {
-  const [resolvedSearchParams, setResolvedSearchParams] = useState<{ onFormCreated?: string }>({});
+  const [resolvedSearchParams, setResolvedSearchParams] = useState<{ onFormCreated?: string; draftId?: string }>({});
   const router = useRouter();
   const { currentCredits } = useCredits();
 
@@ -73,6 +74,7 @@ export default function FileImportPage({ searchParams }: FileImportPageProps) {
         <FileImportFormCreator 
           onFormCreated={handleFormCreated} 
           currentCredits={currentCredits} 
+          draftId={resolvedSearchParams.draftId}
         />
       </main>
     </div>

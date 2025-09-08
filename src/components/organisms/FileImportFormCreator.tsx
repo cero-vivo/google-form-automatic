@@ -19,9 +19,10 @@ import { FormSuccessView } from './FormSuccessView';
 interface FileImportFormCreatorProps {
   onFormCreated?: (formData: any) => void;
   currentCredits?: number;
+  draftId?: string;
 }
 
-export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: FileImportFormCreatorProps) {
+export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draftId }: FileImportFormCreatorProps) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
 
@@ -292,6 +293,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0 }: Fil
                 onCollectEmailChange={setCollectEmail}
                 onFormCreated={handleCreateForm}
                 mode="create"
+                draftId={draftId}
               />
             </div>
           </CardContent>

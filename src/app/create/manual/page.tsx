@@ -12,11 +12,12 @@ import Link from 'next/link';
 interface ManualBuilderPageProps {
   searchParams: Promise<{
     onFormCreated?: string;
+    draftId?: string;
   }>;
 }
 
 export default function ManualBuilderPage({ searchParams }: ManualBuilderPageProps) {
-  const [resolvedSearchParams, setResolvedSearchParams] = useState<{ onFormCreated?: string }>({});
+  const [resolvedSearchParams, setResolvedSearchParams] = useState<{ onFormCreated?: string; draftId?: string }>({});
   const router = useRouter();
   const { currentCredits } = useCredits();
 
@@ -76,6 +77,7 @@ export default function ManualBuilderPage({ searchParams }: ManualBuilderPagePro
         <ManualFormBuilder 
           onFormCreated={handleFormCreated} 
           currentCredits={currentCredits} 
+          draftId={resolvedSearchParams.draftId}
         />
       </main>
     </div>

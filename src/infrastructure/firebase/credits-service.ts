@@ -216,7 +216,6 @@ export class CreditsService {
     userId: string, 
     callback: (credits: UserCredits | null) => void
   ): () => void {
-    console.log(`🔍 Suscribiendo a créditos del usuario: ${userId}`);
     const docRef = doc(db, COLLECTION_NAME, userId);
     
     // Configurar opciones para evitar múltiples snapshots

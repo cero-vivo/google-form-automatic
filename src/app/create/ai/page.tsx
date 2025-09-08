@@ -13,6 +13,8 @@ export default function AIChatPage() {
   const searchParams = useSearchParams();
   const { currentCredits } = useCredits();
   
+  const draftId = searchParams.get('draftId');
+  
   const handleFormCreated = (formData: any) => {
     const onFormCreated = searchParams.get('onFormCreated');
     if (onFormCreated) {
@@ -35,7 +37,7 @@ export default function AIChatPage() {
                 <Logo className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0" />
                 <div className="ml-2 min-w-0">
                   <h1 className="text-base sm:text-lg md:text-xl font-bold text-primary truncate">
-                    Asistente IA FastForm
+                    FastForm IA
                   </h1>
                   <p className="text-xs text-muted-foreground hidden sm:block truncate">
                     Crea formularios con inteligencia artificial
@@ -73,8 +75,9 @@ export default function AIChatPage() {
           </div>
           
           <AIChatFormCreator 
-            onFormCreated={handleFormCreated} 
-          />
+          onFormCreated={handleFormCreated} 
+          draftId={draftId || undefined}
+        />
         </div>
       </main>
     </div>

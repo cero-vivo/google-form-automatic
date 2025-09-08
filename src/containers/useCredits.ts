@@ -104,7 +104,6 @@ export const useCredits = (): UseCreditsReturn => {
       initializeCreditsIfNeeded(user.id).then(() => {
         // Luego suscribirse a cambios en tiempo real
         unsubscribe = CreditsService.subscribeToUserCredits(user.id, (userCredits) => {
-          console.log(`📥 Créditos actualizados en tiempo real:`, userCredits);
           setCredits(userCredits);
           setLoading(false);
         });

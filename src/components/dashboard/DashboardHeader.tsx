@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Logo } from '@/components/ui/logo';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FileText, CreditCard, Menu, X } from 'lucide-react';
 import { AuthUser } from '@/containers/useAuth';
 import { DraftModal } from '../organisms/DraftModal';
+import { FormDraft } from '@/infrastructure/services/DraftService';
 
 interface DashboardHeaderProps {
   user: AuthUser | null | null;
@@ -29,6 +31,7 @@ export function DashboardHeader({
   onSignOut
 }: DashboardHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
   return (
     <header className="border-b bg-white sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -74,6 +77,13 @@ export function DashboardHeader({
                 Borradores
               </Button>
             }
+            onSelectBuilder={(draft: FormDraft, builderType: 'ai' | 'manual' | 'file') => {
+              const params = new URLSearchParams();
+              params.set('draftId', draft.id);
+              params.set('builder', builderType);
+              
+              router.push(`/create?${params.toString()}`);
+            }}
           />
           
           <Button
@@ -152,6 +162,13 @@ export function DashboardHeader({
                   Borradores
                 </Button>
               }
+              onSelectBuilder={(draft: FormDraft, builderType: 'ai' | 'manual' | 'file') => {
+                const params = new URLSearchParams();
+                params.set('draftId', draft.id);
+                params.set('builder', builderType);
+                
+                router.push(`/create?${params.toString()}`);
+              }}
             />
             
             <Button

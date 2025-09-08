@@ -32,6 +32,7 @@ interface ReusableFormBuilderProps {
   collectEmail?: boolean;
   hideSubmitButton?: boolean;
   creationMethod: 'ai' | 'manual' | 'excel';
+  draftId?: string;
 }
 
 const questionTypes = [
@@ -115,7 +116,8 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   mode = 'create',
   submitButtonText = 'Crear formulario',
   hideSubmitButton = false,
-  creationMethod
+  creationMethod,
+  draftId
 }: ReusableFormBuilderProps, ref) {
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [formTitle, setFormTitle] = useState(initialTitle);
@@ -127,6 +129,34 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [showDraftModal, setShowDraftModal] = useState(false);
   const { user } = useAuth();
+
+  // Load draft automatically when draftId is provided
+  React.useEffect(() => {
+    const loadDraftById = async () => {
+      if (!draftId || !user) return;
+      
+      try {
+        const draft = await DraftService.getDraftById(user.id, draftId);
+        if (draft) {
+          setFormTitle(draft.title);
+          setFormDescription(draft.description);
+          setQuestions(draft.questions);
+          setCollectEmail(draft.collectEmail);
+          
+          // Notify parent components
+          onTitleChange?.(draft.title);
+          onDescriptionChange?.(draft.description);
+          onQuestionsChange?.(draft.questions);
+          onCollectEmailChange?.(draft.collectEmail);
+        }
+      } catch (error) {
+        console.error('Error loading draft:', error);
+        setError('Error al cargar el borrador');
+      }
+    };
+
+    loadDraftById();
+  }, [draftId, user]);
 
   // Update questions when initialQuestions changes with better type mapping
   React.useEffect(() => {
