@@ -88,14 +88,31 @@ export const DraftModal: React.FC<DraftModalProps> = ({
     }
   };
 
-  const formatDate = (date: Date) => {
-    console.log("🚀 ~ formatDate ~ date:", date)
-    return new Date(date).toLocaleDateString('ar-AR', {
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const formatDate = (dateInput: Date | number | string | { seconds: number; nanoseconds: number }) => {
+    try {
+      let date: Date;
+      
+      if (dateInput && typeof dateInput === 'object' && 'seconds' in dateInput) {
+        // Firebase Timestamp object
+        date = new Date(dateInput.seconds * 1000);
+      } else {
+        // Regular date format
+        date = new Date(dateInput as any);
+      }
+      
+      if (isNaN(date.getTime())) {
+        return 'Fecha inválida';
+      }
+      
+      return date.toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return 'Fecha inválida';
+    }
   };
 
   const getCreationMethodLabel = (method: string) => {
@@ -142,11 +159,11 @@ export const DraftModal: React.FC<DraftModalProps> = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[85vh] w-[95vw] sm:w-[90vw] md:w-[80vw] mx-auto overflow-y-auto rounded-lg p-4 sm:p-6">
         {!showBuilderSelection ? (
           <>
-            <DialogHeader>
-              <DialogTitle className="text-lg font-semibold">
+            <DialogHeader className="pb-2 sm:pb-4 px-1 sm:px-2">
+              <DialogTitle className="text-lg sm:text-xl font-semibold pr-8">
                 Mis Borradores
               </DialogTitle>
             </DialogHeader>
@@ -168,52 +185,56 @@ export const DraftModal: React.FC<DraftModalProps> = ({
                 <p className="text-xs mt-1">Los formularios guardados como borrador aparecerán aquí</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4 overflow-hidden">
                 {drafts.map((draft) => (
-                  <Card key={draft.id} className="border-slate-200">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle className="text-base font-medium text-slate-800">
+                  <Card key={draft.id} className="border-slate-200 hover:shadow-sm transition-shadow overflow-hidden">
+                    <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-4 pt-3 sm:pt-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 min-w-0">
+                        <div className="flex-1 min-w-0 overflow-hidden">
+                          <CardTitle className="text-base font-medium text-slate-800 truncate break-words mb-1">
                             {draft.title || 'Sin título'}
                           </CardTitle>
-                          <p className="text-sm text-slate-600 mt-1">
+                          <p className="text-sm text-slate-600 line-clamp-2 break-words leading-relaxed">
                             {draft.description || 'Sin descripción'}
                           </p>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="text-xs">
+                        <div className="flex items-center space-x-2 flex-shrink-0 mt-1 sm:mt-0">
+                          <Badge variant="outline" className="text-xs hidden sm:inline-flex">
                             {getCreationMethodLabel(draft.creationMethod)}
                           </Badge>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-red-600 hover:text-red-700 h-7 w-7 p-0"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 h-7 w-7 p-0 flex-shrink-0 rounded-full"
                             onClick={() => handleDeleteDraft(draft.id)}
+                            aria-label="Eliminar borrador"
                           >
                             <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center space-x-4 text-slate-600">
-                          <span className="flex items-center">
+                    <CardContent className="pt-0 px-3 sm:px-4 pb-3 sm:pb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                        <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-2 text-slate-600 min-w-0 mb-3 sm:mb-0">
+                          <span className="flex items-center flex-shrink-0">
                             <Clock className="w-3 h-3 mr-1" />
-                            {formatDate(new Date(draft.updatedAt).getTime())}
+                            {formatDate(draft.updatedAt)}
                           </span>
-                          <span>
+                          <span className="flex items-center flex-shrink-0">
                             {draft.questions.length} pregunta{draft.questions.length !== 1 ? 's' : ''}
                           </span>
+                          <Badge variant="outline" className="text-xs sm:hidden flex-shrink-0">
+                            {getCreationMethodLabel(draft.creationMethod)}
+                          </Badge>
                         </div>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => handleLoadDraft(draft)}
-                          className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                          className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full sm:w-auto flex-shrink-0 mt-1 sm:mt-0"
                         >
-                          <Edit3 className="w-3 h-3 mr-1" />
+                          <Edit3 className="w-3 h-3 mr-1.5" />
                           Cargar
                         </Button>
                       </div>
@@ -225,32 +246,32 @@ export const DraftModal: React.FC<DraftModalProps> = ({
           </>
         ) : (
           <>
-            <DialogHeader>
-              <DialogTitle className="text-lg font-semibold">
+            <DialogHeader className="pb-2 sm:pb-4">
+              <DialogTitle className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 pr-8">
                 Seleccionar Builder
               </DialogTitle>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm sm:text-base text-slate-600 break-words text-center">
                 ¿En qué builder deseas abrir "{selectedDraft?.title || 'este formulario'}"?
               </p>
             </DialogHeader>
             
-            <div className="space-y-3 py-4">
+            <div className="space-y-3 py-2 sm:py-4">
               {(['ai', 'manual', 'file'] as const).map((builderType) => (
                 <Button
                   key={builderType}
                   onClick={() => handleSelectBuilder(builderType)}
-                  className="w-full justify-start h-auto py-4 px-4 text-left"
+                  className="w-full justify-start h-auto py-3 sm:py-4 px-3 sm:px-4 text-left transition-colors hover:bg-slate-50 rounded-md"
                   variant="outline"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="text-blue-600">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="text-blue-600 flex-shrink-0 sm:scale-110">
                       {getBuilderIcon(builderType)}
                     </div>
-                    <div>
-                      <div className="font-medium text-slate-800">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-slate-800 text-sm sm:text-base mb-0.5 sm:mb-1">
                         {getBuilderName(builderType)}
                       </div>
-                      <div className="text-sm text-slate-600">
+                      <div className="text-xs sm:text-sm text-slate-600 line-clamp-2 leading-relaxed">
                         {getBuilderDescription(builderType)}
                       </div>
                     </div>
@@ -259,11 +280,11 @@ export const DraftModal: React.FC<DraftModalProps> = ({
               ))}
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-4 sm:mt-6">
               <Button
                 variant="ghost"
                 onClick={() => setShowBuilderSelection(false)}
-                className="text-slate-600"
+                className="text-slate-600 hover:bg-slate-100 px-6 py-2 sm:py-2.5 text-sm sm:text-base"
               >
                 Volver
               </Button>

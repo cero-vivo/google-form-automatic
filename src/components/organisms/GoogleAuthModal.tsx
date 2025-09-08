@@ -138,16 +138,16 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
   return (
     <Dialog open={modalOpen} onOpenChange={onOpenChange || setIsOpen}>
       <DialogContent 
-        className="sm:max-w-md" 
+        className="sm:max-w-md w-[95vw] mx-auto rounded-lg" 
         onEscapeKeyDown={!showCloseButton ? (e) => e.preventDefault() : undefined}
         onPointerDownOutside={!showCloseButton ? (e) => e.preventDefault() : undefined}
       >
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
             {getStatusIcon()}
-            {getGoogleAuthConfig().messages.renewalTitle}
+            <span className="break-words">{getGoogleAuthConfig().messages.renewalTitle}</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm break-words">
             {getGoogleAuthConfig().messages.renewalDescription}
           </DialogDescription>
         </DialogHeader>
@@ -155,16 +155,18 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
         <div className="space-y-4">
           {/* Estado actual */}
           <Alert variant={getStatusColor() as any}>
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>{getStatusText()}</AlertTitle>
-            <AlertDescription>
-              {authError || 'Por favor, renueva tus permisos para continuar.'}
-            </AlertDescription>
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <div className="ml-2 min-w-0">
+              <AlertTitle className="text-sm sm:text-base">{getStatusText()}</AlertTitle>
+              <AlertDescription className="text-xs sm:text-sm break-words">
+                {authError || 'Por favor, renueva tus permisos para continuar.'}
+              </AlertDescription>
+            </div>
           </Alert>
 
           {/* Información adicional */}
           {lastCheckTime && (
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground">
               Última verificación: {lastCheckTime.toLocaleTimeString()}
             </div>
           )}
@@ -173,7 +175,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
           {isRenewing && (
             <div className="space-y-2">
               <Progress value={renewProgress} className="w-full" />
-              <p className="text-sm text-center text-muted-foreground">
+              <p className="text-xs sm:text-sm text-center text-muted-foreground">
                 Estableciendo conexión con Google...
               </p>
             </div>
@@ -186,7 +188,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
               variant="outline"
               onClick={handleClose}
               disabled={isRenewing}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto order-2 sm:order-1"
             >
               <X className="h-4 w-4 mr-2" />
               Cancelar
@@ -196,7 +198,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
           <Button
             onClick={handleRenew}
             disabled={isRenewing}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto order-1 sm:order-2"
           >
             {isRenewing ? (
               <>
@@ -206,7 +208,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
             ) : (
               <>
                 <ExternalLink className="h-4 w-4 mr-2" />
-                {getGoogleAuthConfig().messages.renewalButtonText}
+                <span className="break-words">{getGoogleAuthConfig().messages.renewalButtonText}</span>
               </>
             )}
           </Button>
