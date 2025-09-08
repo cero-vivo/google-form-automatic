@@ -231,14 +231,18 @@ export default function PricingPage() {
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-primary">
             Créditos de Formularios
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Sistema flexible de créditos: usa tus créditos según el tipo de formulario que quieras crear.
-            <span className="block mt-2">
-              <span className="font-semibold text-blue-600">• Formularios con IA: 2 créditos</span> | 
-              <span className="font-semibold text-green-600">• Formularios tradicionales: 1 crédito</span>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
+            <span className="inline-flex items-center bg-forms text-white px-4 py-3 rounded-full text-sm font-bold mr-3 shadow-lg hover:shadow-xl transition-shadow">
+              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 019 18v-5H5a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+              </svg>
+              IA Inteligente: 2 créditos
             </span>
-            <span className="block mt-2 text-base">
-              Precio base de ${PRICING_CONFIG.unitPrice} ARS por crédito con descuentos especiales en packs grandes.
+            <span className="inline-flex items-center bg-excel text-white px-4 py-3 rounded-full text-sm font-bold shadow-lg hover:shadow-xl transition-shadow">
+              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4a2 2 0 012 2v2h2a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h2V4zm10 4H6v8h8V8zM6 4v2h8V4H6z" clipRule="evenodd" />
+              </svg>
+              Tradicional: 1 crédito
             </span>
           </p>
         </div>
