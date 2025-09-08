@@ -20,7 +20,6 @@ export default function DocsPage() {
             <Button variant="ghost" size="sm" asChild>
               <Link href="/">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver al inicio
               </Link>
             </Button>
             <div className="flex items-center space-x-2">
