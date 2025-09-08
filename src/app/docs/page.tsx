@@ -158,6 +158,7 @@ export default function DocsPage() {
                       <li>• "Necesito un formulario de evaluación de desempeño para empleados"</li>
                       <li>• "Crea una encuesta de satisfacción del cliente para restaurante"</li>
                       <li>• "Formulario de registro para evento corporativo con 100 asistentes"</li>
+                      <li>• "Formulario tipo Quizz sobre Jorge Luis Borges"</li>
                     </ul>
                   </div>
                 </div>
@@ -175,7 +176,7 @@ export default function DocsPage() {
                 <h3 className="text-2xl font-bold mb-4">Método 2: Importar Archivo</h3>
                 <p className="text-muted-foreground mb-6">
                   Convierte archivos existentes en formularios completos. Ideal si ya tienes datos en Excel, CSV o Google Sheets. 
-                  El sistema detecta automáticamente tipos de preguntas y validaciones.
+                  Sigue nuestra guía de tipos de preguntas y descarga la plantilla de ejemplo para asegurar el formato correcto.
                 </p>
                 
                 <div className="grid md:grid-cols-3 gap-6">
@@ -206,13 +207,28 @@ export default function DocsPage() {
                 </div>
                 
                 <div className="mt-6 p-4 bg-white rounded-lg">
-                  <h4 className="font-semibold mb-2">Plantilla de ejemplo:</h4>
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-semibold">Plantilla de ejemplo:</h4>
+                    <a 
+                      href="/examples/advanced-questions-example.csv" 
+                      download
+                      className="inline-flex items-center gap-2 text-sm bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Descargar plantilla
+                    </a>
+                  </div>
                   <div className="text-xs font-mono bg-gray-50 p-3 rounded">
                     Pregunta | Tipo | Opciones | Requerido<br/>
                     ¿Cuál es tu nombre? | texto_corto | | SÍ<br/>
                     ¿Edad tienes? | numero | | SÍ<br/>
                     ¿Estado civil? | opcion_multiple | Soltero,Casado,Otro | NO
                   </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    ⚠️ Los tipos de preguntas deben especificarse exactamente según la guía de abajo.
+                  </p>
                 </div>
               </div>
             </div>
@@ -229,19 +245,19 @@ export default function DocsPage() {
               <div className="flex-1">
                 <h3 className="text-2xl font-bold mb-4">Método 3: Constructor Manual</h3>
                 <p className="text-muted-foreground mb-6">
-                  El editor visual más intuitivo. Crea formularios desde cero con drag & drop, plantillas profesionales, 
-                  y personalización completa. Ideal para usuarios que quieren control total sobre cada detalle.
+                  Crea formularios paso a paso con nuestra interfaz intuitiva. Define cada pregunta manualmente 
+                  con tipos de respuesta específicos. Ideal para usuarios que quieren 
+                  construir formularios desde cero con control total sobre cada detalle.
                 </p>
                 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <h4 className="font-semibold mb-3">Características principales:</h4>
                     <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>• Editor drag & drop intuitivo</li>
-                      <li>• Plantillas predefinidas profesionales</li>
-                      <li>• Personalización completa de cada pregunta</li>
-                      <li>• Vista previa en tiempo real</li>
-                      <li>• Validaciones avanzadas</li>
+                      <li>• Constructor paso a paso guiado</li>
+                      <li>• Definición manual de cada pregunta</li>
+                      <li>• Tipos de respuesta configurables</li>
+                      <li>• Vista previa antes de crear</li>
                     </ul>
                   </div>
                   <div>
@@ -264,7 +280,7 @@ export default function DocsPage() {
 
         {/* Question Types & Validation */}
         <section className="max-w-6xl mx-auto mb-16">
-          <h3 className="text-2xl font-bold mb-8 text-center">Tipos de Preguntas y Validaciones</h3>
+          <h3 className="text-2xl font-bold mb-8 text-center">Tipos de Preguntas Disponibles</h3>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
@@ -272,63 +288,63 @@ export default function DocsPage() {
                 type: "texto_corto",
                 name: "Texto Corto",
                 description: "Respuestas de una línea",
-                validation: "Longitud mínima/máxima",
+                feature: "Ideal para nombres, títulos",
                 icon: "T"
               },
               {
                 type: "texto_largo",
                 name: "Texto Largo",
                 description: "Respuestas de párrafo",
-                validation: "Contador de caracteres",
+                feature: "Perfecto para opiniones",
                 icon: "¶"
               },
               {
                 type: "opcion_multiple",
                 name: "Opción Múltiple",
                 description: "Una sola selección",
-                validation: "Obligatoria/opcional",
+                feature: "Selección exclusiva",
                 icon: "○"
               },
               {
                 type: "checkboxes",
                 name: "Casillas",
                 description: "Múltiples selecciones",
-                validation: "Mínimo/máximo opciones",
+                feature: "Varias opciones posibles",
                 icon: "☐"
               },
               {
                 type: "dropdown",
                 name: "Lista Desplegable",
                 description: "Menú desplegable",
-                validation: "Valor por defecto",
+                feature: "Espacio optimizado",
                 icon: "▼"
               },
               {
                 type: "escala_lineal",
                 name: "Escala Lineal",
                 description: "Rating numérico",
-                validation: "Rango personalizable",
+                feature: "Evaluaciones 1-5 o 1-10",
                 icon: "★"
               },
               {
                 type: "fecha",
                 name: "Fecha",
                 description: "Selector de fecha",
-                validation: "Rango de fechas",
+                feature: "Fechas de nacimiento, eventos",
                 icon: "📅"
               },
               {
                 type: "hora",
                 name: "Hora",
                 description: "Selector de tiempo",
-                validation: "Formato 12/24 horas",
+                feature: "Horarios y disponibilidad",
                 icon: "🕐"
               },
               {
                 type: "email",
                 name: "Email",
-                description: "Validación de email",
-                validation: "Formato email correcto",
+                description: "Campo de correo electrónico",
+                feature: "Contacto y notificaciones",
                 icon: "@"
               }
             ].map((q) => (
@@ -341,27 +357,12 @@ export default function DocsPage() {
                   <CardDescription>{q.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-muted-foreground">{q.validation}</p>
+                  <p className="text-xs text-muted-foreground">{q.feature}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
         </section>
-
-        {/* Demo Section */}
-        <div className="max-w-4xl mx-auto mb-12">
-          <FileUploadCard hideTemplate={true} />
-        </div>
-
-        {/* Advanced Question Examples */}
-        <div className="max-w-4xl mx-auto mt-12">
-          <AdvancedQuestionExamples />
-        </div>
-
-        {/* Advanced Question Types */}
-        <div className="max-w-4xl mx-auto mt-12">
-          <AdvancedQuestionPreview />
-        </div>
 
         {/* Additional Information */}
         <div className="mt-12 space-y-8">
