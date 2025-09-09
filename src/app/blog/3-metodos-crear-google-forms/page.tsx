@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Los 3 métodos definitivos para crear Google Forms en 2024 - FastForm",
+  title: `Los 3 métodos definitivos para crear Google Forms en ${new Date().getFullYear()} - FastForm`,
   description: "Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado. Guía completa.",
   keywords: [
     "crear google forms",
@@ -12,10 +12,10 @@ export const metadata: Metadata = {
     "métodos creación formularios"
   ],
   openGraph: {
-    title: "Los 3 métodos definitivos para crear Google Forms en 2024",
+    title: `Los 3 métodos definitivos para crear Google Forms en ${new Date().getFullYear()}`,
     description: "Aprende a crear formularios profesionales con FastForm usando conversión CSV/Excel, IA conversacional o builder manual avanzado.",
     type: "article",
-    publishedTime: "2024-01-01T00:00:00Z",
+    publishedTime: new Date().toISOString(),
     authors: ["FastForm Team"]
   }
 };
@@ -43,7 +43,7 @@ export default function ArticlePage() {
             </ol>
           </nav>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-            Los 3 métodos definitivos para crear Google Forms en 2024
+            Los 3 métodos definitivos para crear Google Forms en {new Date().getFullYear()}
           </h1>
           <p className="text-gray-600 mt-2">
             Descubre cómo FastForm revoluciona la creación de formularios
@@ -55,7 +55,7 @@ export default function ArticlePage() {
         <div className="max-w-4xl mx-auto">
           <article className="prose prose-lg max-w-none">
             <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-              En 2024, crear Google Forms no tiene que ser una tarea tediosa. FastForm ha transformado este proceso 
+              En {new Date().getFullYear()}, crear Google Forms no tiene que ser una tarea tediosa. FastForm ha transformado este proceso 
               en una experiencia rápida, intuitiva y poderosa. Conoce los tres métodos que hacen posible crear 
               formularios profesionales en minutos, no horas.
             </p>
@@ -233,7 +233,7 @@ export default function ArticlePage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            "headline": "Los 3 métodos definitivos para crear Google Forms en 2024",
+            "headline": `Los 3 métodos definitivos para crear Google Forms en ${new Date().getFullYear()}`,
             "description": "Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado.",
             "author": {
               "@type": "Organization",
@@ -247,7 +247,7 @@ export default function ArticlePage() {
                 "url": "https://fastform.pro/logo.svg"
               }
             },
-            "datePublished": "2024-01-01T00:00:00Z",
+            "datePublished": new Date().toISOString(),
             "mainEntityOfPage": {
               "@type": "WebPage",
               "@id": "https://fastform.pro/blog/3-metodos-crear-google-forms"

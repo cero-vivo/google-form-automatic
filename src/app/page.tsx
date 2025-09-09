@@ -8,7 +8,6 @@ import { ArrowRight, Upload, Zap, CheckCircle, Star, Users, FileSpreadsheet, For
 import Link from "next/link";
 import { useAuthContext } from "@/containers/useAuth";
 import Image from "next/image";
-import FileUploadCard from "@/components/molecules/FileUploadCard";
 import React, { useEffect, useState } from "react";
 
 export default function HomePage() {

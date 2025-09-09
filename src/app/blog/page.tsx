@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   const articles = [
     {
-      title: "Los 3 métodos definitivos para crear Google Forms en 2024",
+      title: `Los 3 métodos definitivos para crear Google Forms en ${new Date().getFullYear()}`,
       excerpt: "Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado.",
       date: "2025",
       readTime: "5 min",
@@ -80,7 +80,7 @@ export default function BlogPage() {
                   <span className="text-sm text-gray-500">5 min de lectura</span>
                 </div>
                 <CardTitle className="text-2xl md:text-3xl mb-3">
-                  Los 3 métodos definitivos para crear Google Forms en 2024
+                  Los 3 métodos definitivos para crear Google Forms en {new Date().getFullYear()}
                 </CardTitle>
                 <CardDescription className="text-lg text-gray-700">
                   Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado.
@@ -172,7 +172,7 @@ export default function BlogPage() {
             "blogPost": [
               {
                 "@type": "BlogPosting",
-                "headline": "Los 3 métodos definitivos para crear Google Forms en 2025",
+                "headline": `Los 3 métodos definitivos para crear Google Forms en ${new Date().getFullYear()}`,
                 "description": "Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado.",
                 "url": "https://fastform.pro/blog/3-metodos-crear-google-forms"
               },

@@ -36,27 +36,27 @@ export default function AboutPage() {
   ];
 
   const milestones = [
-    {
-      year: "2024",
-      title: "Lanzamiento de FastForm",
-      description: "Nacimiento de la idea para simplificar la conversión de CSV a Google Forms"
-    },
-    {
-      year: "2024",
-      title: "Primera versión Beta",
-      description: "Lanzamiento de la versión beta con soporte básico de CSV y Excel"
-    },
-    {
-      year: "2024",
-      title: "Lanzamiento oficial",
-      description: "FastForm se vuelve público con características avanzadas y planes de pago"
-    },
-    {
-      year: "2024",
-      title: "+1000 usuarios",
-      description: "Alcanzamos nuestro primer milestone de usuarios activos"
-    }
-  ];
+      {
+        year: "2024",
+        title: "Lanzamiento de FastForm",
+        description: "Nacimiento de la idea para simplificar la conversión de CSV a Google Forms"
+      },
+      {
+        year: "2024",
+        title: "Primera versión Beta",
+        description: "Lanzamiento de la versión beta con soporte básico de CSV y Excel"
+      },
+      {
+        year: "2024",
+        title: "Lanzamiento oficial",
+        description: "FastForm se vuelve público con características avanzadas y planes de pago"
+      },
+      {
+        year: new Date().getFullYear(),
+        title: "+1000 usuarios",
+        description: "Alcanzamos nuestro primer milestone de usuarios activos"
+      }
+    ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -271,7 +271,7 @@ export default function AboutPage() {
               "name": "Luis Espinoza",
               "jobTitle": "Founder & CEO"
             },
-            "foundingDate": "2024",
+            "foundingDate": new Date().getFullYear(),
             "sameAs": [
               "https://fastform.pro",
               "https://twitter.com/fastform_app"
