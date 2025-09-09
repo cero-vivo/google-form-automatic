@@ -160,13 +160,13 @@ export default function BlogPage() {
             "@type": "Blog",
             "name": "Blog FastForm",
             "description": "Consejos y guías expertas sobre Google Forms y productividad",
-            "url": "https://fastform.app/blog",
+            "url": "https://fastform.pro/blog",
             "publisher": {
               "@type": "Organization",
               "name": "FastForm",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://fastform.app/logo.svg"
+                "url": "https://fastform.pro/logo.svg"
               }
             },
             "blogPost": [
@@ -174,19 +174,19 @@ export default function BlogPage() {
                 "@type": "BlogPosting",
                 "headline": "Los 3 métodos definitivos para crear Google Forms en 2025",
                 "description": "Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado.",
-                "url": "https://fastform.app/blog/3-metodos-crear-google-forms"
+                "url": "https://fastform.pro/blog/3-metodos-crear-google-forms"
               },
               {
                 "@type": "BlogPosting",
                 "headline": "De CSV a Google Forms: Guía completa sin errores",
                 "description": "Aprende a convertir cualquier archivo CSV o Excel en un formulario de Google Forms funcional en menos de 2 minutos.",
-                "url": "https://fastform.app/blog/csv-a-google-forms-guia"
+                "url": "https://fastform.pro/blog/csv-a-google-forms-guia"
               },
               {
                 "@type": "BlogPosting",
                 "headline": "Crear formularios con IA: El futuro está aquí",
                 "description": "Explora cómo nuestra IA conversacional puede crear formularios completos solo describiendo lo que necesitas.",
-                "url": "https://fastform.app/blog/crear-formularios-ia"
+                "url": "https://fastform.pro/blog/crear-formularios-ia"
               }
             ]
           })
@@ -211,7 +211,7 @@ export default function BlogPage() {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Blog",
-                "item": "https://fastform.app/blog"
+                "item": "https://fastform.pro/blog"
               }
             ]
           })

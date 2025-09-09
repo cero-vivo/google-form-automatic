@@ -88,7 +88,7 @@ export function Footer() {
         <div className="border-t mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-600 text-sm">
-              © 2024 FastForm. Todos los derechos reservados.
+              © {new Date().getFullYear()} FastForm. Todos los derechos reservados.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link href="/privacy" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">

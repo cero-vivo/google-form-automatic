@@ -244,13 +244,13 @@ export default function ArticlePage() {
               "name": "FastForm",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://fastform.app/logo.svg"
+                "url": "https://fastform.pro/logo.svg"
               }
             },
             "datePublished": "2024-01-01T00:00:00Z",
             "mainEntityOfPage": {
               "@type": "WebPage",
-              "@id": "https://fastform.app/blog/3-metodos-crear-google-forms"
+              "@id": "https://fastform.pro/blog/3-metodos-crear-google-forms"
             }
           })
         }}
@@ -268,19 +268,19 @@ export default function ArticlePage() {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Inicio",
-                "item": "https://fastform.app"
+                "item": "https://fastform.pro"
               },
               {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Blog",
-                "item": "https://fastform.app/blog"
+                "item": "https://fastform.pro/blog"
               },
               {
                 "@type": "ListItem",
                 "position": 3,
                 "name": "3 Métodos para Google Forms",
-                "item": "https://fastform.app/blog/3-metodos-crear-google-forms"
+                "item": "https://fastform.pro/blog/3-metodos-crear-google-forms"
               }
             ]
           })

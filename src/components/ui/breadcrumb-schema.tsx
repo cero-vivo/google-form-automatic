@@ -18,7 +18,7 @@ export function BreadcrumbSchema({ items, className = "" }: BreadcrumbSchemaProp
       "@type": "ListItem",
       "position": index + 1,
       "name": item.name,
-      ...(item.href && { "item": `https://fastform.app${item.href}` })
+      ...(item.href && { "item": `https://fastform.pro${item.href}` })
     }))
   };
 

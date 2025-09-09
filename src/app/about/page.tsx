@@ -93,13 +93,13 @@ export default function AboutPage() {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Inicio",
-                "item": "https://fastform.app"
+                "item": "https://fastform.pro"
               },
               {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Sobre Nosotros",
-                "item": "https://fastform.app/about"
+                "item": "https://fastform.pro/about"
               }
             ]
           })
@@ -264,8 +264,8 @@ export default function AboutPage() {
             "@type": "Organization",
             "name": "FastForm",
             "description": "Herramienta líder para convertir CSV y Excel a Google Forms automáticamente",
-            "url": "https://fastform.app",
-            "logo": "https://fastform.app/logo.svg",
+            "url": "https://fastform.pro",
+            "logo": "https://fastform.pro/logo.svg",
             "founder": {
               "@type": "Person",
               "name": "Luis Espinoza",
@@ -273,7 +273,7 @@ export default function AboutPage() {
             },
             "foundingDate": "2024",
             "sameAs": [
-              "https://fastform.app",
+              "https://fastform.pro",
               "https://twitter.com/fastform_app"
             ],
             "address": {
@@ -283,7 +283,7 @@ export default function AboutPage() {
             "contactPoint": {
               "@type": "ContactPoint",
               "contactType": "customer support",
-              "email": "hola@fastform.app"
+              "email": "hola@fastform.pro"
             }
           })
         }}

@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     "herramienta google forms",
     "fastform"
   ],
-  authors: [{ name: "FastForm Team", url: "https://fastform.app" }],
+  authors: [{ name: "FastForm Team", url: "https://fastform.pro" }],
   creator: "FastForm Team",
   publisher: "FastForm",
   viewport: "width=device-width, initial-scale=1, maximum-scale=5",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "FastForm - Plataforma Inteligente para Google Forms",
     description: "Convierte archivos CSV y Excel a Google Forms automáticamente. Herramienta gratuita y fácil de usar.",
-    url: "https://fastform.app",
+    url: "https://fastform.pro",
     siteName: "FastForm",
     type: "website",
     locale: "es_ES",
@@ -69,10 +69,10 @@ export const metadata: Metadata = {
     creator: "@fastform_app"
   },
   alternates: {
-    canonical: "https://fastform.app",
+    canonical: "https://fastform.pro",
     languages: {
-      'es': 'https://fastform.app/es',
-      'en': 'https://fastform.app/en'
+      'es': 'https://fastform.pro/es',
+      'en': 'https://fastform.pro/en'
     }
   },
   manifest: "/site.webmanifest",
@@ -84,12 +84,12 @@ export const metadata: Metadata = {
   },
   other: {
     "google-site-verification": "tu-codigo-de-verificacion-aqui",
-    "copyright": "© 2024 FastForm. Todos los derechos reservados.",
+    "copyright": "©2025 FastForm. Todos los derechos reservados.",
     "revised": new Date().toISOString(),
     "subject": "Conversión de CSV y Excel a Google Forms",
     "language": "es",
     "rating": "general",
-    "reply-to": "hola@fastform.app"
+    "reply-to": "hola@fastform.pro"
   }
 };
 
@@ -110,7 +110,7 @@ export default function RootLayout({
               "@type": "WebApplication",
               "name": "FastForm",
               "description": "Convierte archivos CSV y Excel a Google Forms automáticamente. Herramienta gratuita para crear formularios desde CSV, Excel hacia Google Forms en segundos.",
-              "url": "https://fastform.app",
+              "url": "https://fastform.pro",
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web Browser",
               "offers": {

@@ -5,7 +5,7 @@ export async function GET() {
 Allow: /
 
 # Sitemap
-Sitemap: https://fastform.app/sitemap.xml
+Sitemap: https://fastform.pro/sitemap.xml
 
 # Allow access to important pages
 Allow: /dashboard

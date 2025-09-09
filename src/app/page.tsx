@@ -120,38 +120,38 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section - 3 Creation Methods */}
-      <section className="relative py-24 px-6 bg-light-gray overflow-hidden">
-        <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-center">
+      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-light-gray overflow-hidden">
+        <div className="container mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left: Copy + CTAs + Social Proof */}
-          <div>
-            <Badge className="mb-6 bg-velocity/10 text-velocity border-velocity/30 px-4 py-2 font-semibold">
+          <div className="order-2 lg:order-1">
+            <Badge className="mb-4 sm:mb-6 bg-velocity/10 text-velocity border-velocity/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
               3 Formas de Crear Google Forms
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight text-primary">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 leading-tight text-primary">
               Crea formularios profesionales en segundos
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-xl leading-relaxed">
               Tres métodos poderosos para crear formularios: importa archivos, construye manualmente o usa IA. Tu flujo, tu elección.
             </p>
             
             {/* 3 Methods Preview */}
-            <div className="grid sm:grid-cols-3 gap-4 mb-8">
-              <div className="bg-white p-4 rounded-xl border border-gray-200">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+              <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 text-center sm:text-left">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <FileSpreadsheet className="h-4 w-4" />
                 </div>
                 <h4 className="font-semibold text-sm text-primary mb-1">Importar Archivos</h4>
                 <p className="text-xs text-muted-foreground">Excel y CSV</p>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-gray-200">
-                <div className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mb-2">
+              <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 text-center sm:text-left">
+                <div className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <FormInput className="h-4 w-4" />
                 </div>
                 <h4 className="font-semibold text-sm text-primary mb-1">Constructor</h4>
                 <p className="text-xs text-muted-foreground">Manual y plantillas</p>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-gray-200">
-                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-2">
+              <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 text-center sm:text-left">
+                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <h4 className="font-semibold text-sm text-primary mb-1">Asistente IA</h4>
@@ -159,31 +159,31 @@ export default function HomePage() {
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="btn-modern text-white font-bold text-lg px-8 py-5">
-                <Link href="/dashboard" className="flex items-center">
-                  <Upload className="mr-3 h-6 w-6" />
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <Button size="lg" className="btn-modern text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-5 w-full sm:w-auto">
+                <Link href="/dashboard" className="flex items-center justify-center">
+                  <Upload className="mr-2 sm:mr-3 h-5 sm:h-6 w-5 sm:w-6" />
                   Comenzar Gratis
                 </Link>
               </Button>
             </div>
-            <div className="flex flex-wrap gap-6 text-sm mt-6">
+            <div className="flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm mt-4 sm:mt-6">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-excel" />
+                <CheckCircle className="h-4 sm:h-5 w-4 sm:w-5 text-excel" />
                 <span className="font-semibold text-primary">Gratis</span>
               </div>
             </div>
           </div>
 
           {/* Right: Promotional Images Showcase */}
-          <div className="relative max-w-xl w-full mx-auto">
+          <div className="order-1 lg:order-2 relative max-w-md sm:max-w-lg md:max-w-xl w-full mx-auto">
             <div className="relative">
               <Image
                 src="/images/heroimage2.png"
                 alt="3 métodos de creación de formularios"
                 width={680}
                 height={420}
-                className="rounded-2xl shadow-xl border border-gray-200 bg-white"
+                className="rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl border border-gray-200 bg-white w-full h-auto"
                 priority
               />
             </div>
@@ -192,45 +192,45 @@ export default function HomePage() {
       </section>
 
       {/* Blog/Resources Section */}
-      <section className="py-24 px-6 bg-light-gray">
+      <section className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-light-gray">
         <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-velocity/10 text-velocity border-velocity/30 px-4 py-2 font-semibold">
+          <div className="text-center mb-8 sm:mb-12">
+            <Badge className="mb-3 sm:mb-4 bg-velocity/10 text-velocity border-velocity/30 px-3 sm:px-4 py-1.5 sm:py-2 font-semibold text-sm sm:text-base">
               Recursos y Guías
             </Badge>
-            <h2 className="text-4xl md:text-5xl font-black mb-4 text-primary">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 sm:mb-4 text-primary px-2">
               Aprende a crear formularios como un experto
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
               Descubre los mejores métodos y consejos para crear formularios profesionales en minutos
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto px-2">
             <Card className="border border-gray-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-              <div className="md:flex">
-                <div className="md:w-2/5 bg-gradient-to-br from-blue-500 to-purple-600 p-8 flex items-center justify-center">
+              <div className="md:flex flex-col md:flex-row">
+                <div className="md:w-2/5 bg-gradient-to-br from-blue-500 to-purple-600 p-6 sm:p-8 flex items-center justify-center">
                   <div className="text-center text-white">
-                    <Sparkles className="h-16 w-16 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold mb-2">Guía Completa</h3>
-                    <p className="text-blue-100">3 métodos probados</p>
+                    <Sparkles className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-3 sm:mb-4" />
+                    <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">Guía Completa</h3>
+                    <p className="text-blue-100 text-sm sm:text-base">3 métodos probados</p>
                   </div>
                 </div>
-                <div className="md:w-3/5 p-8">
-                  <h3 className="text-2xl font-bold text-primary mb-3">
-                    Los 3 métodos definitivos para crear Google Forms en 2024
+                <div className="md:w-3/5 p-6 sm:p-8">
+                  <h3 className="text-xl sm:text-2xl font-bold text-primary mb-2 sm:mb-3">
+                    Los 3 métodos definitivos para crear Google Forms en {new Date().getFullYear()}
                   </h3>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4">
                     Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, 
                     IA conversacional y builder manual avanzado. Guía práctica para todos los niveles.
                   </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <Badge variant="secondary">CSV/Excel</Badge>
-                    <Badge variant="secondary">IA</Badge>
-                    <Badge variant="secondary">Constructor Manual</Badge>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+                    <Badge variant="secondary" className="text-xs sm:text-sm">CSV/Excel</Badge>
+                    <Badge variant="secondary" className="text-xs sm:text-sm">IA</Badge>
+                    <Badge variant="secondary" className="text-xs sm:text-sm">Constructor Manual</Badge>
                   </div>
-                  <Button asChild>
-                    <Link href="/blog/3-metodos-crear-google-forms" className="flex items-center">
+                  <Button asChild className="w-full sm:w-auto">
+                    <Link href="/blog/3-metodos-crear-google-forms" className="flex items-center justify-center">
                       Leer artículo completo
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
@@ -257,10 +257,10 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* File Upload Method */}
             <Card className="border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-              <CardContent className="p-8">
+              <CardContent className="p-6 sm:p-8">
                 <div className="w-16 h-16 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-6 mx-auto">
                   <FileSpreadsheet className="h-8 w-8" />
                 </div>
@@ -284,7 +284,7 @@ export default function HomePage() {
 
             {/* Manual Builder Method */}
             <Card className="border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-              <CardContent className="p-8">
+              <CardContent className="p-6 sm:p-8">
                 <div className="w-16 h-16 rounded-xl bg-green-100 text-green-600 flex items-center justify-center mb-6 mx-auto">
                   <FormInput className="h-8 w-8" />
                 </div>
@@ -308,7 +308,7 @@ export default function HomePage() {
 
             {/* AI Assistant Method */}
             <Card className="border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-              <CardContent className="p-8">
+              <CardContent className="p-6 sm:p-8">
                 <div className="w-16 h-16 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-6 mx-auto">
                   <Sparkles className="h-8 w-8" />
                 </div>
@@ -336,23 +336,23 @@ export default function HomePage() {
 
 
       {/* CTA Section */}
-      <section className="py-20 px-6 bg-velocity-light">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl font-black mb-6 text-primary">
+      <section className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-velocity-light">
+        <div className="container mx-auto text-center px-2">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-4 sm:mb-6 text-primary px-2">
             ¿Listo para empezar?
           </h2>
-          <p className="text-xl mb-8 text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl mb-6 sm:mb-8 text-muted-foreground max-w-2xl mx-auto px-2">
             Crea tu primer formulario ahora mismo. Es gratis y toma segundos.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-velocity text-white hover:opacity-90 text-lg px-10 py-5 font-bold">
-              <Link href="/dashboard" className="flex items-center">
-                <Upload className="mr-3 h-6 w-6" />
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
+            <Button size="lg" className="bg-velocity text-white hover:opacity-90 text-base sm:text-lg px-6 sm:px-10 py-3 sm:py-5 font-bold w-full sm:w-auto">
+              <Link href="/dashboard" className="flex items-center justify-center">
+                <Upload className="mr-2 sm:mr-3 h-5 sm:h-6 w-5 sm:w-6" />
                 Comenzar Gratis
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-2 border-velocity text-velocity hover:bg-velocity hover:text-white text-lg px-10 py-5 font-bold">
-              <Link href="/docs">
+            <Button size="lg" variant="outline" className="border-2 border-velocity text-velocity hover:bg-velocity hover:text-white text-base sm:text-lg px-6 sm:px-10 py-3 sm:py-5 font-bold w-full sm:w-auto">
+              <Link href="/docs" className="flex items-center justify-center">
                 Ver Documentación
               </Link>
             </Button>
@@ -361,19 +361,19 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-6 bg-primary/5 border-t border-primary/10">
-        <div className="container mx-auto text-center">
-          <div className="flex items-center justify-center space-x-3 mb-8">
-            <Logo className="w-12 h-12" />
-            <span className="text-3xl font-black text-velocity">FastForm</span>
+      <footer className="py-12 sm:py-16 px-4 sm:px-6 bg-primary/5 border-t border-primary/10">
+        <div className="container mx-auto text-center px-2">
+          <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-6 sm:mb-8">
+            <Logo className="w-10 h-10 sm:w-12 sm:h-12" />
+            <span className="text-2xl sm:text-3xl font-black text-velocity">FastForm</span>
           </div>
           
-          <p className="text-muted-foreground mb-8 text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-lg max-w-2xl mx-auto px-2">
             La forma más inteligente y rápida de crear formularios profesionales con Google Forms.
           </p>
           
-          <div className="pt-8 border-t border-primary/10 text-muted-foreground">
-            <p className="font-medium">© {new Date().getFullYear()} FastForm.</p>
+          <div className="pt-6 sm:pt-8 border-t border-primary/10 text-muted-foreground">
+            <p className="font-medium text-sm sm:text-base">© {new Date().getFullYear()} FastForm.</p>
           </div>
         </div>
       </footer>

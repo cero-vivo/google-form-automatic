@@ -204,7 +204,7 @@ npm run build-storybook
 - **Discord**: Comunidad Fast Form
 
 ### Contacto
-- **Email**: design@fastform.app
+- **Email**: design@fastform.pro
 - **Twitter**: @fastformapp
 - **LinkedIn**: Fast Form Design System
 

@@ -127,13 +127,13 @@ export default function FAQPage() {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Inicio",
-                "item": "https://fastform.app"
+                "item": "https://fastform.pro"
               },
               {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "FAQ",
-                "item": "https://fastform.app/faq"
+                "item": "https://fastform.pro/faq"
               }
             ]
           })
@@ -193,7 +193,7 @@ export default function FAQPage() {
               </CardHeader>
               <CardContent>
                 <a
-                  href="mailto:hola@fastform.app"
+                  href="mailto:hola@fastform.pro"
                   className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Contactar Soporte
