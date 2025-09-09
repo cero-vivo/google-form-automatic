@@ -26,11 +26,9 @@ export default function FileImportPage({ searchParams }: FileImportPageProps) {
   }, [searchParams]);
   
   const handleFormCreated = (formData: any) => {
-    if (resolvedSearchParams.onFormCreated) {
+/*     if (resolvedSearchParams.onFormCreated) {
       router.push(resolvedSearchParams.onFormCreated);
-    } else {
-      router.push('/dashboard');
-    }
+    }  */
   };
 
   return (

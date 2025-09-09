@@ -1,20 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Label } from '@/components/ui/label';
-import { Plus, Trash2, Settings, LayoutGrid, Type, List, CheckSquare, Calendar, Mail, Hash, Globe, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
+import {  LayoutGrid, Type, List, CheckSquare, Calendar, Mail, Hash, Globe, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { Question } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
 import { useCredits } from '@/containers/useCredits';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
 import { ReusableFormBuilder } from './ReusableFormBuilder';
-
-
 interface ManualFormBuilderProps {
   onFormCreated?: (formData: any) => void;
   currentCredits?: number;

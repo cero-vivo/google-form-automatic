@@ -27,12 +27,29 @@ export class DraftService {
 
   static async saveDraft(userId: string, draftData: SaveDraftRequest): Promise<string> {
     try {
+      // Validar que todos los campos requeridos estén presentes
+      if (!userId) {
+        throw new Error('User ID es requerido');
+      }
+      if (!draftData.title) {
+        throw new Error('El título del formulario es requerido');
+      }
+      if (!Array.isArray(draftData.questions)) {
+        throw new Error('Las preguntas deben ser un array');
+      }
+      if (typeof draftData.collectEmail !== 'boolean') {
+        throw new Error('collectEmail debe ser un valor booleano');
+      }
+      if (!['ai', 'manual', 'excel'].includes(draftData.creationMethod)) {
+        throw new Error('creationMethod debe ser "ai", "manual" o "excel"');
+      }
+
       const draftId = doc(collection(db, this.DRAFTS_COLLECTION)).id;
       
       const draft: Omit<FormDraft, 'id'> = {
         userId,
-        title: draftData.title,
-        description: draftData.description,
+        title: draftData.title.trim(),
+        description: draftData.description?.trim() || '',
         questions: draftData.questions,
         collectEmail: draftData.collectEmail,
         creationMethod: draftData.creationMethod,
@@ -40,8 +57,13 @@ export class DraftService {
         updatedAt: new Date()
       };
 
+      // Limpiar cualquier campo undefined antes de guardar
+      const cleanDraft = JSON.parse(JSON.stringify(draft, (key, value) => 
+        value === undefined ? null : value
+      ));
+
       await setDoc(doc(db, this.DRAFTS_COLLECTION, draftId), {
-        ...draft,
+        ...cleanDraft,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -49,7 +71,7 @@ export class DraftService {
       return draftId;
     } catch (error) {
       console.error('Error saving draft:', error);
-      throw new Error('No se pudo guardar el borrador');
+      throw error; // Re-lanzar el error original para mejor debugging
     }
   }
 
@@ -84,18 +106,33 @@ export class DraftService {
 
   static async updateDraft(userId: string, draftId: string, draftData: SaveDraftRequest): Promise<void> {
     try {
-      await setDoc(doc(db, this.DRAFTS_COLLECTION, draftId), {
+      // Validar campos requeridos
+      if (!userId) throw new Error('User ID es requerido');
+      if (!draftId) throw new Error('Draft ID es requerido');
+      if (!draftData.title) throw new Error('El título del formulario es requerido');
+      if (!Array.isArray(draftData.questions)) throw new Error('Las preguntas deben ser un array');
+      if (typeof draftData.collectEmail !== 'boolean') throw new Error('collectEmail debe ser un valor booleano');
+      if (!['ai', 'manual', 'excel'].includes(draftData.creationMethod)) throw new Error('creationMethod debe ser "ai", "manual" o "excel"');
+
+      const draft = {
         userId,
-        title: draftData.title,
-        description: draftData.description,
+        title: draftData.title.trim(),
+        description: draftData.description?.trim() || '',
         questions: draftData.questions,
         collectEmail: draftData.collectEmail,
         creationMethod: draftData.creationMethod,
         updatedAt: serverTimestamp()
-      }, { merge: true });
+      };
+
+      // Limpiar campos undefined
+      const cleanDraft = JSON.parse(JSON.stringify(draft, (key, value) => 
+        value === undefined ? null : value
+      ));
+
+      await setDoc(doc(db, this.DRAFTS_COLLECTION, draftId), cleanDraft, { merge: true });
     } catch (error) {
       console.error('Error updating draft:', error);
-      throw new Error('No se pudo actualizar el borrador');
+      throw error;
     }
   }
 

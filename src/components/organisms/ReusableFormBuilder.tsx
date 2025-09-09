@@ -405,16 +405,32 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
       return;
     }
 
+    // Validar que no haya campos undefined
+    const draftData = {
+      title: formTitle || '',
+      description: formDescription || '',
+      questions: questions || [],
+      collectEmail: collectEmail !== undefined ? collectEmail : true,
+      creationMethod: creationMethod || 'manual'
+    };
+
+    // Validar que todas las preguntas tengan la estructura correcta
+    const validatedQuestions = draftData.questions.map(q => ({
+      id: q.id || `q_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      title: q.title || 'Pregunta sin título',
+      type: q.type || 'text',
+      description: q.description || '',
+      required: q.required !== undefined ? q.required : false,
+      options: q.options || []
+    }));
+
     setIsSavingDraft(true);
     setError(null);
 
     try {
       await DraftService.saveDraft(user.id, {
-        title: formTitle,
-        description: formDescription,
-        questions: questions,
-        collectEmail: collectEmail,
-        creationMethod: creationMethod
+        ...draftData,
+        questions: validatedQuestions as Question[]
       });
 
       // Show success feedback

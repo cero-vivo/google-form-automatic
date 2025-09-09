@@ -26,13 +26,8 @@ export default function ManualBuilderPage({ searchParams }: ManualBuilderPagePro
   }, [searchParams]);
   
   const handleFormCreated = (formData: any) => {
-    // Handle form creation success
     if (resolvedSearchParams.onFormCreated) {
-      // If callback URL is provided, redirect back
       router.push(resolvedSearchParams.onFormCreated);
-    } else {
-      // Default behavior - redirect to dashboard
-      router.push('/dashboard');
     }
   };
 

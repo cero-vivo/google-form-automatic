@@ -1,20 +1,27 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Upload, CheckCircle, AlertCircle, Download, Loader2 } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, Loader2, ArrowUp, ArrowDown, Replace } from 'lucide-react';
 import { Question } from '@/domain/entities/question';
 import { useFileUpload } from '@/containers/useFileUpload';
-import { useCredits } from '@/containers/useCredits';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
 import { ReusableFormBuilder } from './ReusableFormBuilder';
 import FormInstructions from './FormInstructions';
 import { FormSuccessView } from './FormSuccessView';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface FileImportFormCreatorProps {
   onFormCreated?: (formData: any) => void;
@@ -23,35 +30,59 @@ interface FileImportFormCreatorProps {
 }
 
 export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draftId }: FileImportFormCreatorProps) {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [parsedQuestions, setParsedQuestions] = useState<Question[]>([]);
+  // Estados principales del formulario
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    questions: [] as Question[],
+    collectEmail: true,
+    creationMethod: 'manual'
+  });
 
-  const [formTitle, setFormTitle] = useState('');
-  const [formDescription, setFormDescription] = useState('');
-  const [collectEmail, setCollectEmail] = useState(true);
+  // Estados de UI
   const [showSuccessView, setShowSuccessView] = useState(false);
   const [createdFormData, setCreatedFormData] = useState<any>(null);
-  const [showEditor, setShowEditor] = useState(false);
-  const [fileProcessed, setFileProcessed] = useState(false);
+  const [isProcessingFile, setIsProcessingFile] = useState(false);
+  const [showImportOptions, setShowImportOptions] = useState(false);
+  const [pendingFileQuestions, setPendingFileQuestions] = useState<Question[]>([]);
+  const [lastUploadedFileName, setLastUploadedFileName] = useState<string>('');
 
-  const { handleFileSelect, questions, loading, progress, error } = useFileUpload();
+  // Hooks
+  const { handleFileSelect, questions: fileQuestions, loading, progress, error } = useFileUpload();
   const { createGoogleForm, isCreating: creatingForm, error: formError } = useGoogleFormsIntegration();
 
+  // Handlers para cambios en el formulario
+  const handleFormUpdate = useCallback((updates: Partial<typeof formData>) => {
+    setFormData(prev => ({ ...prev, ...updates }));
+  }, []);
+
+  const handleQuestionsUpdate = useCallback((questions: Question[]) => {
+    handleFormUpdate({ questions });
+  }, [handleFormUpdate]);
+
+  const handleTitleUpdate = useCallback((title: string) => {
+    handleFormUpdate({ title });
+  }, [handleFormUpdate]);
+
+  const handleDescriptionUpdate = useCallback((description: string) => {
+    handleFormUpdate({ description });
+  }, [handleFormUpdate]);
+
+  const handleCollectEmailUpdate = useCallback((collectEmail: boolean) => {
+    handleFormUpdate({ collectEmail });
+  }, [handleFormUpdate]);
+
+  // Manejo de archivos
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
-      // Reset all state to start from zero
       setShowSuccessView(false);
       setCreatedFormData(null);
-      setUploadedFile(file);
-      setParsedQuestions([]);
-      setFormTitle('');
-      setFormDescription('');
-      setFileProcessed(false);
-      setShowEditor(true);
-      handleFileUpload(file);
+      setIsProcessingFile(true);
+      setLastUploadedFileName(file.name);
+      handleFileSelect(file);
     }
-  }, []);
+  }, [handleFileSelect]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -61,120 +92,111 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
     },
     maxFiles: 1,
-    maxSize: 10 * 1024 * 1024, // 10MB
+    maxSize: 10 * 1024 * 1024,
     disabled: loading
   });
 
-  const handleFileUpload = async (file: File) => {
-    if (currentCredits < 1) {
-      // This will be handled by the hook's error state
-      return;
+  // Efecto para manejar preguntas nuevas del archivo
+  useEffect(() => {
+    if (loading || !fileQuestions || fileQuestions.length === 0) return;
+
+    setPendingFileQuestions(fileQuestions);
+    
+    if (formData.questions.length > 0) {
+      // Si hay preguntas existentes, mostrar opciones de importación
+      setShowImportOptions(true);
+    } else {
+      // Si no hay preguntas, cargar directamente
+      loadFileQuestions(fileQuestions);
     }
     
-    try {
-      await handleFileSelect(file);
-    } catch (error) {
-      // Errors are handled by the hook's error state
-      console.error('Error handling file upload:', error);
-    }
+    setIsProcessingFile(false);
+  }, [fileQuestions, loading]);
+
+  const loadFileQuestions = (questions: Question[]) => {
+    setFormData({
+      ...formData,
+      questions,
+      creationMethod: 'excel',
+      title: `Formulario importado: ${lastUploadedFileName || 'Formulario importado'}`,
+      description: `Formulario creado desde archivo ${lastUploadedFileName || ''} (${questions.length} preguntas)`
+    });
   };
 
-  // Update questions when they are parsed
-  React.useEffect(() => {
-    if (loading) return; // Don't process while loading
-
-    if (questions && questions.length > 0) {
-      setParsedQuestions(questions);
-      setFormTitle(`Formulario importado: ${uploadedFile?.name || 'Formulario importado'}`);
-      setFormDescription(`Formulario creado desde archivo ${uploadedFile?.name || ''} (${questions.length} preguntas)`);
-      setFileProcessed(true);
-    }
-  }, [questions, uploadedFile?.name, loading, showEditor]);
-
-
-
   const handleCreateForm = async () => {
-    if (parsedQuestions.length === 0) {
-      console.error('No hay preguntas válidas para crear el formulario');
-      return;
-    }
-
-    if (!formTitle.trim()) {
-      console.error('Debes agregar un título al formulario');
-      return;
-    }
-
     if (currentCredits < 1) {
       console.error('No tienes suficientes créditos para crear un formulario');
       return;
     }
 
+    if (!formData.title.trim()) {
+      console.error('Debes agregar un título al formulario');
+      return;
+    }
+
     try {
       const result = await createGoogleForm({
-        title: formTitle,
-        description: formDescription,
-        questions: parsedQuestions,
+        title: formData.title,
+        description: formData.description,
+        questions: formData.questions,
         settings: {
-          collectEmails: collectEmail
+          collectEmails: formData.collectEmail
         }
       });
-      console.log("RESULT", result)
 
       if (result) {
-        const formData = {
-          title: formTitle,
-          description: formDescription,
-          questions: parsedQuestions,
-          collectEmail: collectEmail,
-          creationMethod: 'file',
+        const createdForm = {
+          title: formData.title,
+          description: formData.description,
+          questions: formData.questions,
+          collectEmail: formData.collectEmail,
+          creationMethod: formData.creationMethod,
           formId: result.formId,
           formUrl: result.formUrl,
           editUrl: result.editUrl,
           createdAt: new Date()
         };
         
-        setCreatedFormData(formData);
+        setCreatedFormData(createdForm);
         setShowSuccessView(true);
-        
-        onFormCreated?.(formData);
+        onFormCreated?.(createdForm);
       }
     } catch (error) {
       console.error('Error al crear el formulario:', error);
     }
   };
 
-
-
   const handleCreateNewForm = () => {
     setShowSuccessView(false);
     setCreatedFormData(null);
-    setUploadedFile(null);
-    setParsedQuestions([]);
-    setFormTitle('');
-    setFormDescription('');
-    setCollectEmail(true);
-    setShowEditor(false);
-    setFileProcessed(false);
+    setFormData({
+      title: '',
+      description: '',
+      questions: [],
+      collectEmail: true,
+      creationMethod: 'manual'
+    });
+    setLastUploadedFileName('');
+    setPendingFileQuestions([]);
   };
 
   const handleDuplicateForm = () => {
     if (createdFormData) {
-      setFormTitle(`${createdFormData.title} - Copia`);
-      setFormDescription(createdFormData.description);
-      setParsedQuestions(createdFormData.questions.map((q: any) => ({
-        ...q,
-        id: Date.now().toString() + Math.random()
-      })));
-      setCollectEmail(createdFormData.collectEmail);
+      setFormData({
+        title: `${createdFormData.title} - Copia`,
+        description: createdFormData.description,
+        questions: createdFormData.questions.map((q: any) => ({
+          ...q,
+          id: Date.now().toString() + Math.random()
+        })),
+        collectEmail: createdFormData.collectEmail,
+        creationMethod: createdFormData.creationMethod
+      });
       setShowSuccessView(false);
       setCreatedFormData(null);
-      setUploadedFile(null);
-      setShowEditor(true);
-      setFileProcessed(true);
+      setLastUploadedFileName('');
     }
   };
-
-
 
   const downloadTemplate = () => {
     const template = [
@@ -192,6 +214,32 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
     a.href = url;
     a.download = 'plantilla-formulario.csv';
     a.click();
+  };
+
+  const handleImportOption = (option: 'replace' | 'add-top' | 'add-bottom') => {
+    let newQuestions: Question[];
+    
+    switch (option) {
+      case 'replace':
+        newQuestions = pendingFileQuestions;
+        break;
+      case 'add-top':
+        newQuestions = [...pendingFileQuestions, ...formData.questions];
+        break;
+      case 'add-bottom':
+        newQuestions = [...formData.questions, ...pendingFileQuestions];
+        break;
+    }
+    
+    setFormData({
+      ...formData,
+      questions: newQuestions,
+      creationMethod: 'excel',
+      title: `${formData.title || 'Formulario'} + ${pendingFileQuestions.length} preguntas importadas`
+    });
+    
+    setPendingFileQuestions([]);
+    setShowImportOptions(false);
   };
 
   if (showSuccessView && createdFormData) {
@@ -213,59 +261,105 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Importar desde archivo</h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          Sube un archivo CSV o Excel y lo convertiremos automáticamente en un formulario
+      <div className="text-center">
+        <h3 className="text-2xl font-bold mb-2">Crear Formulario</h3>
+        <p className="text-sm text-muted-foreground">
+          Crea tu formulario manualmente o importa desde un archivo CSV/Excel
         </p>
       </div>
 
-      <div
-        {...getRootProps()}
-        className={`
-            border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-            ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300'}
-            ${loading ? 'opacity-50 cursor-not-allowed' : ''}
-          `}
-      >
-        <input {...getInputProps()} />
+      {/* File Upload Section - Always Visible */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Importar desde archivo</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Sube un archivo CSV o Excel para llenar automáticamente el formulario
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div
+            {...getRootProps()}
+            className={`
+              border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+              ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-gray-400'}
+              ${loading || isProcessingFile ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
+          >
+            <input {...getInputProps()} />
 
-        <div className="flex flex-col items-center space-y-4">
-          {loading ? (
-            <>
-              <Loader2 className="h-12 w-12 animate-spin text-primary" />
-              <p className="text-lg font-medium">Procesando archivo...</p>
-              <Progress value={progress} className="w-full max-w-xs" />
-              <p className="text-sm text-muted-foreground mt-2">
-                {progress < 50 ? 'Validando formato...' : 
-                 progress < 80 ? 'Analizando preguntas...' : 
-                 'Preparando formulario...'}
-              </p>
-            </>
-          ) : uploadedFile ? (
-            <>
-              <CheckCircle className="h-12 w-12 text-green-500" />
-              <p className="text-lg font-medium">Archivo procesado: {uploadedFile.name}</p>
-              <Badge variant="secondary">{uploadedFile.type}</Badge>
-              {parsedQuestions.length > 0 && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  {parsedQuestions.length} preguntas detectadas - Listo para editar
-                </p>
+            <div className="flex flex-col items-center space-y-4">
+              {loading || isProcessingFile ? (
+                <>
+                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                  <p className="text-lg font-medium">Procesando archivo...</p>
+                  <Progress value={progress} className="w-full max-w-xs" />
+                  <p className="text-sm text-muted-foreground mt-2">
+                    {progress < 50 ? 'Validando formato...' : 
+                     progress < 80 ? 'Analizando preguntas...' : 
+                     'Preparando formulario...'}
+                  </p>
+                </>
+              ) : lastUploadedFileName ? (
+                <>
+                  <CheckCircle className="h-12 w-12 text-green-500" />
+                  <p className="text-lg font-medium">Archivo procesado: {lastUploadedFileName}</p>
+                  <Badge variant="secondary">{formData.questions.length} preguntas importadas</Badge>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-12 w-12 text-gray-400" />
+                  <p className="text-lg font-medium">
+                    {isDragActive ? 'Suelta el archivo aquí' : 'Arrastra y suelta o haz clic para seleccionar'}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    CSV, Excel (máx. 10MB)
+                  </p>
+                </>
               )}
-            </>
-          ) : (
-            <>
-              <Upload className="h-12 w-12 text-gray-400" />
-              <p className="text-lg font-medium">
-                {isDragActive ? 'Suelta el archivo aquí' : 'Arrastra y suelta o haz clic para seleccionar'}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                CSV, Excel (máx. 10MB)
-              </p>
-            </>
-          )}
-        </div>
-      </div>
+            </div>
+          </div>
+
+          <div className="mt-4 text-center">
+            <button
+              onClick={downloadTemplate}
+              className="text-sm text-primary hover:underline"
+            >
+              Descargar plantilla de ejemplo
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Form Builder - Always Visible */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">
+            {formData.creationMethod === 'excel' ? 'Formulario importado' : 'Crear formulario manual'}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {formData.creationMethod === 'excel' 
+              ? 'Revisa y edita las preguntas importadas desde tu archivo'
+              : 'Crea tu formulario desde cero'}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <ReusableFormBuilder
+            creationMethod={formData.creationMethod as 'manual' | 'excel'}
+            initialQuestions={formData.questions}
+            initialTitle={formData.title}
+            initialDescription={formData.description}
+            initialCollectEmail={formData.collectEmail}
+            onQuestionsChange={handleQuestionsUpdate}
+            onTitleChange={handleTitleUpdate}
+            onDescriptionChange={handleDescriptionUpdate}
+            onCollectEmailChange={handleCollectEmailUpdate}
+            onFormCreated={handleCreateForm}
+            mode="create"
+            draftId={draftId}
+          />
+        </CardContent>
+      </Card>
+
       {(error || formError) && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -273,32 +367,56 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
         </Alert>
       )}
 
-      {(fileProcessed) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Formulario importado</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-6">
-              <ReusableFormBuilder
-                creationMethod="excel"
-                key={uploadedFile?.name || 'form-builder'}
-                initialQuestions={parsedQuestions}
-                initialTitle={formTitle}
-                initialDescription={formDescription}
-                initialCollectEmail={collectEmail}
-                onQuestionsChange={setParsedQuestions}
-                onTitleChange={setFormTitle}
-                onDescriptionChange={setFormDescription}
-                onCollectEmailChange={setCollectEmail}
-                onFormCreated={handleCreateForm}
-                mode="create"
-                draftId={draftId}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Import Options Dialog */}
+      <Dialog open={showImportOptions} onOpenChange={setShowImportOptions}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>¿Qué deseas hacer con las preguntas importadas?</DialogTitle>
+            <DialogDescription>
+              Ya tienes {formData.questions.length} preguntas en tu formulario. 
+              Las nuevas preguntas del archivo: {pendingFileQuestions.length}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Button 
+              onClick={() => handleImportOption('replace')}
+              className="justify-start"
+              variant="outline"
+            >
+              <Replace className="mr-2 h-4 w-4" />
+              Reemplazar todas las preguntas actuales
+            </Button>
+            <Button 
+              onClick={() => handleImportOption('add-top')}
+              className="justify-start"
+              variant="outline"
+            >
+              <ArrowUp className="mr-2 h-4 w-4" />
+              Agregar nuevas preguntas arriba de las existentes
+            </Button>
+            <Button 
+              onClick={() => handleImportOption('add-bottom')}
+              className="justify-start"
+              variant="outline"
+            >
+              <ArrowDown className="mr-2 h-4 w-4" />
+              Agregar nuevas preguntas debajo de las existentes
+            </Button>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="ghost" 
+              onClick={() => {
+                setShowImportOptions(false);
+                setPendingFileQuestions([]);
+              }}
+            >
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <FormInstructions />
     </div>
   );
