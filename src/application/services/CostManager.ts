@@ -38,13 +38,7 @@ export class CostManager {
       description: 'Mensajes iniciales de IA (gratis)',
       limit: CONFIG.CREDITS.CHAT.FREE_MESSAGES
     });
-
-    this.rules.set('ai_generation', {
-      type: 'ai_generation',
-      cost: CONFIG.CREDITS.CHAT.COST_PER_GENERATION,
-      description: `Generación de formulario con IA (${CONFIG.CREDITS.CHAT.COST_PER_GENERATION} créditos)`
-    });
-
+    
     this.rules.set('ai_message_exceeded', {
       type: 'ai_message',
       cost: CONFIG.CREDITS.CHAT.COST_PER_MESSAGE_AFTER_FREE,

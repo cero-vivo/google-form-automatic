@@ -8,6 +8,11 @@ export const CONFIG = {
       COST_PER_GENERATION: 2,
       COST_PER_QUESTIONS_PACK: 10,
       COST_PER_MESSAGE: 0
+    },
+    PUBLISH_FORM: {
+      IA: 2,
+      FILE: 1,
+      MANUAL: 1
     }
   },
   FIRESTORE: {

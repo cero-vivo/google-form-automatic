@@ -21,8 +21,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    console.log('📋 Datos recibidos:', JSON.stringify(formData, null, 2));
     
     if (formData.questions) {
       formData.questions.forEach((q: any, i: number) => {
@@ -35,8 +33,6 @@ export async function POST(request: NextRequest) {
 
     // Crear el formulario usando el servicio
     const result = await googleFormsService.createForm(formData, accessToken);
-
-    console.log('✅ Formulario creado exitosamente:', result.formId);
 
     return NextResponse.json({
       success: true,

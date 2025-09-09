@@ -15,6 +15,7 @@ import { useAuth } from '@/containers/useAuth';
 import { DraftService } from '@/infrastructure/firebase/DraftService';
 import { DraftModal } from './DraftModal';
 import { FormSuccessView } from './FormSuccessView';
+import { CONFIG } from '@/lib/config';
 
 interface ReusableFormBuilderProps {
   initialQuestions?: Question[];
@@ -361,14 +362,22 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
     setError(null);
 
     try {
-      const result = await createGoogleForm({
-        title: formTitle,
-        description: formDescription,
-        questions: questions,
-        settings: {
-          collectEmails: collectEmail
+      const cost = {
+        "ai": CONFIG.CREDITS.PUBLISH_FORM.IA,
+        "excel": CONFIG.CREDITS.PUBLISH_FORM.FILE,
+        "manual": CONFIG.CREDITS.PUBLISH_FORM.MANUAL
+      }
+      const result = await createGoogleForm(
+        {
+          title: formTitle,
+          description: formDescription,
+          questions: questions,
+          creditCost: cost[creationMethod],
+          settings: {
+            collectEmails: collectEmail
+          }
         }
-      });
+      );
 
       if (result) {
         const formData = {

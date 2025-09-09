@@ -253,19 +253,10 @@ export function AIChatFormCreator({ onFormCreated, draftId }: { onFormCreated?: 
 
 
 	const handleBuilderSubmit = async (formData: any) => {
-		const generationCost = calculateCost('ai_generation');
-
 		try {
-			await consumeCredits({
-				amount: generationCost,
-				formTitle: formData.title || 'Formulario generado por IA',
-				formId: 'ai-form-' + Date.now()
-			});
-
 			if (onFormCreated) {
 				onFormCreated(formData);
 			}
-
 			// Limpiar formulario para permitir nueva creación
 			setFormPreview({
 				title: '',
@@ -704,4 +695,4 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 				</div>
 			)}
 		</div>
-	);
+	)}

@@ -19,6 +19,7 @@ export interface FormCreationOptions {
   questions: Question[];
   shareEmails?: string[];
   settings?: FormSettings;
+  creditCost: number;
 }
 
 export interface UseGoogleFormsIntegrationReturn {
@@ -103,6 +104,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
   }, [getAccessToken]);
 
   const createGoogleForm = useCallback(async (options: FormCreationOptions): Promise<CreatedFormResult | null> => {
+    console.log("🚀 ~ useGoogleFormsIntegration ~ options:", options)
     if (!user) {
       setError('Debes iniciar sesión con Google para crear formularios. La autenticación con Google es necesaria para acceder a Google Forms.');
       return null;
@@ -136,18 +138,12 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
           ...options.settings
         }
       };
-      
-      console.log('📤 Enviando formData:', JSON.stringify(formData, null, 2));
-
-      console.log('🚀 Iniciando creación de formulario:', formData);
 
       // Llamar a la API route
       const requestBody = JSON.stringify({
         formData,
         accessToken
       });
-      
-      console.log('📤 Request body:', requestBody);
       
       const response = await fetch('/api/google-forms/create', {
         method: 'POST',
@@ -176,7 +172,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
       const usage = {
         formId: result.formId,
         formTitle: options.title || 'Formulario sin título',
-        amount: 1
+        amount: options.creditCost
       };
 
       // Importar CreditsService y consumir créditos
