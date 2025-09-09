@@ -4,23 +4,10 @@ export const CONFIG = {
     CHAT: {
       FREE_MESSAGES: 10,
       COST_PER_10_QUESTIONS: 3,
-      COST_PER_MESSAGE_AFTER_FREE: 2
-    },
-    PLANS: {
-      FREE: {
-        maxForms: 5,
-        maxQuestions: 20,
-        price: 0
-      },
-      PRO: {
-        maxForms: 100,
-        maxQuestions: 100,
-        price: 9900 // $99.00
-      },
-      ENTERPRISE: {
-        unlimited: true,
-        price: 29900 // $299.00
-      }
+      COST_PER_MESSAGE_AFTER_FREE: 2,
+      COST_PER_GENERATION: 2,
+      COST_PER_QUESTIONS_PACK: 10,
+      COST_PER_MESSAGE: 0
     }
   },
   FIRESTORE: {

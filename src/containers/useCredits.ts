@@ -95,7 +95,6 @@ export const useCredits = (): UseCreditsReturn => {
     // Solo suscribirse si el usuario cambió
     if (userIdRef.current !== user.id) {
       userIdRef.current = user.id;
-      console.log(`✅ Suscribiendo a créditos en tiempo real para usuario: ${user.id}`);
       setLoading(true);
       
       let unsubscribe: (() => void) | null = null;

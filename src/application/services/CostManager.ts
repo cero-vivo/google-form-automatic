@@ -3,7 +3,7 @@ import { useCredits } from '@/containers/useCredits';
 import { CONFIG } from '@/lib/config';
 
 export interface CostRule {
-  type: 'ai_message' | 'form_creation' | 'ai_generation';
+  type: 'ai_message' | 'form_creation' | 'ai_generation' | 'ai_questions_pack';
   cost: number;
   description: string;
   limit?: number;
@@ -34,15 +34,15 @@ export class CostManager {
   private initializeDefaultRules() {
     this.rules.set('ai_message', {
       type: 'ai_message',
-      cost: 0,
+      cost: CONFIG.CREDITS.CHAT.COST_PER_MESSAGE,
       description: 'Mensajes iniciales de IA (gratis)',
       limit: CONFIG.CREDITS.CHAT.FREE_MESSAGES
     });
 
     this.rules.set('ai_generation', {
       type: 'ai_generation',
-      cost: 2,
-      description: 'Generación de formulario con IA (2 créditos)'
+      cost: CONFIG.CREDITS.CHAT.COST_PER_GENERATION,
+      description: `Generación de formulario con IA (${CONFIG.CREDITS.CHAT.COST_PER_GENERATION} créditos)`
     });
 
     this.rules.set('ai_message_exceeded', {

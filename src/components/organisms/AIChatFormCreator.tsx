@@ -43,13 +43,12 @@ export function AIChatFormCreator({ onFormCreated, draftId }: { onFormCreated?: 
 	const { user } = useAuth();
 	const { currentCredits, refreshCredits, consumeCredits } = useCredits();
 	const credits = currentCredits;
-	const { calculateCost, getWarnings, canAfford, getRuleDescription, warnings } = useCostManager();
+	const { calculateCost, getWarnings, canAfford } = useCostManager();
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [inputValue, setInputValue] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 	const [formPreview, setFormPreview] = useState<FormPreviewData>({ title: '', questions: [] });
 
-	const [creditsUsed, setCreditsUsed] = useState(0);
 	const builderRef = useRef<any>(null);
 	const [totalMessages, setTotalMessages] = useState(0);
 	const [formContext, setFormContext] = useState<FormContext>({
@@ -331,12 +330,6 @@ export function AIChatFormCreator({ onFormCreated, draftId }: { onFormCreated?: 
 				case 'numero':
 					mappedType = QuestionType.NUMBER;
 					break;
-				case 'file_upload':
-				case 'file upload':
-				case 'archivo':
-				case 'upload':
-					mappedType = QuestionType.FILE_UPLOAD;
-					break;
 				case 'linear_scale':
 				case 'linear scale':
 				case 'escala':
@@ -355,31 +348,11 @@ export function AIChatFormCreator({ onFormCreated, draftId }: { onFormCreated?: 
 				 mappedType === QuestionType.CHECKBOXES || 
 				 mappedType === QuestionType.DROPDOWN) && 
 				(!options || options.length === 0)) {
-				
-				// Intentar extraer opciones de la descripción o usar valores por defecto
-				const defaultOptions = ['Opción 1', 'Opción 2', 'Opción 3'];
-				
-				// Si la descripción contiene opciones separadas por comas, usarlas
-				if (q.description && q.description.includes(',')) {
-					const extractedOptions = q.description
-						.split(',')
-						.map(opt => opt.trim())
-						.filter(opt => opt.length > 0);
-					
-					if (extractedOptions.length > 1) {
-						options = extractedOptions;
-					} else {
-						options = defaultOptions;
-					}
-				} else {
-					options = defaultOptions;
-				}
 			}
 
 			return {
 				id: `ai-question-${index}`,
 				title: q.label,
-				description: q.description || '',
 				type: mappedType,
 				required: false,
 				options: options,
