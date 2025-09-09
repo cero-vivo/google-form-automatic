@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cómo Convertir CSV a Google Forms | Guía Excel a Google Forms - FastForm",
+  title: "Guía Completa: Cómo Convertir CSV y Excel a Google Forms Paso a Paso",
   description: "Aprende cómo convertir archivos CSV y Excel a Google Forms paso a paso. Guía completa para importar datos y crear formularios automáticamente con FastForm.",
   keywords: [
     "como convertir csv a google forms",
@@ -27,4 +27,4 @@ export default function DocsLayout({
   children: React.ReactNode;
 }) {
   return <>{children}</>;
-} 
+}

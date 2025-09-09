@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GoogleAuthProvider } from "@/providers/GoogleAuthProvider";
+import { Footer } from "@/components/ui/footer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -11,7 +12,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "FastForm - Convertir CSV a Google Forms | Excel a Google Forms Gratis",
+  title: "FastForm - Crea Google Forms con CSV, Excel o IA | Plataforma Inteligente",
   description: "Convierte archivos CSV y Excel a Google Forms automáticamente. Herramienta gratuita para crear formularios desde CSV, Excel hacia Google Forms en segundos. Sin código requerido.",
   keywords: [
     "csv a google forms",
@@ -31,9 +32,11 @@ export const metadata: Metadata = {
     "herramienta google forms",
     "fastform"
   ],
-  authors: [{ name: "FastForm Team" }],
-  viewport: "width=device-width, initial-scale=1",
-  robots: "index, follow",
+  authors: [{ name: "FastForm Team", url: "https://fastform.app" }],
+  creator: "FastForm Team",
+  publisher: "FastForm",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
+  robots: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -43,7 +46,7 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: "FastForm - Convertir CSV a Google Forms | Excel a Google Forms",
+    title: "FastForm - Plataforma Inteligente para Google Forms",
     description: "Convierte archivos CSV y Excel a Google Forms automáticamente. Herramienta gratuita y fácil de usar.",
     url: "https://fastform.app",
     siteName: "FastForm",
@@ -72,8 +75,21 @@ export const metadata: Metadata = {
       'en': 'https://fastform.app/en'
     }
   },
+  manifest: "/site.webmanifest",
+  themeColor: "#ffffff",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "FastForm - Plataforma Inteligente para Google Forms"
+  },
   other: {
-    "google-site-verification": "tu-codigo-de-verificacion-aqui"
+    "google-site-verification": "tu-codigo-de-verificacion-aqui",
+    "copyright": "© 2024 FastForm. Todos los derechos reservados.",
+    "revised": new Date().toISOString(),
+    "subject": "Conversión de CSV y Excel a Google Forms",
+    "language": "es",
+    "rating": "general",
+    "reply-to": "hola@fastform.app"
   }
 };
 
@@ -85,7 +101,7 @@ export default function RootLayout({
   
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`min-h-screen bg-background antialiased ${poppins.variable} font-poppins`}>
+      <body className={`min-h-screen bg-background antialiased ${poppins.variable} font-poppins flex flex-col`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -111,18 +127,20 @@ export default function RootLayout({
               "featureList": [
                 "Convertir CSV a Google Forms",
                 "Convertir Excel a Google Forms", 
-                "Importar datos desde archivos",
-                "Generación automática de formularios",
-                "Integración directa con Google Forms",
-                "Herramienta gratuita",
-                "Sin necesidad de programación"
+                "Interfaz intuitiva",
+                "Sin registro requerido",
+                "Procesamiento en segundos",
+                "Compatible con Google Workspace"
               ]
             })
           }}
         />
         <AuthProvider>
-          <GoogleAuthProvider autoCheck={false}>
-            {children}
+          <GoogleAuthProvider>
+            <div className="flex-1">
+              {children}
+            </div>
+            <Footer />
           </GoogleAuthProvider>
         </AuthProvider>
       </body>
