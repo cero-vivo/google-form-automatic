@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GoogleAuthProvider } from "@/providers/GoogleAuthProvider";
 import { Footer } from "@/components/ui/footer";
+import { FloatingFeedbackButton } from "@/components/FloatingFeedbackButton";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -141,6 +142,7 @@ export default function RootLayout({
               {children}
             </div>
             <Footer />
+            <FloatingFeedbackButton position="bottom-right" />
           </GoogleAuthProvider>
         </AuthProvider>
       </body>

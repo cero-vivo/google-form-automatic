@@ -97,7 +97,8 @@ export const COLLECTIONS = {
   TEMPLATES: 'templates',
   ANALYTICS: 'analytics',
   USER_CREDITS: 'userCredits',
-  NEWSLETTER: 'newsletter'
+  NEWSLETTER: 'newsletter',
+  FEEDBACK: 'feedback'
 } as const;
 
 export const STORAGE_PATHS = {
