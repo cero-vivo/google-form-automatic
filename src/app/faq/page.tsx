@@ -1,21 +1,22 @@
 import { Metadata } from 'next';
-import { ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'FAQ FastForm - Respuestas sobre CSV, Excel y Google Forms | Ayuda',
-  description: 'Respuestas a las preguntas más comunes sobre cómo convertir archivos CSV y Excel a Google Forms. Guía completa de uso de FastForm.',
+  title: 'FAQ FastForm - Respuestas sobre CSV, Excel, Chat IA y Google Forms | Ayuda',
+  description: 'Respuestas a las preguntas más comunes sobre cómo convertir archivos CSV y Excel, chat IA a Google Forms. Guía completa de uso de FastForm.',
   keywords: [
     'faq csv google forms',
     'preguntas frecuentes excel google forms',
     'ayuda convertir csv google forms',
     'problemas csv google forms',
     'tutorial csv a google forms',
-    'guía rápida excel google forms'
+    'guía rápida excel google forms',
+    'chat ia google forms',
+    'ayuda chat ia google forms',
   ],
   openGraph: {
-    title: 'FAQ - Convertir CSV a Google Forms | FastForm',
-    description: 'Resuelve todas tus dudas sobre cómo convertir archivos CSV y Excel a Google Forms automáticamente.',
+    title: 'FAQ - Convertir CSV, Excel, Chat IA a Google Forms | FastForm',
+    description: 'Resuelve todas tus dudas sobre cómo convertir archivos CSV y Excel, chat IA a Google Forms automáticamente.',
     type: 'website',
   }
 };
@@ -138,15 +139,6 @@ export default function FAQPage() {
       {/* FAQ Content */}
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          {/* Search Box */}
-          <div className="mb-8">
-            <input
-              type="text"
-              placeholder="Buscar en preguntas frecuentes..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
           {/* FAQ Sections */}
           {categories.map(category => (
             <section key={category} className="mb-8">
