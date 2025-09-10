@@ -735,6 +735,60 @@ vercel
 vercel env add NEXT_PUBLIC_FIREBASE_API_KEY
 ```
 
+### 🔧 Netlify Deployment
+
+#### Preparación para Netlify
+1. **Copiar archivo de variables de entorno**
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+2. **Configurar variables requeridas**
+   Las siguientes variables son obligatorias para el despliegue:
+   - `OPENAI_API_KEY` - Clave API de OpenAI
+   - `MOONSHOT_API_KEY` - Clave API de Moonshot (alternativa)
+   - `NEXT_PUBLIC_FIREBASE_API_KEY` - Firebase API Key
+   - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` - Firebase Auth Domain
+   - `NEXT_PUBLIC_FIREBASE_PROJECT_ID` - Firebase Project ID
+   - `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` - Firebase Storage
+   - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` - Firebase Sender ID
+   - `NEXT_PUBLIC_FIREBASE_APP_ID` - Firebase App ID
+   - `GOOGLE_CLIENT_SECRET` - Google OAuth Client Secret
+
+#### Configuración en Netlify
+
+**Opción 1: Desde Netlify Dashboard**
+1. Ir a **Site Settings > Environment Variables**
+2. Agregar cada variable manualmente
+3. Usar los valores de tu archivo `.env.local`
+
+**Opción 2: Desde terminal (Netlify CLI)**
+```bash
+# Instalar Netlify CLI
+npm install -g netlify-cli
+
+# Login en Netlify
+netlify login
+
+# Configurar variables de entorno
+netlify env:set OPENAI_API_KEY your_openai_key_here
+netlify env:set MOONSHOT_API_KEY your_moonshot_key_here
+netlify env:set NEXT_PUBLIC_FIREBASE_API_KEY your_firebase_key_here
+# ... continuar con todas las variables necesarias
+
+# Deploy manual
+netlify deploy --prod
+```
+
+#### Verificación del Deploy
+```bash
+# Verificar que todas las variables estén configuradas
+netlify env:list
+
+# Ver logs del build
+netlify logs
+```
+
 #### Configuración `vercel.json`
 ```json
 {
