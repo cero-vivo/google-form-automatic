@@ -50,32 +50,27 @@ const faqData: FAQItem[] = [
   {
     category: 'Conversión CSV/Excel',
     question: '¿Puedo personalizar después de la conversión automática?',
-    answer: 'Sí, la conversión es solo el comienzo. Después de generar el formulario, puedes editar cada pregunta, cambiar tipos de respuesta, agregar validaciones, preguntas condicionales y personalizar completamente el diseño.'
+    answer: 'Sí, la conversión es solo el comienzo. Después de generar el formulario, puedes editar cada pregunta y cambiar tipos de respuesta.'
   },
   {
     category: 'Builder Manual',
     question: '¿Qué ventajas tiene el builder manual de FastForm sobre Google Forms nativo?',
-    answer: 'Nuestro builder manual ofrece: interfaz más intuitiva, plantillas predefinidas, validaciones avanzadas, lógica condicional simplificada, integración directa con tus datos existentes, y la capacidad de guardar y reutilizar configuraciones de formularios.'
+    answer: 'Nuestro builder manual ofrece: interfaz más intuitiva, integración directa con tus datos existentes, y la capacidad de guardar y reutilizar configuraciones de formularios.'
   },
   {
-    category: 'Builder Manual',
-    question: '¿Hay plantillas disponibles en el builder manual?',
-    answer: 'Sí, ofrecemos plantillas para encuestas de satisfacción, registros de eventos, formularios de contacto, evaluaciones, y más. Cada plantilla es personalizable y puedes guardar tus propias plantillas personalizadas.'
-  },
-  {
-    category: 'Precios y Planes',
+    category: 'Precios',
     question: '¿Es gratis usar FastForm?',
-    answer: 'Ofrecemos un plan gratuito generoso que incluye hasta 5 formularios al mes con cualquiera de nuestros tres métodos de creación. Para usuarios frecuentes, tenemos planes Pro con límites más altos y características avanzadas.'
+    answer: 'Sí, FastForm es completamente gratuito para empezar. Todos los usuarios nuevos reciben créditos gratuitos para crear sus primeros formularios. Funcionamos con un sistema de créditos: cada formulario que creas consume créditos. Puedes comprar créditos adicionales cuando los necesites, sin suscripciones ni compromisos mensuales.'
   },
   {
-    category: 'Precios y Planes',
-    question: '¿Qué incluye el plan gratuito?',
-    answer: 'El plan gratuito incluye: hasta 5 formularios/mes, hasta 50 preguntas por formulario, acceso a los tres métodos de creación (CSV/Excel, IA, manual), y todas las funciones básicas de personalización y análisis.'
+    category: 'Créditos',
+    question: '¿Cuánto cuestan los créditos y cómo los compro?',
+    answer: 'Cada crédito cuesta $500 ARS y te permite crear un formulario completo sin importar cuántas preguntas tenga. Puedes comprar créditos individualmente o aprovechar nuestros packs con descuentos. La compra se realiza directamente desde tu dashboard con tarjeta de crédito o débito a través de MercadoPago. Los créditos nunca expiran y los puedes usar cuando los necesites.'
   },
   {
-    category: 'Funcionalidades Avanzadas',
-    question: '¿Puedo agregar lógica condicional a mis formularios?',
-    answer: 'Sí, todos nuestros métodos de creación soportan lógica condicional. Puedes configurar reglas para mostrar/ocultar preguntas basadas en respuestas previas, crear flujos personalizados, y establecer validaciones complejas.'
+    category: 'Créditos',
+    question: '¿Qué obtengo con los créditos gratuitos?',
+    answer: 'Todos los usuarios nuevos reciben créditos gratuitos para crear sus primeros formularios. Los créditos se utilizan para crear formularios, sin importar cuántas preguntas tengan. Tienes acceso completo a los tres métodos de creación (plantillas CSV, IA, y editor manual) y todas las funciones básicas desde el principio.'
   },
   {
     category: 'Funcionalidades Avanzadas',
@@ -193,7 +188,7 @@ export default function FAQPage() {
               </CardHeader>
               <CardContent>
                 <a
-                  href="mailto:hola@fastform.pro"
+                  href="mailto:luis.espinoza.nav@outlook.com"
                   className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Contactar Soporte
