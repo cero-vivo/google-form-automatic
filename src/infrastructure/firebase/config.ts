@@ -96,7 +96,8 @@ export const COLLECTIONS = {
   RESPONSES: 'responses',
   TEMPLATES: 'templates',
   ANALYTICS: 'analytics',
-  USER_CREDITS: 'userCredits'
+  USER_CREDITS: 'userCredits',
+  NEWSLETTER: 'newsletter'
 } as const;
 
 export const STORAGE_PATHS = {
@@ -104,4 +105,4 @@ export const STORAGE_PATHS = {
   FORM_ATTACHMENTS: 'form-attachments',
   USER_AVATARS: 'avatars',
   TEMP_FILES: 'temp'
-} as const; 
+} as const;

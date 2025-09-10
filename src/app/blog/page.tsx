@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { NewsletterSubscription } from '@/components/molecules/NewsletterSubscription';
 
 const currentYear = 2024;
 
@@ -137,16 +138,7 @@ export default function BlogPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                  <input
-                    type="email"
-                    placeholder="Tu email"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Suscribirse
-                  </button>
-                </div>
+                <NewsletterSubscription />
               </CardContent>
             </Card>
           </section>
