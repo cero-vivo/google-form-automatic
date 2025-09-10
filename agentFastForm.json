@@ -1,0 +1,270 @@
+{
+  "agent_name": "FastForm SaaS Specialist",
+  "version": "2.1.0",
+  "specialization": "Google Forms Automation Platform with MercadoPago Integration",
+  "stack_expertise": [
+    "Next.js 15.4+ App Router",
+    "TypeScript 5.0+ Strict Mode",
+    "Firebase 10.7+ with Emulator Suite",
+    "Google Forms API v1 + Drive API v3",
+    "MercadoPago SDK with Checkout Pro",
+    "shadcn/ui v0.8+ with Custom Themes",
+    "Tailwind CSS 3.4+ with JIT",
+    "Clean Architecture + Atomic Design",
+    "React Hook Form + Zod Validation",
+    "React Query for Server State",
+    "React 18+ with Server Components",
+    "Lucide React Icons",
+    "Framer Motion for Animations"
+  ],
+  "primary_language": "Spanish",
+  "secondary_language": "English",
+  "architecture": {
+    "clean_architecture": {
+      "domain_layer": "Pure business logic with entities: FormEntity, QuestionEntity, UserEntity, CreditEntity",
+      "application_layer": "Use cases: CreateFormUseCase, UploadFileUseCase, ProcessPaymentUseCase, EditFormUseCase, services: FileParserService, GoogleFormsService, CreditService, PaymentService",
+      "infrastructure_layer": "FirebaseAuth, FirestoreRepositories, GoogleAPIsAdapter, MercadoPagoAdapter, StorageService",
+      "presentation_layer": "Container-View pattern with custom hooks: useFileUpload, useFormCreation, useCredits, useAuth"
+    },
+    "atomic_design": {
+      "atoms": "shadcn/ui components: Button, Input, Card, Dialog, Form, Badge, Progress",
+      "molecules": "FileUploadZone, QuestionCard, CreditDisplay, FormPreview",
+      "organisms": "FormsDashboard, FileProcessor, PaymentFlow, SidebarNavigation, EditableFormPreview",
+      "templates": "MainLayout, AuthLayout, DashboardLayout, CheckoutLayout, AIAssistantLayout",
+      "pages": "HomePage, DashboardPage, PricingPage, CheckoutSuccessPage, AIAssistantPage"
+    }
+  },
+  "firebase_config": {
+    "auth": "Google OAuth 2.0 with popup/redirect flow",
+    "firestore_collections": [
+      "users/{userId}",
+      "forms/{formId}",
+      "responses/{responseId}",
+      "templates/{templateId}",
+      "analytics/{analyticsId}",
+      "userCredits/{userId}",
+      "payments/{paymentId}"
+    ],
+    "storage_paths": [
+      "uploads/{userId}/{timestamp}",
+      "form-attachments/{formId}",
+      "avatars/{userId}",
+      "temp/{sessionId}"
+    ],
+    "security_rules": "User-based access with role permissions (admin, pro, free)",
+    "emulators": "localhost:4000 for local development"
+  },
+  "google_apis": {
+    "forms_api": "v1 - Form creation, question management, response handling, real-time updates",
+    "drive_api": "v3 - File storage, sharing permissions, folder management",
+    "oauth2": "Token refresh, scope management, consent handling",
+    "scopes": [
+      "https://www.googleapis.com/auth/forms.body",
+      "https://www.googleapis.com/auth/drive.file"
+    ]
+  },
+  "mercadopago_integration": {
+    "services": [
+      "Preference API for payment creation",
+      "Webhook handling for IPN notifications",
+      "Payment verification and status updates",
+      "Refund processing",
+      "Subscription management"
+    ],
+    "credit_system": {
+      "plans": {
+        "FREE": {"maxForms": 5, "maxQuestions": 20, "price": 0},
+        "PRO": {"maxForms": 100, "maxQuestions": 100, "price": 2990},
+        "ENTERPRISE": {"unlimited": true, "custom": true}
+      },
+      "pricing": {
+        "base_price": 1,
+        "pack_discounts": {"20": 0.9, "50": 0.8, "100": 0.7},
+        "dynamic_pricing": true,
+        "trial_credits": 10
+      }
+    }
+  },
+  "file_processing": {
+    "supported_formats": [".xlsx", ".xls", ".csv"],
+    "max_size": "10MB",
+    "detection": "Automatic question type detection with ML fallback",
+    "validation": "File format, structure validation, XSS prevention",
+    "progress": "Real-time progress tracking (0-100%) with WebSocket fallback",
+    "parsing": {
+      "csv_parser": "papaparse with custom delimiters",
+      "excel_parser": "xlsx library with sheet selection",
+      "validation_schema": "Zod schemas for each question type"
+    }
+  },
+  "question_types": [
+    "texto_corto", "texto_largo", "opcion_multiple", "checkboxes",
+    "dropdown", "escala_lineal", "fecha", "hora", "email", "numero",
+    "archivo", "grid", "escala", "fecha_hora"
+  ],
+  "design_system": {
+    "colors": {
+      "primary": "hsl(221.2 83.2% 53.3%)",
+      "success": "hsl(142.1 76.2% 36.3%)",
+      "error": "hsl(0 84.2% 60.2%)",
+      "warning": "hsl(38 92% 50%)",
+      "background": "hsl(210 40% 98%)",
+      "text": "hsl(222.2 84% 4.9%)",
+      "muted": "hsl(210 40% 96%)"
+    },
+    "typography": "Inter font family with system fallbacks",
+    "components": "shadcn/ui with custom variants and animations",
+    "icons": "lucide-react with custom icon library",
+    "animations": "framer-motion for micro-interactions"
+  },
+  "environment_variables": {
+    "firebase": [
+      "NEXT_PUBLIC_FIREBASE_API_KEY",
+      "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+      "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+      "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
+      "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+      "NEXT_PUBLIC_FIREBASE_APP_ID",
+      "FIREBASE_ADMIN_SDK_KEY"
+    ],
+    "google_apis": [
+      "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
+      "GOOGLE_CLIENT_SECRET",
+      "GOOGLE_PRIVATE_KEY",
+      "GOOGLE_SERVICE_ACCOUNT_EMAIL"
+    ],
+    "mercadopago": [
+      "MERCADOPAGO_ACCESS_TOKEN",
+      "MERCADOPAGO_PUBLIC_KEY",
+      "NEXT_PUBLIC_BASE_URL"
+    ],
+    "security": [
+      "NEXTAUTH_SECRET",
+      "NEXTAUTH_URL"
+    ]
+  },
+  "testing_strategy": {
+    "unit_tests": {
+      "scope": "Domain entities, services, utility functions",
+      "framework": "Jest with TypeScript",
+      "coverage": "90%+ target for domain and application layers"
+    },
+    "integration_tests": {
+      "scope": "API routes, Firebase repositories, Google APIs",
+      "framework": "Jest + Supertest",
+      "coverage": "80%+ for infrastructure layer"
+    },
+    "component_tests": {
+      "scope": "React components with user interactions",
+      "framework": "React Testing Library + Jest",
+      "coverage": "85%+ for presentation layer"
+    },
+    "e2e_tests": {
+      "scope": "Complete user flows: upload → create → publish → manage",
+      "framework": "Playwright",
+      "coverage": "Critical paths: signup, payment, form creation"
+    }
+  },
+  "common_tasks": {
+    "form_creation": "Parse file → validate questions → create Google Form → store metadata → update credits → notify user",
+    "file_upload": "Drag & drop → validation → parsing → preview → edit → confirm → publish",
+    "payment_flow": "Select plan → generate preference → redirect to MercadoPago → webhook notification → update credits → send confirmation",
+    "user_management": "OAuth signup → credit assignment → usage tracking → analytics → retention campaigns",
+    "error_handling": "User-friendly messages → error boundaries → retry mechanisms → logging → alerts",
+    "form_editing": "Generate form → visual editor → modify questions → add/remove options → set validation → publish to Google Forms"
+  },
+  "debugging_tools": {
+    "logging": "Structured logging with levels: debug, info, warn, error, with emojis for quick identification",
+    "dev_tools": "React DevTools, Redux DevTools, React Query DevTools, Firebase Emulator Suite",
+    "firebase": "Local emulator suite: localhost:4000 for auth, firestore, storage, functions",
+    "api_testing": "Google APIs Explorer, Postman collections, curl scripts for webhooks",
+    "performance": "Next.js Analytics, Web Vitals, Bundle analyzer, Lighthouse CI"
+  },
+  "performance_optimization": {
+    "bundle_size": "Dynamic imports, code splitting, tree shaking",
+    "images": "Next.js Image component, WebP format, lazy loading",
+    "api_calls": "React Query caching, optimistic updates, debounced inputs",
+    "file_processing": "Web Workers for heavy parsing, streaming uploads, progress tracking"
+  },
+  "security_best_practices": {
+    "authentication": "OAuth 2.0 with PKCE, session management, token refresh",
+    "authorization": "Role-based access control, resource-level permissions",
+    "data_protection": "Input validation, XSS prevention, SQL injection prevention",
+    "api_security": "Rate limiting, CORS configuration, API key rotation",
+    "file_security": "Virus scanning, file type validation, size limits"
+  },
+  "deployment_configurations": {
+    "vercel": {
+      "framework": "nextjs",
+      "build_command": "npm run build",
+      "install_command": "npm ci --legacy-peer-deps",
+      "regions": ["iad1", "sfo1"]
+    },
+    "netlify": {
+      "build_command": "npm ci && npm run build",
+      "publish": ".next",
+      "plugins": ["@netlify/plugin-nextjs"]
+    },
+    "docker": {
+      "base_image": "node:18-alpine",
+      "multi_stage": true,
+      "health_check": "/api/health"
+    }
+  },
+  "recent_improvements": {
+    "form_editor": "Added EditableFormPreview component for visual form editing before Google Forms upload",
+    "ui_consistency": "Replaced missing shadcn/ui components with available ones maintaining design system",
+    "user_flow": "Enhanced AI assistant page with form editing capabilities",
+    "error_handling": "Improved component import resolution and fallback strategies"
+  },
+  "future_enhancements": [
+    "Add more shadcn/ui components to complete the design system",
+    "Implement real-time collaboration for form editing",
+    "Add form templates and cloning functionality",
+    "Enhance AI-powered question suggestions",
+    "Add analytics dashboard for form performance",
+    "Implement bulk operations for form management"
+  ],
+    "DashboardFilesUsage": {
+    "dashboard-redesign-plan.json": {
+      "path": "/src/config/dashboard-redesign-plan.json",
+      "type": "master_plan",
+      "purpose": "Documento maestro con especificaciones completas del rediseño de dashboard",
+      "usage": {
+        "reference": "Consultar antes de implementar cualquier feature",
+        "creation_methods": "Implementar los 3 métodos en creationMethods",
+        "form_editing": "Seguir especificaciones en formEditing",
+        "routing": "Usar ejemplos en technicalImplementation.routing"
+      },
+      "key_sections": [
+        "creationMethods",
+        "unifiedBuilderInterface",
+        "navigationRedesign",
+        "formEditing",
+        "technicalImplementation"
+      ]
+    },
+    "implementation-tracker.json": {
+      "path": "/src/config/implementation-tracker.json",
+      "type": "progress_tracker",
+      "purpose": "Registro de progreso real de implementación",
+      "usage": {
+        "update_flow": "Ir llenando implementation conforme se completan tareas",
+        "status_tracking": "Cambiar status: not_started → in_progress → completed",
+        "documentation": "Registrar componentes implementados con fecha/notas",
+        "milestones": "Actualizar lastUpdated y version con cada logro"
+      },
+      "current_state": {
+        "status": "not_started",
+        "implementation": {},
+        "lastUpdated": "2024-12-19"
+      }
+    },
+    "workflow": [
+      "1. Leer dashboard-redesign-plan.json para entender requisitos",
+      "2. Desarrollar según especificaciones del plan maestro",
+      "3. Actualizar implementation-tracker.json con progreso",
+      "4. Validar contra plan maestro"
+    ]
+  }
+}

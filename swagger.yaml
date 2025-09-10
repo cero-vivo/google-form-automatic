@@ -1,0 +1,709 @@
+openapi: 3.0.3
+info:
+  title: FastForm SaaS API
+  description: |
+    API para la plataforma FastForm - automatización de Google Forms con integración de MercadoPago.
+    
+    Esta API permite:
+    - Crear formularios de Google Forms desde archivos CSV/Excel
+    - Generar formularios con inteligencia artificial
+    - Gestionar créditos y pagos mediante MercadoPago
+    - Administrar formularios existentes
+    - Verificar transacciones y balances de créditos
+    
+    ## Autenticación
+    La API utiliza autenticación basada en tokens de Firebase Auth y tokens de acceso de Google OAuth 2.0.
+  version: 2.1.0
+  contact:
+    name: FastForm Support
+    email: support@fastform.pro
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://fastform.pro
+    description: Servidor de producción
+  - url: http://localhost:3000
+    description: Servidor de desarrollo
+
+security:
+  - BearerAuth: []
+  - GoogleOAuth: []
+
+paths:
+  # Google Forms Endpoints
+  /api/google-forms/create:
+    post:
+      tags:
+        - Google Forms
+      summary: Crear un nuevo formulario en Google Forms
+      description: Crea un formulario en Google Forms con la estructura proporcionada
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - formData
+                - accessToken
+              properties:
+                formData:
+                  $ref: '#/components/schemas/FormData'
+                accessToken:
+                  type: string
+                  description: Token de acceso de Google OAuth
+            example:
+              formData:
+                title: "Encuesta de Satisfacción del Cliente"
+                description: "Ayúdanos a mejorar nuestros servicios"
+                questions:
+                  - type: "texto_corto"
+                    label: "¿Cuál es tu nombre?"
+                    required: true
+                  - type: "opcion_multiple"
+                    label: "¿Cómo calificarías nuestro servicio?"
+                    options: ["Excelente", "Bueno", "Regular", "Malo"]
+                    required: true
+              accessToken: "ya29.a0Ae4lvC0..."
+      responses:
+        '200':
+          description: Formulario creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      formId:
+                        type: string
+                        example: "1FAIpQLSdK9..."
+                      formUrl:
+                        type: string
+                        example: "https://forms.gle/abc123"
+                      editUrl:
+                        type: string
+                        example: "https://docs.google.com/forms/d/1FAIpQLSdK9.../edit"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/google-forms/list:
+    post:
+      tags:
+        - Google Forms
+      summary: Listar formularios del usuario
+      description: Obtiene una lista de todos los formularios de Google Forms del usuario autenticado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accessToken
+              properties:
+                accessToken:
+                  type: string
+                  description: Token de acceso de Google OAuth
+            example:
+              accessToken: "ya29.a0Ae4lvC0..."
+      responses:
+        '200':
+          description: Lista de formularios obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        published:
+                          type: boolean
+                        created:
+                          type: string
+                          format: date-time
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+
+  # AI Chat Endpoints
+  /api/ai-chat/generate-form:
+    post:
+      tags:
+        - Inteligencia Artificial
+      summary: Generar formulario con IA
+      description: Genera un formulario completo utilizando inteligencia artificial basada en una descripción
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - userId
+              properties:
+                message:
+                  type: string
+                  description: Descripción del formulario que se desea crear
+                userId:
+                  type: string
+                  description: ID del usuario de Firebase
+            example:
+              message: "Necesito un formulario para evaluar la satisfacción del cliente después de una compra"
+              userId: "user123"
+      responses:
+        '200':
+          description: Formulario generado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  form:
+                    $ref: '#/components/schemas/GeneratedForm'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # MercadoPago Endpoints
+  /api/mercadopago/create-preference:
+    post:
+      tags:
+        - Pagos
+      summary: Crear preferencia de pago
+      description: Crea una preferencia de pago en MercadoPago para comprar créditos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quantity
+                - unitPrice
+                - totalPrice
+              properties:
+                quantity:
+                  type: integer
+                  description: Cantidad de créditos a comprar
+                  minimum: 1
+                unitPrice:
+                  type: integer
+                  description: Precio unitario por crédito en centavos
+                totalPrice:
+                  type: integer
+                  description: Precio total en centavos
+                packSize:
+                  type: integer
+                  description: Tamaño del pack (para descuentos)
+                discountPercent:
+                  type: integer
+                  description: Porcentaje de descuento aplicado
+                userId:
+                  type: string
+                  description: ID del usuario
+            example:
+              quantity: 50
+              unitPrice: 2990
+              totalPrice: 149500
+              packSize: 50
+              discountPercent: 20
+              userId: "user123"
+      responses:
+        '200':
+          description: Preferencia creada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "123456789"
+                  initPoint:
+                    type: string
+                    example: "https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=123456789"
+                  sandboxInitPoint:
+                    type: string
+                    example: "https://sandbox.mercadopago.com.ar/checkout/v1/redirect?pref_id=123456789"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/mercadopago/webhooks:
+    post:
+      tags:
+        - Pagos
+      summary: Webhook de MercadoPago
+      description: Endpoint para recibir notificaciones de pagos de MercadoPago (IPN)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "payment"
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "123456789"
+      responses:
+        '200':
+          description: Webhook procesado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Créditos agregados exitosamente"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/mercadopago/verify-payment:
+    post:
+      tags:
+        - Pagos
+      summary: Verificar estado de pago
+      description: Verifica el estado de un pago específico en MercadoPago
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - paymentId
+                - userId
+                - purchase
+              properties:
+                paymentId:
+                  type: string
+                  description: ID del pago en MercadoPago
+                userId:
+                  type: string
+                  description: ID del usuario
+                purchase:
+                  $ref: '#/components/schemas/CreditPurchase'
+            example:
+              paymentId: "123456789"
+              userId: "user123"
+              purchase:
+                quantity: 50
+                unitPrice: 2990
+                totalPrice: 149500
+      responses:
+        '200':
+          description: Pago verificado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Créditos agregados exitosamente"
+                  paymentStatus:
+                    type: string
+                    example: "approved"
+                  creditsAdded:
+                    type: integer
+                    example: 50
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # Créditos y Usuario
+  /api/ai-credits/{userId}/balance:
+    get:
+      tags:
+        - Créditos
+      summary: Obtener balance de créditos
+      description: Obtiene el balance actual de créditos de un usuario
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Balance obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCredits'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/ai-credits/{userId}/transactions:
+    get:
+      tags:
+        - Créditos
+      summary: Obtener historial de transacciones
+      description: Obtiene el historial completo de transacciones de créditos de un usuario
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Historial obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreditTransaction'
+
+  /api/ai-credits/{userId}/analytics:
+    get:
+      tags:
+        - Créditos
+      summary: Obtener análisis de uso de créditos
+      description: Obtiene estadísticas y análisis del uso de créditos
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Análisis obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalEarned:
+                    type: integer
+                  totalPurchased:
+                    type: integer
+                  totalUsed:
+                    type: integer
+                  currentBalance:
+                    type: integer
+                  usageByMonth:
+                    type: object
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    GoogleOAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+
+  schemas:
+    FormData:
+      type: object
+      required:
+        - title
+        - questions
+      properties:
+        title:
+          type: string
+          description: Título del formulario
+          example: "Encuesta de Satisfacción"
+        description:
+          type: string
+          description: Descripción del formulario
+          example: "Ayúdanos a mejorar nuestros servicios"
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+
+    Question:
+      type: object
+      required:
+        - type
+        - label
+      properties:
+        type:
+          type: string
+          enum: ["texto_corto", "texto_largo", "opcion_multiple", "checkboxes", "dropdown", "escala_lineal", "fecha", "hora", "email", "numero", "archivo", "grid", "escala", "fecha_hora"]
+          example: "opcion_multiple"
+        label:
+          type: string
+          example: "¿Cómo calificarías nuestro servicio?"
+        description:
+          type: string
+          example: "Selecciona una opción"
+        required:
+          type: boolean
+          example: true
+        options:
+          type: array
+          items:
+            type: string
+          example: ["Excelente", "Bueno", "Regular", "Malo"]
+        validation:
+          type: object
+          properties:
+            minLength:
+              type: integer
+            maxLength:
+              type: integer
+            pattern:
+              type: string
+
+    GeneratedForm:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Formulario de Satisfacción del Cliente"
+        description:
+          type: string
+          example: "Formulario generado con inteligencia artificial"
+        questions:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              label:
+                type: string
+              required:
+                type: boolean
+              options:
+                type: array
+                items:
+                  type: string
+
+    CreditTransaction:
+      type: object
+      required:
+        - id
+        - type
+        - amount
+        - date
+        - status
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: ["purchase", "use", "bonus"]
+        amount:
+          type: integer
+          description: Cantidad de créditos
+        date:
+          type: string
+          format: date-time
+        paymentId:
+          type: string
+          description: ID del pago en MercadoPago
+        description:
+          type: string
+        status:
+          type: string
+          enum: ["completed", "pending", "failed"]
+
+    UserCredits:
+      type: object
+      required:
+        - userId
+        - balance
+        - updatedAt
+        - history
+      properties:
+        userId:
+          type: string
+        balance:
+          type: integer
+          description: Balance actual de créditos
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        totalEarned:
+          type: integer
+        totalPurchased:
+          type: integer
+        totalUsed:
+          type: integer
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditTransaction'
+
+    CreditPurchase:
+      type: object
+      required:
+        - quantity
+        - unitPrice
+        - totalPrice
+      properties:
+        quantity:
+          type: integer
+          description: Cantidad de créditos
+          example: 50
+        unitPrice:
+          type: integer
+          description: Precio por crédito en centavos
+          example: 2990
+        totalPrice:
+          type: integer
+          description: Precio total en centavos
+          example: 149500
+        packSize:
+          type: string
+          description: Tamaño del pack
+          example: "50"
+        discountPercent:
+          type: integer
+          description: Porcentaje de descuento aplicado
+          example: 20
+
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              details:
+                type: string
+
+    Unauthorized:
+      description: No autorizado
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+    Forbidden:
+      description: Permisos insuficientes
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+    PaymentRequired:
+      description: Créditos insuficientes
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+
+    RateLimit:
+      description: Límite de tasa excedido
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+    InternalServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+tags:
+  - name: Google Forms
+    description: Operaciones con Google Forms API
+  - name: Inteligencia Artificial
+    description: Generación de formularios con IA
+  - name: Pagos
+    description: Integración con MercadoPago
+  - name: Créditos
+    description: Gestión de sistema de créditos

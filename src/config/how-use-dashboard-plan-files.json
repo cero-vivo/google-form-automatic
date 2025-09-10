@@ -1,0 +1,44 @@
+{
+  "DashboardFilesUsage": {
+    "dashboard-redesign-plan.json": {
+      "path": "/src/config/dashboard-redesign-plan.json",
+      "type": "master_plan",
+      "purpose": "Documento maestro con especificaciones completas del rediseño de dashboard",
+      "usage": {
+        "reference": "Consultar antes de implementar cualquier feature",
+        "creation_methods": "Implementar los 3 métodos en creationMethods",
+        "form_editing": "Seguir especificaciones en formEditing",
+        "routing": "Usar ejemplos en technicalImplementation.routing"
+      },
+      "key_sections": [
+        "creationMethods",
+        "unifiedBuilderInterface",
+        "navigationRedesign",
+        "formEditing",
+        "technicalImplementation"
+      ]
+    },
+    "implementation-tracker.json": {
+      "path": "/src/config/implementation-tracker.json",
+      "type": "progress_tracker",
+      "purpose": "Registro de progreso real de implementación",
+      "usage": {
+        "update_flow": "Ir llenando implementation conforme se completan tareas",
+        "status_tracking": "Cambiar status: not_started → in_progress → completed",
+        "documentation": "Registrar componentes implementados con fecha/notas",
+        "milestones": "Actualizar lastUpdated y version con cada logro"
+      },
+      "current_state": {
+        "status": "not_started",
+        "implementation": {},
+        "lastUpdated": "2024-12-19"
+      }
+    },
+    "workflow": [
+      "1. Leer dashboard-redesign-plan.json para entender requisitos",
+      "2. Desarrollar según especificaciones del plan maestro",
+      "3. Actualizar implementation-tracker.json con progreso",
+      "4. Validar contra plan maestro"
+    ]
+  }
+}

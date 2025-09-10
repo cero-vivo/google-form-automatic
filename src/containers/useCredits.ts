@@ -95,7 +95,6 @@ export const useCredits = (): UseCreditsReturn => {
     // Solo suscribirse si el usuario cambió
     if (userIdRef.current !== user.id) {
       userIdRef.current = user.id;
-      console.log(`✅ Suscribiendo a créditos en tiempo real para usuario: ${user.id}`);
       setLoading(true);
       
       let unsubscribe: (() => void) | null = null;
@@ -104,7 +103,6 @@ export const useCredits = (): UseCreditsReturn => {
       initializeCreditsIfNeeded(user.id).then(() => {
         // Luego suscribirse a cambios en tiempo real
         unsubscribe = CreditsService.subscribeToUserCredits(user.id, (userCredits) => {
-          console.log(`📥 Créditos actualizados en tiempo real:`, userCredits);
           setCredits(userCredits);
           setLoading(false);
         });

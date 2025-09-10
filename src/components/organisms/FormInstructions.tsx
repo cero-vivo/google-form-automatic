@@ -14,7 +14,7 @@ export default function FormInstructions() {
       // Header
       ['Pregunta', 'Tipo', 'Opciones', 'Requerido', 'Descripción'],
       
-      // Ejemplos para cada tipo
+      // Ejemplos para tipos básicos
       ['¿Cuál es tu nombre completo?', 'short_text', '', 'Sí', 'Ingresa tu nombre y apellidos'],
       ['¿Podrías contarnos tu experiencia?', 'long_text', '', 'No', 'Describe tu experiencia en detalle'],
       ['¿Cuál es tu color favorito?', 'multiple_choice', 'Rojo,Azul,Verde,Amarillo,Otro', 'No', 'Selecciona una opción'],
@@ -25,7 +25,13 @@ export default function FormInstructions() {
       ['¿A qué hora prefieres ser contactado?', 'time', '', 'No', 'Formato: HH:MM'],
       ['¿Cuál es tu correo electrónico?', 'email', '', 'Sí', 'Ingresa un email válido'],
       ['¿Cuántos años tienes?', 'number', '', 'No', 'Solo números'],
-      ['¿Cuál es tu número de teléfono?', 'phone', '', 'No', 'Incluye código de país si es necesario']
+      ['¿Cuál es tu número de teléfono?', 'phone', '', 'No', 'Incluye código de país si es necesario'],
+      
+      // Ejemplos para tipos avanzados
+      ['¿Qué tan satisfecho estás?', 'rating', '1-10', 'No', 'Escala de satisfacción del 1 al 10'],
+      ['¿Cuál es tu sitio web?', 'website', '', 'No', 'Ingresa una URL válida'],
+      ['¿Cuál es tu código postal?', 'text', '', 'No', 'Código postal de tu domicilio'],
+      ['¿Aceptas los términos?', 'yes_no', '', 'Sí', 'Respuesta sí o no']
     ];
 
     // Crear hoja de cálculo
@@ -50,7 +56,7 @@ export default function FormInstructions() {
   };
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="mx-100">
       <CardHeader>
         <CardTitle>Cómo crear tu formulario</CardTitle>
         <CardDescription>
@@ -89,6 +95,7 @@ export default function FormInstructions() {
             <h4 className="font-medium mb-2">Tipos de preguntas soportados</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
               <div className="space-y-2">
+                <h5 className="font-semibold text-xs mb-2">Tipos Básicos</h5>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">short_text</Badge>
                   <span>Respuesta corta</span>
@@ -115,6 +122,11 @@ export default function FormInstructions() {
                 </div>
               </div>
               <div className="space-y-2">
+                <h5 className="font-semibold text-xs mb-2">Tipos Avanzados</h5>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs">rating</Badge>
+                  <span>Escala de calificación</span>
+                </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">date</Badge>
                   <span>Fecha</span>
@@ -178,9 +190,9 @@ export default function FormInstructions() {
             <h5 className="text-sm font-medium mb-3">💡 Ejemplo de estructura CSV:</h5>
             <code className="text-xs block bg-white dark:bg-slate-800 p-3 rounded border font-mono">
               Pregunta,Tipo,Opciones,Requerido<br/>
-              ¿Cuál es tu nombre?,short_text,,Sí<br/>
-              ¿Cuál es tu color favorito?,multiple_choice,"Rojo,Azul,Verde,Amarillo",No<br/>
-              Comentarios adicionales,long_text,,No
+            ¿Cuál es tu nombre?,short_text,,Sí<br/>
+            ¿Cuál es tu color favorito?,multiple_choice,"Rojo,Azul,Verde,Amarillo",No<br/>
+            Comentarios adicionales,long_text,,No
             </code>
           </div>
           
@@ -219,4 +231,4 @@ export default function FormInstructions() {
       </CardContent>
     </Card>
   );
-} 
+}

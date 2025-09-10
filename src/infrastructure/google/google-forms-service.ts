@@ -65,6 +65,7 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       const auth = this.getAuthClient(accessToken);
       
       console.log('🚀 Creando formulario base:', formData.title);
+      console.log('📋 Datos del formulario recibidos:', JSON.stringify(formData, null, 2));
       console.log('⚙️ Configuraciones recibidas:', formData.settings);
 
       // 1. Crear el formulario básico (título y documentTitle)
@@ -95,6 +96,7 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       // 3. Agregar preguntas si las hay (usando batchUpdate)
       if (formData.questions.length > 0) {
         console.log(`📝 Agregando ${formData.questions.length} preguntas...`);
+        console.log('📋 Procesando preguntas:', JSON.stringify(formData.questions, null, 2));
         await this.addQuestionsToForm(form.formId, formData.questions, accessToken);
       }
 
@@ -161,6 +163,8 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
     
     try {
       const requests = questions.map((question, index) => {
+        console.log(`📋 Procesando pregunta ${index + 1}: ${question.title} (${question.type})`);
+        
         const request = this.createQuestionRequest(question, index);
         console.log(`🔧 Pregunta ${index + 1}:`, JSON.stringify(request, null, 2));
         return request;
@@ -190,63 +194,103 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       index: index
     };
 
-    // Estructura correcta según la documentación oficial de Google Forms API
-    const questionItem: any = {
-      title: question.title,
-      description: question.description || ''
+    // Configurar tipo de pregunta según QuestionType
+    // Mapeo de tipos españoles a tipos de Google Forms
+    const typeMapping: Record<string, string> = {
+      'short_text': QuestionType.SHORT_TEXT,
+      'long_text': QuestionType.LONG_TEXT,
+      'multiple_choice': QuestionType.MULTIPLE_CHOICE,
+      'checkboxes': QuestionType.CHECKBOXES,
+      'dropdown': QuestionType.DROPDOWN,
+      'linear_scale': QuestionType.LINEAR_SCALE,
+      'date': QuestionType.DATE,
+      'time': QuestionType.TIME,
+      'email': QuestionType.EMAIL,
+      'number': QuestionType.NUMBER,
+      'phone': QuestionType.PHONE,
+      'rating': 'rating',
+      // Mapeo de tipos españoles
+      'texto_corto': QuestionType.SHORT_TEXT,
+      'texto_largo': QuestionType.LONG_TEXT,
+      'opcion_multiple': QuestionType.MULTIPLE_CHOICE,
+      'casillas': QuestionType.CHECKBOXES,
+      'lista_desplegable': QuestionType.DROPDOWN,
+      'escala_lineal': QuestionType.LINEAR_SCALE,
+      'fecha': QuestionType.DATE,
+      'hora': QuestionType.TIME,
+      'correo': QuestionType.EMAIL,
+      'numero': QuestionType.NUMBER,
+      'telefono': QuestionType.PHONE,
+      'calificacion': 'rating',
+      'casillas_de_verificacion': QuestionType.CHECKBOXES,
+      'opción_múltiple': QuestionType.MULTIPLE_CHOICE
     };
 
-    // La pregunta va dentro de 'question' no directamente en el item
-    const questionConfig: any = {};
+    const normalizedType = typeMapping[question.type] || question.type;
+    
+    let questionConfig: any = {
+      required: question.required
+    };
 
-    // Configurar tipo de pregunta según QuestionType
-    switch (question.type) {
+    switch (normalizedType) {
       case QuestionType.SHORT_TEXT:
+      case 'short_text':
         questionConfig.textQuestion = {
           paragraph: false
         };
         break;
 
       case QuestionType.LONG_TEXT:
+      case 'long_text':
         questionConfig.textQuestion = {
           paragraph: true
         };
         break;
 
       case QuestionType.MULTIPLE_CHOICE:
-        if (question.multipleChoiceConfig?.options) {
-          questionConfig.choiceQuestion = {
-            type: 'RADIO',
-            options: question.multipleChoiceConfig.options.map(option => ({
-              value: option
-            }))
-          };
+      case 'multiple_choice':
+        const multipleOptions = question.multipleChoiceConfig?.options || question.options || [];
+        if (multipleOptions.length === 0) {
+          throw new Error(`La pregunta "${question.title}" es de tipo opción múltiple pero no tiene opciones. Por favor, proporciona al menos una opción.`);
         }
+        questionConfig.choiceQuestion = {
+          type: 'RADIO',
+          options: multipleOptions.map((option: string) => ({
+            value: option
+          }))
+        };
         break;
 
       case QuestionType.CHECKBOXES:
-        if (question.multipleChoiceConfig?.options) {
-          questionConfig.choiceQuestion = {
-            type: 'CHECKBOX',
-            options: question.multipleChoiceConfig.options.map(option => ({
-              value: option
-            }))
-          };
+      case 'checkboxes':
+        const checkboxOptions = question.multipleChoiceConfig?.options || question.options || [];
+        if (checkboxOptions.length === 0) {
+          throw new Error(`La pregunta "${question.title}" es de tipo casillas de verificación pero no tiene opciones. Por favor, proporciona al menos una opción.`);
         }
+        questionConfig.choiceQuestion = {
+          type: 'CHECKBOX',
+          options: checkboxOptions.map((option: string) => ({
+            value: option
+          }))
+        };
         break;
 
       case QuestionType.DROPDOWN:
-        if (question.multipleChoiceConfig?.options) {
-          questionConfig.choiceQuestion = {
-            type: 'DROP_DOWN',
-            options: question.multipleChoiceConfig.options.map(option => ({
-              value: option
-            }))
-          };
+      case 'dropdown':
+        const dropdownOptions = question.multipleChoiceConfig?.options || question.options || [];
+        if (dropdownOptions.length === 0) {
+          throw new Error(`La pregunta "${question.title}" es de tipo lista desplegable pero no tiene opciones. Por favor, proporciona al menos una opción.`);
         }
+        questionConfig.choiceQuestion = {
+          type: 'DROP_DOWN',
+          options: dropdownOptions.map((option: string) => ({
+            value: option
+          }))
+        };
         break;
 
       case QuestionType.LINEAR_SCALE:
+      case 'linear_scale':
         const scaleConfig = question.linearScaleConfig;
         questionConfig.scaleQuestion = {
           low: scaleConfig?.min || 1,
@@ -257,6 +301,7 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
         break;
 
       case QuestionType.DATE:
+      case 'date':
         questionConfig.dateQuestion = {
           includeTime: false,
           includeYear: true
@@ -264,41 +309,57 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
         break;
 
       case QuestionType.TIME:
+      case 'time':
         questionConfig.timeQuestion = {
           duration: false
         };
         break;
 
       case QuestionType.EMAIL:
+      case 'email':
         questionConfig.textQuestion = {
           paragraph: false
         };
-        // TODO: Agregar validación de email si es posible
         break;
 
       case QuestionType.NUMBER:
+      case 'number':
         questionConfig.textQuestion = {
           paragraph: false
         };
-        // TODO: Agregar validación de número si es posible
         break;
 
       case QuestionType.PHONE:
+      case 'phone':
         questionConfig.textQuestion = {
           paragraph: false
         };
-        // TODO: Agregar validación de teléfono si es posible
+        break;
+
+
+
+      case 'rating':
+        // Mapear rating a linear scale
+        const ratingConfig = { min: 1, max: 5 };
+        const ratingOptions = question.options?.[0]?.split('-') || ['1', '5'];
+        if (ratingOptions.length === 2) {
+          ratingConfig.min = parseInt(ratingOptions[0]) || 1;
+          ratingConfig.max = parseInt(ratingOptions[1]) || 5;
+        }
+        questionConfig.scaleQuestion = {
+          low: ratingConfig.min,
+          high: ratingConfig.max,
+          lowLabel: '',
+          highLabel: ''
+        };
         break;
 
       default:
-        // Por defecto, usar texto corto
+        console.warn(`Tipo de pregunta no reconocido: ${question.type}, usando texto corto por defecto`);
         questionConfig.textQuestion = {
           paragraph: false
         };
     }
-
-    // Agregar la configuración required al questionConfig
-    questionConfig.required = question.required;
 
     // Estructura final correcta según la API
     return {
@@ -522,50 +583,16 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       const files = driveResponse.data.files || [];
       console.log(`✅ ${files.length} formularios encontrados`);
 
-      const userForms: UserForm[] = [];
-
-      // Para cada formulario, obtener información adicional
-      for (const file of files) {
-        if (file.id && file.name) {
-          try {
-            // Obtener información del formulario desde Forms API
-            const formResponse = await this.formsAPI.forms.get({
-              auth,
-              formId: file.id
-            });
-
-            const form = formResponse.data;
-            const responseCount = await this.getFormResponseCount(file.id, accessToken);
-
-            const userForm: UserForm = {
-              id: file.id,
-              title: form.info?.title || file.name,
-              description: form.info?.description || file.description || undefined,
-              googleFormUrl: `https://docs.google.com/forms/d/${file.id}/viewform`,
-              editUrl: `https://docs.google.com/forms/d/${file.id}/edit`,
-              responseCount,
-              createdAt: file.createdTime ? new Date(file.createdTime) : new Date(),
-              modifiedAt: file.modifiedTime ? new Date(file.modifiedTime) : new Date()
-            };
-
-            userForms.push(userForm);
-          } catch (formError) {
-            console.warn(`⚠️ Error obteniendo detalles del formulario ${file.id}:`, formError);
-            // Agregar formulario con información básica si no se pueden obtener los detalles
-            const userForm: UserForm = {
-              id: file.id,
-              title: file.name,
-              description: file.description || undefined,
-              googleFormUrl: `https://docs.google.com/forms/d/${file.id}/viewform`,
-              editUrl: `https://docs.google.com/forms/d/${file.id}/edit`,
-              responseCount: 0,
-              createdAt: file.createdTime ? new Date(file.createdTime) : new Date(),
-              modifiedAt: file.modifiedTime ? new Date(file.modifiedTime) : new Date()
-            };
-            userForms.push(userForm);
-          }
-        }
-      }
+      const userForms: UserForm[] = files.map((file) => ({
+        id: file.id || '',
+        title: file.name || '',
+        description: file.description || undefined,
+        googleFormUrl: file.webViewLink || '',
+        editUrl: file.webViewLink || '',
+        responseCount: 0,
+        createdAt: file.createdTime ? new Date(file.createdTime) : new Date(),
+        modifiedAt: file.modifiedTime ? new Date(file.modifiedTime) : new Date()
+      }));
 
       console.log(`✅ ${userForms.length} formularios procesados exitosamente`);
       return userForms;
@@ -588,4 +615,4 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
 }
 
 // Singleton instance
-export const googleFormsService = new GoogleFormsServiceImpl(); 
+export const googleFormsService = new GoogleFormsServiceImpl();

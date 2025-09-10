@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Precios FastForm - Convertir CSV a Google Forms Gratis | Excel a Google Forms",
+  title: "Precios FastForm - Planes para Crear Google Forms desde CSV y Excel",
   description: "Planes y precios de FastForm para convertir archivos CSV y Excel a Google Forms. Plan gratuito disponible para crear formularios automáticamente.",
   keywords: [
     "precios fastform",
@@ -23,4 +23,4 @@ export default function PricingLayout({
   children: React.ReactNode;
 }) {
   return <>{children}</>;
-} 
+}

@@ -227,6 +227,45 @@ export class FileParserServiceImpl implements FileParserService {
     return ['question', 'type', 'options', 'required', 'description'];
   }
 
+  private detectQuestionTypeFromText(questionText: string, typeHint?: string): QuestionType {
+    const text = questionText.toLowerCase();
+    
+    // FILE_UPLOAD ya no es soportado - usar texto corto como fallback
+      if (text.includes('sube') || text.includes('adjunta') || text.includes('carga') || 
+          text.includes('pdf') || text.includes('cv') || text.includes('documento') || 
+          text.includes('archivo') || text.includes('foto') || text.includes('imagen')) {
+        return QuestionType.SHORT_TEXT; // Fallback seguro
+      }
+    
+    // Detectar email
+    if (text.includes('email') || text.includes('correo') || text.includes('@')) {
+      return QuestionType.EMAIL;
+    }
+    
+    // Detectar número
+    if (text.includes('número') || text.includes('teléfono') || text.includes('edad') || 
+        text.includes('cuántos') || text.includes('cuántas')) {
+      return QuestionType.NUMBER;
+    }
+    
+    // Detectar fecha
+    if (text.includes('fecha') || text.includes('cumpleaños') || text.includes('nacimiento')) {
+      return QuestionType.DATE;
+    }
+    
+    // Detectar evaluación por palabras clave
+    if (text.includes('calificar') || text.includes('rate') || text.includes('evaluar')) {
+      return QuestionType.LINEAR_SCALE; // Usar escala como fallback
+    }
+    
+    // Si hay un hint de tipo, usarlo
+    if (typeHint) {
+      return this.parseQuestionType(typeHint);
+    }
+    
+    return QuestionType.SHORT_TEXT;
+  }
+
   private parseRow(row: any[], headers: string[], rowNumber: number): Question | null {
     const rowData: Record<string, any> = {};
     
@@ -248,19 +287,29 @@ export class FileParserServiceImpl implements FileParserService {
       throw new Error(`Fila ${rowNumber}: La pregunta es requerida`);
     }
 
-    // Determinar el tipo de pregunta
-    const questionType = this.parseQuestionType(rowData.type?.toString().trim());
+    // Determinar el tipo de pregunta - usar detección inteligente si no hay tipo especificado
+    let questionType = this.parseQuestionType(rowData.type?.toString().trim());
+    if (questionType === QuestionType.SHORT_TEXT && !rowData.type) {
+      questionType = this.detectQuestionTypeFromText(questionText);
+    }
 
     // Parsear opciones si es necesario
     let multipleChoiceConfig;
     if (this.requiresOptions(questionType)) {
       const optionsText = rowData.options?.toString().trim();
-      if (optionsText) {
-        multipleChoiceConfig = {
-          options: this.parseOptions(optionsText),
-          allowOther: false
-        };
+      if (!optionsText) {
+        throw new Error(`Fila ${rowNumber}: La pregunta "${questionText}" es de tipo ${questionType} y requiere opciones. Por favor, proporciona opciones separadas por comas en la columna 'options'.`);
       }
+      
+      const options = this.parseOptions(optionsText);
+      if (options.length === 0) {
+        throw new Error(`Fila ${rowNumber}: La pregunta "${questionText}" es de tipo ${questionType} pero no tiene opciones válidas. Por favor, proporciona al menos una opción.`);
+      }
+      
+      multipleChoiceConfig = {
+        options: options,
+        allowOther: false
+      };
     }
 
     // Parsear si es requerido
@@ -315,7 +364,12 @@ export class FileParserServiceImpl implements FileParserService {
                         (requerida || '').toString().toLowerCase().trim() === 'yes';
 
       // Mapear tipos de Google Forms a nuestros tipos
-      const questionType = this.mapGoogleFormsType(tipoLower);
+      let questionType = this.mapGoogleFormsType(tipoLower);
+      
+      // Si no se pudo mapear claramente, usar detección inteligente
+      if (questionType === QuestionType.SHORT_TEXT && (!tipo || tipo.trim() === '')) {
+        questionType = this.detectQuestionTypeFromText(pregunta.toString().trim());
+      }
       
       // Filtrar opciones válidas (solo para tipos que las necesitan)
       const validOptions = opciones
@@ -334,10 +388,13 @@ export class FileParserServiceImpl implements FileParserService {
       };
 
       // Agregar configuración específica según el tipo
-      if ((questionType === QuestionType.MULTIPLE_CHOICE || 
-           questionType === QuestionType.CHECKBOXES || 
-           questionType === QuestionType.DROPDOWN) && 
-          validOptions.length > 0) {
+      if (questionType === QuestionType.MULTIPLE_CHOICE || 
+          questionType === QuestionType.CHECKBOXES || 
+          questionType === QuestionType.DROPDOWN) {
+        if (validOptions.length === 0) {
+          throw new Error(`Fila ${rowNumber}: La pregunta "${pregunta}" es de tipo ${questionType} y requiere opciones. Por favor, proporciona al menos una opción en las columnas de opciones.`);
+        }
+        
         question.multipleChoiceConfig = {
           options: validOptions,
           allowOther: false
@@ -356,25 +413,28 @@ export class FileParserServiceImpl implements FileParserService {
   private mapGoogleFormsType(tipo: string): QuestionType {
     tipo = tipo.toLowerCase().trim();
     
-    if (tipo.includes('respuesta corta') || tipo.includes('short')) {
+    if (tipo.includes('respuesta corta') || tipo.includes('short') || tipo.includes('short_text')) {
       return QuestionType.SHORT_TEXT;
     }
-    if (tipo.includes('respuesta larga') || tipo.includes('long') || tipo.includes('paragraph')) {
+    if (tipo.includes('respuesta larga') || tipo.includes('long') || tipo.includes('paragraph') || tipo.includes('long_text')) {
       return QuestionType.LONG_TEXT;
     }
-    if (tipo.includes('selección múltiple') || tipo.includes('checkbox') || tipo.includes('múltiple')) {
+    if (tipo.includes('checkbox') || tipo.includes('checkboxes')) {
       return QuestionType.CHECKBOXES;
     }
-    if (tipo.includes('opción múltiple') || tipo.includes('radio') || tipo.includes('choice')) {
+    if (tipo.includes('opción múltiple') || tipo.includes('radio') || tipo.includes('choice') || tipo.includes('multiple_choice')) {
       return QuestionType.MULTIPLE_CHOICE;
     }
     if (tipo.includes('dropdown') || tipo.includes('lista') || tipo.includes('desplegable')) {
       return QuestionType.DROPDOWN;
     }
-    if (tipo.includes('escala') || tipo.includes('scale')) {
+    if (tipo.includes('escala') || tipo.includes('scale') || tipo.includes('linear_scale') || tipo.includes('rating')) {
       return QuestionType.LINEAR_SCALE;
     }
     if (tipo.includes('fecha') || tipo.includes('date')) {
+      if (tipo.includes('hora') || tipo.includes('time')) {
+        return QuestionType.DATE;
+      }
       return QuestionType.DATE;
     }
     if (tipo.includes('hora') || tipo.includes('time')) {
@@ -442,6 +502,8 @@ export class FileParserServiceImpl implements FileParserService {
       'date': QuestionType.DATE,
       'hora': QuestionType.TIME,
       'time': QuestionType.TIME,
+      
+      // FILE_UPLOAD ya no es soportado - se elimina
       
       // Otros
       'email': QuestionType.EMAIL,
@@ -535,4 +597,4 @@ export class FileParserServiceImpl implements FileParserService {
   private isCSVFile(file: File): boolean {
     return ['text/csv', 'application/csv'].includes(file.type);
   }
-} 
+}

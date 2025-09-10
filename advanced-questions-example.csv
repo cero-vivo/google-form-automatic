@@ -1,0 +1,13 @@
+Pregunta,Tipo,Requerida,Opción 1,Opción 2,Opción 3,Opción 4,Descripción
+Sube tu CV en PDF,fileUploadQuestion,Sí,,,,,Por favor sube tu CV actualizado en formato PDF
+Evalúa estos productos,,Sí,Muy bueno,Bueno,Regular,Malo,Evalúa la calidad de nuestros productos
+Fecha de nacimiento,fecha,No,,,,,Ingresa tu fecha de nacimiento
+Hora de la cita,hora,Sí,,,,,Selecciona la hora para tu cita
+Correo electrónico,email,Sí,,,,,Ingresa tu correo electrónico personal
+Número de teléfono,número,Sí,,,,,Ingresa tu número de contacto
+Selecciona tu país,dropdown,Sí,España,México,Argentina,Colombia,Selecciona tu país de residencia
+¿Qué servicios utilizas?,checkboxes,No,Email,Chat,Teléfono,WhatsApp,Selecciona todos los servicios que utilizas
+Adjunta tu documento de identidad,archivo,Sí,,,,,Sube una foto o escaneo de tu documento
+Califica nuestro servicio,grid,Sí,1 - Muy malo,2 - Malo,3 - Regular,4 - Bueno,5 - Excelente,Califica tu experiencia con nuestro servicio
+Cuéntanos tu experiencia,texto_largo,No,,,,,Describe tu experiencia en detalle
+¿Cuántos años tienes?,número,Sí,,,,,Ingresa tu edad actual

@@ -15,18 +15,20 @@ import * as XLSX from 'xlsx';
 export interface FileUploadCardProps {
   onQuestionsLoaded?: (questions: Question[]) => void;
   className?: string;
+  hideTemplate?: boolean;
 }
 
-const FileUploadCard: React.FC<FileUploadCardProps> = ({ 
+const FileUploadCard: React.FC<FileUploadCardProps> = ({
   onQuestionsLoaded,
-  className = ""
+  className = "",
+  hideTemplate = false
 }) => {
-  const { 
-    loading, 
-    progress, 
-    error, 
-    questions, 
-    handleFileSelect: uploadFile, 
+  const {
+    loading,
+    progress,
+    error,
+    questions,
+    handleFileSelect: uploadFile,
     clearError,
     clearFile
   } = useFileUpload();
@@ -45,19 +47,20 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
     }
   };
 
-  const getQuestionTypeLabel = (type: QuestionType): string => {
-    const labels = {
+  const getQuestionTypeLabel = (type: string): string => {
+    const labels: Record<string, string> = {
       [QuestionType.SHORT_TEXT]: 'Texto Corto',
       [QuestionType.LONG_TEXT]: 'Texto Largo',
       [QuestionType.MULTIPLE_CHOICE]: 'Opción Múltiple',
-      [QuestionType.CHECKBOXES]: 'Selección Múltiple',
+      [QuestionType.CHECKBOXES]: 'Casillas',
       [QuestionType.DROPDOWN]: 'Lista Desplegable',
-      [QuestionType.LINEAR_SCALE]: 'Escala Linear',
+      [QuestionType.LINEAR_SCALE]: 'Escala Lineal',
       [QuestionType.DATE]: 'Fecha',
       [QuestionType.TIME]: 'Hora',
       [QuestionType.EMAIL]: 'Email',
       [QuestionType.NUMBER]: 'Número',
-      [QuestionType.PHONE]: 'Teléfono'
+    
+      [QuestionType.RATING]: 'Calificación'
     };
     return labels[type] || type;
   };
@@ -74,7 +77,9 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
       [QuestionType.TIME]: 'bg-red-50 text-red-700',
       [QuestionType.EMAIL]: 'bg-indigo-50 text-indigo-700',
       [QuestionType.NUMBER]: 'bg-gray-50 text-gray-700',
-      [QuestionType.PHONE]: 'bg-cyan-50 text-cyan-700'
+      [QuestionType.PHONE]: 'bg-violet-50 text-violet-700',
+      [QuestionType.URL]: 'bg-sky-50 text-sky-700',
+      [QuestionType.RATING]: 'bg-emerald-50 text-emerald-700'
     };
     return colors[type] || 'bg-gray-50 text-gray-700';
   };
@@ -84,7 +89,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
     const exampleData = [
       // Header
       ['Pregunta', 'Tipo', 'Opciones', 'Requerido', 'Descripción'],
-      
+
       // Ejemplos para cada tipo
       ['¿Cuál es tu nombre completo?', 'short_text', '', 'Sí', 'Ingresa tu nombre y apellidos'],
       ['¿Podrías contarnos tu experiencia?', 'long_text', '', 'No', 'Describe tu experiencia en detalle'],
@@ -96,17 +101,19 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
       ['¿A qué hora prefieres ser contactado?', 'time', '', 'No', 'Formato: HH:MM'],
       ['¿Cuál es tu correo electrónico?', 'email', '', 'Sí', 'Ingresa un email válido'],
       ['¿Cuántos años tienes?', 'number', '', 'No', 'Solo números'],
-      ['¿Cuál es tu número de teléfono?', 'phone', '', 'No', 'Incluye código de país si es necesario']
+      ['¿Cuál es tu número de teléfono?', 'phone', '', 'Sí', 'Ingresa tu número de contacto'],
+
+      ['¿Qué tan satisfecho estás?', 'rating', '1-10', 'No', 'Escala del 1 (muy insatisfecho) al 10 (muy satisfecho)']
     ];
 
     // Crear hoja de cálculo
     const worksheet = XLSX.utils.aoa_to_sheet(exampleData);
-    
+
     // Configurar ancho de columnas
     const columnWidths = [
       { wch: 35 }, // Pregunta
       { wch: 15 }, // Tipo
-      { wch: 40 }, // Opciones
+      { wch: 50 }, // Opciones (ampliado para grid)
       { wch: 10 }, // Requerido
       { wch: 35 }  // Descripción
     ];
@@ -115,7 +122,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
     // Crear libro de trabajo
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Ejemplo Formulario');
-    
+
     // Descargar archivo
     XLSX.writeFile(workbook, 'ejemplo_formulario_completo.xlsx');
   };
@@ -134,33 +141,40 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Formato Compatible */}
-          <Alert className="bg-white border border-gray-200">
-            <FileSpreadsheet className="w-4 h-4 text-excel" />
-            <AlertDescription className="space-y-2">
-              <div>
-                <strong>Formato requerido:</strong> Tu archivo debe tener estas columnas:
-              </div>
-              <code className="block bg-gray-100 px-2 py-1 rounded text-sm">
-                Pregunta | Tipo | Opciones | Requerido | Descripción
-              </code>
-              <div className="space-y-1">
-                <div><strong>Tipos soportados:</strong></div>
-                <div className="text-xs grid grid-cols-2 gap-1 text-gray-700">
-                  <span>• short_text (Respuesta corta)</span>
-                  <span>• long_text (Respuesta larga)</span>
-                  <span>• multiple_choice (Opción múltiple)</span>
-                  <span>• checkboxes (Casillas múltiples)</span>
-                  <span>• dropdown (Lista desplegable)</span>
-                  <span>• linear_scale (Escala lineal)</span>
-                  <span>• date (Fecha)</span>
-                  <span>• time (Hora)</span>
-                  <span>• email (Correo electrónico)</span>
-                  <span>• number (Número)</span>
-                  <span>• phone (Teléfono)</span>
+          {!hideTemplate && (
+            <Alert className="bg-white border border-gray-200">
+              <FileSpreadsheet className="w-4 h-4 text-excel" />
+              <AlertDescription className="space-y-2">
+                <div>
+                  <strong>Formato requerido:</strong> Tu archivo debe tener estas columnas:
                 </div>
-              </div>
-            </AlertDescription>
-          </Alert>
+                <code className="block bg-gray-100 px-2 py-1 rounded text-sm">
+                  Pregunta | Tipo | Opciones | Requerido | Descripción
+                </code>
+                <div className="space-y-1">
+                  <div><strong>Tipos soportados:</strong></div>
+                  <div className="text-xs grid grid-cols-2 gap-1 text-gray-700">
+                    <span>• short_text (Respuesta corta)</span>
+                    <span>• long_text (Respuesta larga)</span>
+                    <span>• multiple_choice (Opción múltiple)</span>
+                    <span>• checkboxes (Casillas múltiples)</span>
+                    <span>• dropdown (Lista desplegable)</span>
+                    <span>• linear_scale (Escala lineal)</span>
+                    <span>• date (Fecha)</span>
+                    <span>• time (Hora)</span>
+                    <span>• email (Correo electrónico)</span>
+                    <span>• number (Número)</span>
+                    <span>• phone (Teléfono)</span>
+          
+                    <span>• rating (Calificación)</span>
+                  </div>
+                  <div className="text-xs text-gray-600 mt-2">
+          
+                  </div>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Download Example Button */}
           <div className="bg-excel-light p-3 rounded-lg">
@@ -171,8 +185,8 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
                   Descarga un archivo Excel con ejemplos de todos los tipos
                 </p>
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={generateExampleExcel}
                 className="flex items-center gap-2 border-excel text-excel hover:bg-excel/5"
@@ -195,16 +209,15 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
             />
             <label
               htmlFor="file-upload"
-              className={`cursor-pointer flex flex-col items-center gap-2 ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`cursor-pointer flex flex-col items-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             >
               <FileText className="w-12 h-12 text-gray-400" />
               <span className="text-lg font-medium text-primary">
                 {loading ? 'Procesando archivo...' : 'Haz clic para seleccionar archivo'}
               </span>
               <span className="text-sm text-muted">
-                Archivos soportados: .xlsx, .csv (máx. 10MB)
+                Archivos soportados: .xlsx, .csv (máx. 10MB) | Tipos: texto, opción múltiple, casillas, escala, fecha, matriz, calificación
               </span>
             </label>
           </div>
@@ -333,4 +346,20 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
   );
 };
 
-export default FileUploadCard; 
+export default FileUploadCard;
+
+const colors = {
+  [QuestionType.SHORT_TEXT]: 'text-blue-600',
+  [QuestionType.LONG_TEXT]: 'text-purple-600',
+  [QuestionType.MULTIPLE_CHOICE]: 'text-green-600',
+  [QuestionType.CHECKBOXES]: 'text-orange-600',
+  [QuestionType.DROPDOWN]: 'text-pink-600',
+  [QuestionType.LINEAR_SCALE]: 'text-indigo-600',
+  [QuestionType.DATE]: 'text-yellow-600',
+  [QuestionType.TIME]: 'text-cyan-600',
+  [QuestionType.EMAIL]: 'text-red-600',
+  [QuestionType.NUMBER]: 'text-teal-600',
+  [QuestionType.PHONE]: 'text-gray-600',
+  [QuestionType.RATING]: 'text-amber-600',
+  [QuestionType.URL]: 'text-sky-600', // Added missing URL type
+};

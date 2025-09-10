@@ -322,6 +322,58 @@ NEXTAUTH_SECRET=tu-secret-super-seguro
 
 ---
 
+## 📚 Documentación de API (Swagger UI)
+
+### 🚀 Cómo Ejecutar Swagger UI
+
+La documentación de API está disponible en formato Swagger/OpenAPI 3.0.3. Puedes visualizarla localmente de la siguiente manera:
+
+#### Método 1: Usando Python (Recomendado)
+```bash
+# Desde la raíz del proyecto
+python3 -m http.server 8080
+# o
+python -m http.server 8080
+```
+
+Luego abre tu navegador en:
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **YAML**: http://localhost:8080/swagger.yaml
+- **JSON**: http://localhost:8080/swagger.json
+
+#### Método 2: Usando Node.js
+```bash
+# Instalar un servidor HTTP simple
+npm install -g http-server
+
+# Ejecutar el servidor
+http-server -p 8080
+```
+
+#### Método 3: Usando VS Code Live Server
+1. Instala la extensión "Live Server" en VS Code
+2. Haz clic derecho en `swagger-ui.html`
+3. Selecciona "Open with Live Server"
+
+### 📋 Endpoints Documentados
+
+La documentación incluye:
+- **Google Forms**: `/api/google-forms/create`, `/api/google-forms/list`
+- **AI Chat**: `/api/ai-chat/generate-form`
+- **MercadoPago**: `/api/mercadopago/create-preference`, `/api/mercadopago/webhooks`, `/api/mercadopago/verify-payment`
+- **Credits**: `/api/ai-credits/{userId}/balance`, `/api/ai-credits/{userId}/transactions`, `/api/ai-credits/{userId}/analytics`
+
+### 🔐 Autenticación en Swagger UI
+- **Bearer Token**: Para endpoints protegidos
+- **Google OAuth**: Para integración con Google APIs
+
+### 📁 Archivos de Documentación
+- `swagger.yaml` - Especificación OpenAPI 3.0.3
+- `swagger.json` - Versión JSON de la especificación
+- `swagger-ui.html` - Interfaz Swagger UI lista para usar
+
+---
+
 ## 📖 Guía de Uso
 
 ### 👤 Para Usuarios Finales

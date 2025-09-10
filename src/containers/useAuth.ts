@@ -93,7 +93,6 @@ export const useAuth = (): UseAuthReturn => {
           if (isMounted) {
             setUser(authUser);
             setUserEntity(entity);
-            console.log('✅ User authenticated:', authUser.email);
           }
         } catch (err) {
           console.error('❌ Error loading user data:', err);

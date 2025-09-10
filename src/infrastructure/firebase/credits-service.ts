@@ -216,14 +216,11 @@ export class CreditsService {
     userId: string, 
     callback: (credits: UserCredits | null) => void
   ): () => void {
-    console.log(`🔍 Suscribiendo a créditos del usuario: ${userId}`);
     const docRef = doc(db, COLLECTION_NAME, userId);
     
     // Configurar opciones para evitar múltiples snapshots
     const unsubscribe = onSnapshot(docRef, {
       next: (docSnap) => {
-        console.log(`📊 Snapshot recibido para usuario ${userId}:`, docSnap.exists());
-        
         if (docSnap.exists()) {
           const data = docSnap.data();
           const userCredits: UserCredits = {
@@ -235,15 +232,12 @@ export class CreditsService {
               date: item.date?.toDate() || new Date()
             })) || []
           };
-          console.log(`✅ Créditos actualizados para usuario ${userId}:`, userCredits.balance);
           callback(userCredits);
         } else {
-          console.log(`⚠️ No se encontraron créditos para usuario ${userId}`);
           callback(null);
         }
       },
       error: (error) => {
-        console.error('Error listening to user credits:', error);
         callback(null);
       }
     });

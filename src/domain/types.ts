@@ -10,7 +10,9 @@ export enum QuestionType {
   TIME = 'time',
   EMAIL = 'email',
   NUMBER = 'number',
-  PHONE = 'phone'
+  PHONE = 'phone',
+  RATING = 'rating',
+  URL = 'url'
 }
 
 export enum FormStatus {
@@ -52,8 +54,3 @@ export interface LinearScaleConfig {
   minLabel?: string;
   maxLabel?: string;
 }
-
-export interface DateTimeConfig {
-  includeTime?: boolean;
-  dateFormat?: string;
-} 
