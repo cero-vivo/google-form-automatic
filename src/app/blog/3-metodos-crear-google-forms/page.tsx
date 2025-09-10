@@ -55,38 +55,49 @@ export default function ArticlePage() {
         <div className="max-w-4xl mx-auto">
           <article className="prose prose-lg max-w-none">
             <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-              En {new Date().getFullYear()}, crear Google Forms no tiene que ser una tarea tediosa. FastForm ha transformado este proceso 
-              en una experiencia rápida, intuitiva y poderosa. Conoce los tres métodos que hacen posible crear 
+              En {new Date().getFullYear()}, crear Google Forms no tiene que ser una tarea tediosa. FastForm ha transformado este proceso
+              en una experiencia rápida, intuitiva y poderosa. Conoce los tres métodos que hacen posible crear
               formularios profesionales en minutos, no horas.
             </p>
 
-            {/* Método 1: Conversión CSV/Excel */}
+
+            {/* Comparación */}
+            {/* Método 1: Plantillas CSV/Excel para creación rápida */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                1. Conversión Inteligente de CSV/Excel
+                1. Creación Ultra-Rápida con Plantillas CSV
               </h2>
               <p className="mb-4">
-                ¿Tienes datos en Excel o CSV que necesitas convertir en un formulario? Este método es perfecto 
-                para migrar encuestas existentes, crear formularios a partir de bases de datos, o digitalizar 
-                formularios en papel.
+                ¿Necesitas crear un formulario con 20, 50 o 100 preguntas? Con nuestras plantillas CSV puedes crear formularios masivos en segundos en lugar de horas. Es como copiar y pegar, pero para formularios completos.
               </p>
-              
-              <h3 className="text-xl font-semibold mb-3">Cómo funciona:</h3>
+
+              <h3 className="text-xl font-semibold mb-3">Proceso súper simple:</h3>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li><strong>Sube tu archivo:</strong> Compatible con CSV, Excel (.xlsx, .xls) y Google Sheets</li>
-                <li><strong>Inteligencia automática:</strong> FastForm detecta tipos de preguntas basados en tus datos</li>
-                <li><strong>Personalización instantánea:</strong> Ajusta tipos de respuesta, validaciones y diseño</li>
-                <li><strong>Conversión en 2 minutos:</strong> De archivo a formulario funcional</li>
+                <li><strong>1. Descarga:</strong> Nuestra plantilla CSV lista para usar</li>
+                <li><strong>2. Escribe:</strong> Agrega tus preguntas en columnas simples</li>
+                <li><strong>3. Sube:</strong> FastForm crea todo el formulario automáticamente</li>
+                <li><strong>4. Listo:</strong> Tu formulario con todas las preguntas está creado</li>
               </ul>
 
-              <div className="bg-blue-50 p-4 rounded-lg mb-4">
-                <h4 className="font-semibold text-blue-900 mb-2">Casos de uso ideales:</h4>
-                <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Migrar encuestas antiguas a Google Forms</li>
-                  <li>• Crear formularios a partir de listas de participantes</li>
-                  <li>• Digitalizar formularios en papel</li>
-                  <li>• Generar formularios desde bases de datos</li>
+              <div className="bg-purple-50 p-4 rounded-lg mb-4">
+                <h4 className="font-semibold text-purple-900 mb-2">¿Por qué es mejor que crear manualmente?</h4>
+                <ul className="text-sm text-purple-800 space-y-1">
+                  <li>✅ 100 preguntas en 5 segundos vs 3 horas manuales</li>
+                  <li>✅ Evitas errores de copiar/pegar repetitivo</li>
+                  <li>✅ Mismo formato consistente en todas las preguntas</li>
+                  <li>✅ Puedes reutilizar y editar fácilmente</li>
                 </ul>
+              </div>
+
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-green-900 mb-2">Ejemplo práctico:</h4>
+                <p className="text-sm text-green-800 mb-2">
+                  <strong>Escenario:</strong> Necesitas crear una encuesta de satisfacción de 50 preguntas
+                </p>
+                <p className="text-sm text-green-800">
+                  <strong>Google Forms manual:</strong> 1.5 horas clickeando cada pregunta<br />
+                  <strong>FastForm con CSV:</strong> 5 segundos y tu café aún está caliente
+                </p>
               </div>
             </section>
 
@@ -96,22 +107,27 @@ export default function ArticlePage() {
                 2. Creación Asistida por IA
               </h2>
               <p className="mb-4">
-                Describe en lenguaje natural lo que necesitas y nuestra IA generará un formulario completo. 
+                Describe en lenguaje natural lo que necesitas y nuestra IA generará un formulario completo.
                 Es como tener un experto en formularios que entiende exactamente lo que quieres.
               </p>
-              
+
               <h3 className="text-xl font-semibold mb-3">Ejemplos de prompts:</h3>
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <p className="text-sm mb-2"><strong>Ejemplo 1:</strong></p>
                 <p className="text-sm italic mb-3">
-                  "Necesito un formulario de registro para un evento corporativo con nombre completo, 
+                  "Necesito un formulario de registro para un evento corporativo con nombre completo,
                   email corporativo, empresa, cargo, y preferencias alimenticias"
                 </p>
-                
+
                 <p className="text-sm mb-2"><strong>Ejemplo 2:</strong></p>
-                <p className="text-sm italic">
-                  "Crea una encuesta de satisfacción post-compra con escala de 1-5, 
+                <p className="text-sm italic mb-3">
+                  "Crea una encuesta de satisfacción post-compra con escala de 1-5,
                   preguntas sobre calidad del producto, servicio al cliente, y espacio para comentarios"
+                </p>
+
+                <p className="text-sm mb-2"><strong>Ejemplo 3:</strong></p>
+                <p className="text-sm italic">
+                  "Crea una formulario tipo quizz con 20 preguntas sobre historia Argentina"
                 </p>
               </div>
 
@@ -119,7 +135,6 @@ export default function ArticlePage() {
               <ul className="list-disc pl-6 space-y-1">
                 <li>Entiende contexto y crea preguntas relevantes</li>
                 <li>Sugiere tipos de respuesta óptimos</li>
-                <li>Agrega validaciones automáticas</li>
                 <li>Genera formularios completos en segundos</li>
               </ul>
             </section>
@@ -130,15 +145,12 @@ export default function ArticlePage() {
                 3. Builder Manual Avanzado
               </h2>
               <p className="mb-4">
-                Para quienes prefieren control total, nuestro builder manual ofrece una interfaz 
-                más intuitiva que Google Forms nativo, con plantillas inteligentes y validaciones avanzadas.
+                Para quienes prefieren control total, nuestro builder manual ofrece una interfaz
+                más intuitiva que Google Forms nativo.
               </p>
-              
+
               <h3 className="text-xl font-semibold mb-3">Ventajas sobre Google Forms nativo:</h3>
               <ul className="list-disc pl-6 mb-4 space-y-2">
-                <li><strong>Plantillas predefinidas:</strong> Encuestas, registros, evaluaciones, contacto</li>
-                <li><strong>Validaciones inteligentes:</strong> Email, teléfono, número, fecha</li>
-                <li><strong>Lógica condicional simplificada:</strong> Sin necesidad de scripts</li>
                 <li><strong>Guardado de plantillas personalizadas:</strong> Reutiliza configuraciones</li>
                 <li><strong>Interfaz más intuitiva:</strong> Menos clics, más resultados</li>
               </ul>
@@ -173,7 +185,7 @@ export default function ArticlePage() {
                     <tr>
                       <td className="px-6 py-4 text-sm font-medium">Conversión CSV/Excel</td>
                       <td className="px-6 py-4 text-sm">Tener datos existentes</td>
-                      <td className="px-6 py-4 text-sm">2 minutos</td>
+                      <td className="px-6 py-4 text-sm">10 segundos</td>
                       <td className="px-6 py-4 text-sm">Principiante</td>
                     </tr>
                     <tr>
@@ -199,8 +211,8 @@ export default function ArticlePage() {
                 Comenzar hoy mismo
               </h2>
               <p className="mb-4">
-                No importa tu nivel de experiencia o necesidades específicas, FastForm tiene el método perfecto 
-                para ti. Todos los formularios se crean directamente en tu cuenta de Google Forms, 
+                No importa tu nivel de experiencia o necesidades específicas, FastForm tiene el método perfecto
+                para ti. Todos los formularios se crean directamente en tu cuenta de Google Forms,
                 manteniendo la familiaridad y potencia de Google mientras agregamos capas de inteligencia y eficiencia.
               </p>
               <div className="bg-blue-50 p-6 rounded-lg">
@@ -216,7 +228,7 @@ export default function ArticlePage() {
           </article>
 
           <div className="mt-12 text-center">
-            <a 
+            <a
               href="/create"
               className="inline-flex items-center px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-medium"
             >
