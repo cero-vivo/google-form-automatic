@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { FileText, CreditCard, Menu, X } from 'lucide-react';
 import { AuthUser } from '@/containers/useAuth';
 import { DraftModal } from '../organisms/DraftModal';
-import { FormDraft } from '@/infrastructure/services/DraftService';
+import { FormDraft } from '@/infrastructure/firebase/DraftService';
 
 interface DashboardHeaderProps {
   user: AuthUser | null | null;

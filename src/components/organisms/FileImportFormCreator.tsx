@@ -141,7 +141,8 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
         questions: formData.questions,
         settings: {
           collectEmails: formData.collectEmail
-        }
+        },
+        creditCost: 1 // Cost for Excel import method
       });
 
       if (result) {

@@ -170,30 +170,6 @@ export default function AboutPage() {
             </div>
           </section>
 
-          {/* Timeline */}
-          <section className="mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Nuestra Historia</h2>
-            <div className="relative">
-              <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-blue-200"></div>
-              {milestones.map((milestone, index) => (
-                <div key={index} className={`relative flex items-center mb-8 ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                  <div className={`w-5/12 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}>
-                    <Card className="border-0 shadow-sm">
-                      <CardHeader>
-                        <CardTitle className="text-blue-600">{milestone.year}</CardTitle>
-                        <CardDescription className="font-semibold text-gray-900">{milestone.title}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-700">{milestone.description}</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-600 rounded-full"></div>
-                </div>
-              ))}
-            </div>
-          </section>
-
           {/* Values */}
           <section className="mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Nuestros Valores</h2>
@@ -244,7 +220,7 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent>
                 <a
-                  href="/create"
+                  href="/dashboard"
                   className="inline-flex items-center px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-medium"
                 >
                   Comenzar Ahora

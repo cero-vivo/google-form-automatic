@@ -7,8 +7,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCredits } from '@/containers/useCredits';
 import { Logo } from '@/components/ui/logo';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-export default function AIChatPage() {
+function AIChatPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { currentCredits } = useCredits();
@@ -75,11 +76,26 @@ export default function AIChatPage() {
           </div>
           
           <AIChatFormCreator 
-          onFormCreated={handleFormCreated} 
-          draftId={draftId || undefined}
-        />
+            onFormCreated={handleFormCreated} 
+            draftId={draftId || undefined}
+          />
         </div>
       </main>
     </div>
+  );
+}
+
+export default function AIChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando asistente de IA...</p>
+        </div>
+      </div>
+    }>
+      <AIChatPageContent />
+    </Suspense>
   );
 }

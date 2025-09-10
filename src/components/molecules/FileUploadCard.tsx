@@ -78,7 +78,7 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
       [QuestionType.EMAIL]: 'bg-indigo-50 text-indigo-700',
       [QuestionType.NUMBER]: 'bg-gray-50 text-gray-700',
       [QuestionType.PHONE]: 'bg-violet-50 text-violet-700',
-    
+      [QuestionType.URL]: 'bg-sky-50 text-sky-700',
       [QuestionType.RATING]: 'bg-emerald-50 text-emerald-700'
     };
     return colors[type] || 'bg-gray-50 text-gray-700';
@@ -347,3 +347,19 @@ const FileUploadCard: React.FC<FileUploadCardProps> = ({
 };
 
 export default FileUploadCard;
+
+const colors = {
+  [QuestionType.SHORT_TEXT]: 'text-blue-600',
+  [QuestionType.LONG_TEXT]: 'text-purple-600',
+  [QuestionType.MULTIPLE_CHOICE]: 'text-green-600',
+  [QuestionType.CHECKBOXES]: 'text-orange-600',
+  [QuestionType.DROPDOWN]: 'text-pink-600',
+  [QuestionType.LINEAR_SCALE]: 'text-indigo-600',
+  [QuestionType.DATE]: 'text-yellow-600',
+  [QuestionType.TIME]: 'text-cyan-600',
+  [QuestionType.EMAIL]: 'text-red-600',
+  [QuestionType.NUMBER]: 'text-teal-600',
+  [QuestionType.PHONE]: 'text-gray-600',
+  [QuestionType.RATING]: 'text-amber-600',
+  [QuestionType.URL]: 'text-sky-600', // Added missing URL type
+};

@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
+const currentYear = 2024;
+
 export const metadata: Metadata = {
   title: "Blog FastForm - Expertos en Google Forms, CSV y Excel | Recursos",
   description: "Descubre cómo crear Google Forms más eficientemente con FastForm. Guías sobre conversión CSV/Excel, IA conversacional y mejores prácticas.",
@@ -22,7 +24,7 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   const articles = [
     {
-      title: `Los 3 métodos definitivos para crear Google Forms en ${new Date().getFullYear()}`,
+      title: `Los 3 métodos definitivos para crear Google Forms en ${currentYear}`,
       excerpt: "Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado.",
       date: "2025",
       readTime: "5 min",
@@ -80,7 +82,7 @@ export default function BlogPage() {
                   <span className="text-sm text-gray-500">5 min de lectura</span>
                 </div>
                 <CardTitle className="text-2xl md:text-3xl mb-3">
-                  Los 3 métodos definitivos para crear Google Forms en {new Date().getFullYear()}
+                  Los 3 métodos definitivos para crear Google Forms en {currentYear}
                 </CardTitle>
                 <CardDescription className="text-lg text-gray-700">
                   Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado.

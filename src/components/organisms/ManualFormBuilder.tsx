@@ -59,7 +59,8 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0, draftId }
         questions: questions,
         settings: {
           collectEmails: collectEmail
-        }
+        },
+        creditCost: 1 // Cost for manual creation method
       });
 
       if (result) {

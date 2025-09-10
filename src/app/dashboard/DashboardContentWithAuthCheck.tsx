@@ -98,6 +98,7 @@ function DashboardContent() {
         creditsLoading={creditsLoading}
         isLoadingForms={isLoadingForms}
         userFormsCount={userForms.length}
+        onToggleFormsList={handleToggleFormsList}
         onSignOut={signOut}
       />
       

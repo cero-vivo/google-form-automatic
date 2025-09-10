@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
 
+const currentYear = 2024;
+
 export const metadata: Metadata = {
-  title: `Los 3 métodos definitivos para crear Google Forms en ${new Date().getFullYear()} - FastForm`,
+  title: `Los 3 métodos definitivos para crear Google Forms en ${currentYear} - FastForm`,
   description: "Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado. Guía completa.",
   keywords: [
     "crear google forms",
@@ -12,7 +14,7 @@ export const metadata: Metadata = {
     "métodos creación formularios"
   ],
   openGraph: {
-    title: `Los 3 métodos definitivos para crear Google Forms en ${new Date().getFullYear()}`,
+    title: `Los 3 métodos definitivos para crear Google Forms en ${currentYear}`,
     description: "Aprende a crear formularios profesionales con FastForm usando conversión CSV/Excel, IA conversacional o builder manual avanzado.",
     type: "article",
     publishedTime: new Date().toISOString(),
@@ -21,6 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default function ArticlePage() {
+  const currentYear = 2024;
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <header className="border-b bg-white sticky top-0 z-50">
@@ -43,7 +46,7 @@ export default function ArticlePage() {
             </ol>
           </nav>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-            Los 3 métodos definitivos para crear Google Forms en {new Date().getFullYear()}
+            Los 3 métodos definitivos para crear Google Forms en {currentYear}
           </h1>
           <p className="text-gray-600 mt-2">
             Descubre cómo FastForm revoluciona la creación de formularios
@@ -55,13 +58,11 @@ export default function ArticlePage() {
         <div className="max-w-4xl mx-auto">
           <article className="prose prose-lg max-w-none">
             <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-              En {new Date().getFullYear()}, crear Google Forms no tiene que ser una tarea tediosa. FastForm ha transformado este proceso
+              En {currentYear}, crear Google Forms no tiene que ser una tarea tediosa. FastForm ha transformado este proceso
               en una experiencia rápida, intuitiva y poderosa. Conoce los tres métodos que hacen posible crear
               formularios profesionales en minutos, no horas.
             </p>
 
-
-            {/* Comparación */}
             {/* Método 1: Plantillas CSV/Excel para creación rápida */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -220,8 +221,7 @@ export default function ArticlePage() {
                 <ul className="text-sm text-blue-800 space-y-1">
                   <li>• 5 formularios gratuitos al mes</li>
                   <li>• Acceso a los 3 métodos de creación</li>
-                  <li>• Sin tarjeta de crédito</li>
-                  <li>• Formularios creados en tu propia cuenta de Google</li>
+                  <li>• Soporte completo y guías paso a paso</li>
                 </ul>
               </div>
             </section>
@@ -229,10 +229,13 @@ export default function ArticlePage() {
 
           <div className="mt-12 text-center">
             <a
-              href="/create"
-              className="inline-flex items-center px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-medium"
+              href="/"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Crear mi primer formulario
+              Comenzar a crear formularios
+              <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </a>
           </div>
         </div>
@@ -245,7 +248,7 @@ export default function ArticlePage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            "headline": `Los 3 métodos definitivos para crear Google Forms en ${new Date().getFullYear()}`,
+            "headline": `Los 3 métodos definitivos para crear Google Forms en ${currentYear}`,
             "description": "Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, IA conversacional y builder manual avanzado.",
             "author": {
               "@type": "Organization",

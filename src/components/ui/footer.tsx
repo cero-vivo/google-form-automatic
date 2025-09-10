@@ -90,14 +90,6 @@ export function Footer() {
             <p className="text-gray-600 text-sm">
               © {new Date().getFullYear()} FastForm. Todos los derechos reservados.
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/privacy" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-                Privacidad
-              </Link>
-              <Link href="/terms" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-                Términos
-              </Link>
-            </div>
           </div>
         </div>
       </div>
