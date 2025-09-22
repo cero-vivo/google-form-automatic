@@ -49,7 +49,7 @@ export default function TTCCPage() {
               <li><strong>Third-party Social Media Service:</strong> any services or content provided by a third-party that may be displayed, included or made available by the Service.</li>
               <li>
                 <strong>Website:</strong> Fast Form, accessible from {" "}
-                <Link href="https://www.fastform.com" target="_blank" rel="noopener noreferrer" className="underline text-blue-600">https://www.fastform.com</Link>
+                <Link href="https://www.fastform.pro" target="_blank" rel="noopener noreferrer" className="underline text-blue-600">https://www.fastform.pro</Link>
               </li>
               <li><strong>You:</strong> the individual or entity accessing or using the Service.</li>
             </ul>

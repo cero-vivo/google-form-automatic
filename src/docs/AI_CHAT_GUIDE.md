@@ -238,9 +238,9 @@ npm run test:e2e -- ai-chat
 ## Soporte
 
 Para soporte técnico:
-- Email: soporte@fastform.com
+- Email: soporte@fastform.pro
 - Chat en vivo: Disponible en el dashboard
-- Documentación: docs.fastform.com
+- Documentación: docs.fastform.pro
 
 ## Actualizaciones Futuras
 
