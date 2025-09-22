@@ -76,11 +76,16 @@ export function Footer() {
                   Sobre Nosotros
                 </Link>
               </li>
-              <li>
-                <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition-colors">
-                  Contacto
-                </Link>
-              </li>
+                <li>
+                  <Link href="/legals/pp" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    Políticas de Privacidad
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/legals/ttcc" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    Términos y Condiciones
+                  </Link>
+                </li>
             </ul>
           </div>
         </div>
