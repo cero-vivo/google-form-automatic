@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 
-export default function TCPage() {
+export default function TTCCPage() {
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
       <Card>
