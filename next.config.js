@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  devIndicators: false,
   eslint: {
     // Ignore ESLint errors during builds to avoid blocking deploys while iterating
     ignoreDuringBuilds: true,

@@ -40,7 +40,7 @@ export function GoogleAuthCheckModal() {
   }
 
   return (
-    <Dialog open={shouldShowModal} onOpenChange={() => {}}>
+    <Dialog open={false} onOpenChange={() => {}}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
