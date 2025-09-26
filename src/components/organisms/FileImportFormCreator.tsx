@@ -123,48 +123,27 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
     });
   };
 
-  const handleCreateForm = async () => {
-    if (currentCredits < 1) {
-      console.error('No tienes suficientes créditos para crear un formulario');
-      return;
-    }
-
-    if (!formData.title.trim()) {
-      console.error('Debes agregar un título al formulario');
-      return;
-    }
-
-    try {
-      const result = await createGoogleForm({
-        title: formData.title,
-        description: formData.description,
-        questions: formData.questions,
-        settings: {
-          collectEmails: formData.collectEmail
-        },
-        creditCost: 1 // Cost for Excel import method
-      });
-
-      if (result) {
-        const createdForm = {
-          title: formData.title,
-          description: formData.description,
-          questions: formData.questions,
-          collectEmail: formData.collectEmail,
-          creationMethod: formData.creationMethod,
-          formId: result.formId,
-          formUrl: result.formUrl,
-          editUrl: result.editUrl,
-          createdAt: new Date()
-        };
-        
-        setCreatedFormData(createdForm);
-        setShowSuccessView(true);
-        onFormCreated?.(createdForm);
-      }
-    } catch (error) {
-      console.error('Error al crear el formulario:', error);
-    }
+  // Función para manejar el resultado de la creación del formulario desde ReusableFormBuilder
+  const handleFormCreated = async (formData: any) => {
+    // El ReusableFormBuilder ya se encarga de crear el formulario y consumir créditos
+    // Solo necesitamos actualizar nuestro estado local y mostrar la vista de éxito
+    const createdForm = {
+      title: formData.title,
+      description: formData.description,
+      questions: formData.questions,
+      collectEmail: formData.collectEmail,
+      creationMethod: formData.creationMethod,
+      formId: formData.formId,
+      formUrl: formData.formUrl,
+      editUrl: formData.editUrl,
+      createdAt: formData.createdAt
+    };
+    
+    setCreatedFormData(createdForm);
+    setShowSuccessView(true);
+    
+    // Notificar al componente padre si es necesario
+    onFormCreated?.(createdForm);
   };
 
   const handleCreateNewForm = () => {
@@ -354,7 +333,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
             onTitleChange={handleTitleUpdate}
             onDescriptionChange={handleDescriptionUpdate}
             onCollectEmailChange={handleCollectEmailUpdate}
-            onFormCreated={handleCreateForm}
+            onFormCreated={handleFormCreated}
             mode="create"
             draftId={draftId}
           />
