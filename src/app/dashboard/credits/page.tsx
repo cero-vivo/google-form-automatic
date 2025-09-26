@@ -14,42 +14,6 @@ import { useRouter } from 'next/navigation';
 import CreditsManager from '@/components/organisms/CreditsManager';
 import { useCredits } from '@/containers/useCredits';
 
-// Datos mock para demostración - en producción vendrían de la base de datos
-const mockTransactions = [
-  {
-    id: '1',
-    type: 'purchase' as const,
-    amount: 50,
-    description: 'Compra de 50 créditos - Pack Business',
-    date: new Date('2024-01-15T10:30:00'),
-    status: 'completed' as const
-  },
-  {
-    id: '2',
-    type: 'usage' as const,
-    amount: 1,
-    description: 'Formulario: Encuesta de satisfacción',
-    date: new Date('2024-01-16T14:20:00'),
-    status: 'completed' as const
-  },
-  {
-    id: '3',
-    type: 'usage' as const,
-    amount: 1,
-    description: 'Formulario: Registro de usuarios',
-    date: new Date('2024-01-17T09:15:00'),
-    status: 'completed' as const
-  },
-  {
-    id: '4',
-    type: 'purchase' as const,
-    amount: 20,
-    description: 'Compra de 20 créditos - Pack Starter',
-    date: new Date('2024-01-18T16:45:00'),
-    status: 'completed' as const
-  }
-];
-
 export default function CreditsPage() {
   const [hasMounted, setHasMounted] = useState(false);
   const { user, loading: authLoading } = useAuthContext();

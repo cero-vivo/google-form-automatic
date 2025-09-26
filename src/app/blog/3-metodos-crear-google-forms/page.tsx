@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-const currentYear = 2024;
+const currentYear = new Date().getFullYear();
 
 export const metadata: Metadata = {
   title: `Los 3 métodos definitivos para crear Google Forms en ${currentYear} - FastForm`,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default function ArticlePage() {
-  const currentYear = 2024;
+  const currentYear = new Date().getFullYear();
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <header className="border-b bg-white sticky top-0 z-50">

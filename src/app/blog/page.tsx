@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { NewsletterSubscription } from '@/components/molecules/NewsletterSubscription';
 
-const currentYear = 2024;
+const currentYear = new Date().getFullYear();
 
 export const metadata: Metadata = {
   title: "Blog FastForm - Expertos en Formularios Inteligentes con IA | Recursos",
