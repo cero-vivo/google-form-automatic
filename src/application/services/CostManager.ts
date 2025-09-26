@@ -53,8 +53,8 @@ export class CostManager {
 
     this.rules.set('ai_generation', {
       type: 'ai_generation',
-      cost: CONFIG.CREDITS.CHAT.COST_PER_GENERATION,
-      description: `Generación de contenido (${CONFIG.CREDITS.CHAT.COST_PER_GENERATION} créditos)`
+      cost: CONFIG.CREDITS.PUBLISH_FORM.IA,
+      description: `Generación de contenido (${CONFIG.CREDITS.PUBLISH_FORM.IA} créditos)`
     });
   }
 
