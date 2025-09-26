@@ -50,6 +50,12 @@ export class CostManager {
       cost: CONFIG.CREDITS.CHAT.COST_PER_10_QUESTIONS,
       description: `Paquete de 10 preguntas adicionales (${CONFIG.CREDITS.CHAT.COST_PER_10_QUESTIONS} créditos)`
     });
+
+    this.rules.set('ai_generation', {
+      type: 'ai_generation',
+      cost: CONFIG.CREDITS.CHAT.COST_PER_GENERATION,
+      description: `Generación de contenido (${CONFIG.CREDITS.CHAT.COST_PER_GENERATION} créditos)`
+    });
   }
 
   getCostForAction(type: string, context?: any): number {
