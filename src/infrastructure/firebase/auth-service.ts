@@ -56,7 +56,7 @@ class FirebaseAuthService implements AuthService {
       // Timeout de 30 segundos para la autenticación
       const authPromise = signInWithPopup(this.auth, this.googleProvider);
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout de autenticación')), 30000);
+        setTimeout(() => reject(new Error('Timeout de autenticación')), 80000);
       });
 
       const userCredential: UserCredential = await Promise.race([
@@ -69,6 +69,13 @@ class FirebaseAuthService implements AuthService {
       // Obtener el token de acceso de Google
       const credential = GoogleAuthProvider.credentialFromResult(userCredential);
       const accessToken = credential?.accessToken;
+      
+      console.log('🔍 Debug Google Auth Token:', {
+        hasCredential: !!credential,
+        hasAccessToken: !!accessToken,
+        accessTokenLength: accessToken ? accessToken.length : 0,
+        accessTokenPreview: accessToken ? `${accessToken.substring(0, 10)}...` : 'NULL'
+      });
       
       // Verificar si es usuario nuevo o existente con timeout
       const userCheckPromise = getDoc(doc(db, COLLECTIONS.USERS, user.uid));
@@ -95,7 +102,15 @@ class FirebaseAuthService implements AuthService {
           updates.googleAccessToken = accessToken;
           // Los tokens de OAuth suelen expirar en 1 hora
           updates.googleTokenExpiry = new Date(Date.now() + 3600 * 1000);
+          console.log('✅ Token guardado para usuario existente:', {
+            tokenLength: accessToken.length,
+            expiryTime: updates.googleTokenExpiry
+          });
+        } else {
+          console.warn('⚠️ No accessToken disponible para usuario existente');
         }
+        
+        console.log('📝 Actualizando documento de usuario existente:', updates);
         
         await this.updateUserDocument(user.uid, updates);
       }
@@ -217,6 +232,14 @@ class FirebaseAuthService implements AuthService {
       updatedAt: new Date(),
       lastLoginAt: new Date()
     };
+
+    console.log('📥 Creando nuevo documento de usuario con:', {
+      uid: user.uid,
+      email: user.email,
+      hasToken: !!accessToken,
+      tokenLength: accessToken ? accessToken.length : 0,
+      expiryTime: accessToken ? new Date(Date.now() + 3600 * 1000) : null
+    });
 
     await setDoc(doc(db, COLLECTIONS.USERS, user.uid), firestoreData);
 

@@ -6,8 +6,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { accessToken } = body;
 
+    console.log('📥 API /google-forms/list recibió request:', {
+      hasAccessToken: !!accessToken,
+      tokenLength: accessToken ? accessToken.length : 0,
+      tokenPreview: accessToken ? `${accessToken.substring(0, 15)}...${accessToken.substring(accessToken.length - 5)}` : 'NULL'
+    });
+
     // Validar datos requeridos
     if (!accessToken) {
+      console.error('❌ No accessToken provided in request');
       return NextResponse.json(
         { error: 'accessToken es requerido' },
         { status: 400 }

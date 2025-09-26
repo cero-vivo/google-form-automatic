@@ -128,7 +128,7 @@ export const useAuth = (): UseAuthReturn => {
     try {
       // Agregar timeout de 30 segundos para prevenir loading infinito
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout de conexión')), 30000);
+        setTimeout(() => reject(new Error('Timeout de conexión')), 80000);
       });
 
       await Promise.race([

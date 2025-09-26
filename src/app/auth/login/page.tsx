@@ -37,6 +37,9 @@ export default function LoginPage() {
 
       await signInWithGoogle();
       router.push('/dashboard');
+      setTimeout(() => {
+        router.refresh();
+      }, 500);
     } catch (err) {
       // Error ya manejado por useAuth - no necesitamos hacer nada aquí
     }

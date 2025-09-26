@@ -568,6 +568,12 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
 
   async getUserForms(accessToken: string): Promise<UserForm[]> {
     try {
+      console.log('🚀 GoogleFormsService.getUserForms iniciado:', {
+        hasAccessToken: !!accessToken,
+        tokenLength: accessToken ? accessToken.length : 0,
+        tokenPreview: accessToken ? `${accessToken.substring(0, 15)}...${accessToken.substring(accessToken.length - 5)}` : 'NULL'
+      });
+
       const auth = this.getAuthClient(accessToken);
       
       console.log('📋 Obteniendo formularios del usuario...');

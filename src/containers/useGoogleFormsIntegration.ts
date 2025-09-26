@@ -48,6 +48,10 @@ export interface UseGoogleFormsIntegrationReturn {
   // OAuth para permisos adicionales
   requestGooglePermissions: () => Promise<string | null>;
   hasGooglePermissions: () => boolean;
+  renewSession: () => Promise<void>;
+  
+  // Estado de renovación
+  needsSessionRenewal: boolean;
 }
 
 export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => {
@@ -61,47 +65,82 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
   const [createdForm, setCreatedForm] = useState<CreatedFormResult | null>(null);
   const [formResponses, setFormResponses] = useState<any[]>([]);
   const [userForms, setUserForms] = useState<UserForm[]>([]);
+  const [needsSessionRenewal, setNeedsSessionRenewal] = useState(false);
 
-  const { user, userEntity } = useAuthContext();
+  const { user, userEntity, signInWithGoogle } = useAuthContext();
 
-  const getAccessToken = useCallback((): string | null => {
-    // Verificar si tenemos token y si está válido
+  // Función simplificada para mostrar error y forzar reauth
+  const handleTokenError = useCallback((errorMessage: string) => {
+    console.error('❌ Error de token:', errorMessage);
+    setError('Tu sesión con Google ha expirado. Haz clic en "Renovar sesión" para continuar.');
+    setNeedsSessionRenewal(true);
+  }, []);
+
+  const renewSession = useCallback(async () => {
+    try {
+      setError(null);
+      setNeedsSessionRenewal(false);
+      console.log('🔄 Renovando sesión con Google...');
+      await signInWithGoogle();
+      console.log('✅ Sesión renovada exitosamente');
+    } catch (err) {
+      console.error('❌ Error renovando sesión:', err);
+      setError('No se pudo renovar la sesión. Por favor, recarga la página e inicia sesión nuevamente.');
+      setNeedsSessionRenewal(true);
+    }
+  }, [signInWithGoogle]);
+
+  // Función simple para obtener token actual
+  const getCurrentToken = useCallback((): string | null => {
+    console.log('🔍 Debug getCurrentToken:', {
+      hasUserEntity: !!userEntity,
+      hasGoogleAccessToken: !!userEntity?.googleAccessToken,
+      googleAccessToken: userEntity?.googleAccessToken ? 'EXISTS' : 'NULL',
+      googleTokenExpiry: userEntity?.googleTokenExpiry,
+      isExpired: userEntity?.googleTokenExpiry ? userEntity.googleTokenExpiry.getTime() <= new Date().getTime() : 'NO_EXPIRY',
+      currentTime: new Date().getTime(),
+    });
+
     if (!userEntity?.googleAccessToken) {
+      console.warn('⚠️ No userEntity or googleAccessToken');
       return null;
     }
 
     // Verificar si el token ha expirado
-    if (userEntity.googleTokenExpiry && userEntity.googleTokenExpiry <= new Date()) {
-      console.warn('⚠️ Token de Google expirado');
+    if (userEntity.googleTokenExpiry && userEntity.googleTokenExpiry.getTime() <= new Date().getTime()) {
+      console.warn('⚠️ Token expirado:', {
+        expiryTime: userEntity.googleTokenExpiry.getTime(),
+        currentTime: new Date().getTime(),
+        difference: new Date().getTime() - userEntity.googleTokenExpiry.getTime()
+      });
       return null;
     }
 
+    console.log('✅ Token válido encontrado');
     return userEntity.googleAccessToken;
   }, [userEntity]);
 
   const hasGooglePermissions = useCallback((): boolean => {
-    const token = getAccessToken();
-    return token !== null;
-  }, [getAccessToken]);
+    return getCurrentToken() !== null;
+  }, [getCurrentToken]);
 
   const requestGooglePermissions = useCallback(async (): Promise<string | null> => {
     try {
-      // Si ya tenemos un token válido, devolverlo
-      const currentToken = getAccessToken();
+      const currentToken = getCurrentToken();
       if (currentToken) {
         return currentToken;
       }
-
-      // Si no tenemos token o está expirado, necesitamos reautenticar
-      // Redirigir al usuario para que vuelva a iniciar sesión con Google
-      throw new Error('Token expirado. Por favor, cierra sesión y vuelve a iniciar sesión con Google para renovar los permisos.');
+      
+      // Si no hay token válido, solicitar nueva autenticación
+      await renewSession();
+      return getCurrentToken();
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error obteniendo permisos';
-      setError(errorMessage);
+      handleTokenError(errorMessage);
       return null;
     }
-  }, [getAccessToken]);
+  }, [getCurrentToken, renewSession, handleTokenError]);
 
   const createGoogleForm = useCallback(async (options: FormCreationOptions): Promise<CreatedFormResult | null> => {
     console.log("🚀 ~ useGoogleFormsIntegration ~ options:", options)
@@ -114,11 +153,10 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      // Verificar permisos
-      let accessToken = getAccessToken();
+      // Verificar permisos y obtener token válido
+      const accessToken = getCurrentToken();
       if (!accessToken) {
-        // Si no hay token, el usuario necesita autenticarse
-        setError('Tu sesión con Google ha expirado o no tienes los permisos necesarios. Por favor, cierra sesión y vuelve a iniciar sesión con Google para crear formularios.');
+        handleTokenError('Token no disponible');
         return null;
       }
 
@@ -158,7 +196,8 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
         
         // Manejar errores específicos de autenticación desde la API
         if (response.status === 401 || response.status === 403) {
-          throw new Error('Tu sesión con Google ha expirado. Por favor, cierra sesión y vuelve a iniciar sesión con Google para renovar los permisos.');
+          handleTokenError('Tu sesión con Google ha expirado');
+          return null;
         }
         
         throw new Error(errorData.error || 'Error al crear formulario');
@@ -198,7 +237,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
           errorMessage.includes('Token expirado') ||
           errorMessage.includes('insufficient authentication scopes') ||
           errorMessage.includes('sesión con Google ha expirado')) {
-        setError('Tu sesión con Google ha expirado. Por favor, cierra sesión y vuelve a iniciar sesión con Google para renovar los permisos.');
+        handleTokenError(errorMessage);
       } else if (errorMessage.includes('403') || errorMessage.includes('Forbidden')) {
         setError('No tienes permisos para crear formularios en Google. Asegúrate de haber iniciado sesión con la cuenta correcta.');
       } else {
@@ -210,7 +249,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     } finally {
       setIsCreating(false);
     }
-  }, [user, getAccessToken]);
+  }, [user, getCurrentToken, handleTokenError]);
 
   const updateGoogleForm = useCallback(async (formId: string, options: FormCreationOptions): Promise<void> => {
     if (!user) {
@@ -222,9 +261,10 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      const accessToken = getAccessToken();
+      const accessToken = getCurrentToken();
       if (!accessToken) {
-        throw new Error('Token de acceso no disponible');
+        handleTokenError('Token no disponible');
+        return;
       }
 
       const formData: GoogleFormData = {
@@ -245,7 +285,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     } finally {
       setIsUpdating(false);
     }
-  }, [user, getAccessToken]);
+  }, [user, getCurrentToken, handleTokenError]);
 
   const deleteGoogleForm = useCallback(async (formId: string): Promise<void> => {
     if (!user) {
@@ -257,9 +297,10 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      const accessToken = getAccessToken();
+      const accessToken = getCurrentToken();
       if (!accessToken) {
-        throw new Error('Token de acceso no disponible');
+        handleTokenError('Token no disponible');
+        return;
       }
 
       // TODO: Implementar API route para deleteForm
@@ -276,7 +317,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     } finally {
       setIsDeleting(false);
     }
-  }, [user, getAccessToken]);
+  }, [user, getCurrentToken, handleTokenError]);
 
   const getFormResponses = useCallback(async (formId: string): Promise<any[]> => {
     if (!user) {
@@ -288,9 +329,10 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      const accessToken = getAccessToken();
+      const accessToken = getCurrentToken();
       if (!accessToken) {
-        throw new Error('Token de acceso no disponible');
+        handleTokenError('Token no disponible');
+        return [];
       }
 
       // TODO: Implementar API route para getFormResponses
@@ -308,7 +350,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     } finally {
       setIsLoadingResponses(false);
     }
-  }, [user, getAccessToken]);
+  }, [user, getCurrentToken, handleTokenError]);
 
   const shareGoogleForm = useCallback(async (formId: string, emails: string[]): Promise<void> => {
     if (!user) {
@@ -320,9 +362,10 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      const accessToken = getAccessToken();
+      const accessToken = getCurrentToken();
       if (!accessToken) {
-        throw new Error('Token de acceso no disponible');
+        handleTokenError('Token no disponible');
+        return;
       }
 
       // TODO: Implementar API route para shareForm
@@ -337,10 +380,18 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     } finally {
       setIsSharing(false);
     }
-  }, [user, getAccessToken]);
+  }, [user, getCurrentToken, handleTokenError]);
 
   const getUserForms = useCallback(async (): Promise<UserForm[]> => {
+    console.log('🚀 getUserForms iniciado:', {
+      hasUser: !!user,
+      userId: user?.id,
+      hasUserEntity: !!userEntity,
+      userEntityKeys: userEntity ? Object.keys(userEntity) : 'NO_ENTITY'
+    });
+
     if (!user) {
+      console.error('❌ No user authenticated');
       setError('Debes estar autenticado para obtener formularios');
       return [];
     }
@@ -349,13 +400,23 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      const accessToken = getAccessToken();
-      if (!accessToken) {
-        throw new Error('Token de acceso no disponible. Por favor, vuelve a iniciar sesión con Google.');
-      }
-
       console.log('🔍 Obteniendo formularios del usuario...');
       
+      // Verificar si tenemos token válido
+      const accessToken = getCurrentToken();
+      console.log('🔑 Token check result:', {
+        hasToken: !!accessToken,
+        tokenLength: accessToken ? accessToken.length : 0,
+        tokenPreview: accessToken ? `${accessToken.substring(0, 10)}...` : 'NULL'
+      });
+
+      if (!accessToken) {
+        console.error('❌ No access token available');
+        handleTokenError('Tu sesión con Google ha expirado');
+        return [];
+      }
+
+      console.log('📡 Enviando request a API...');
       const response = await fetch('/api/google-forms/list', {
         method: 'POST',
         headers: {
@@ -366,13 +427,32 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
         })
       });
 
+      console.log('📨 API Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('❌ API Error:', errorData);
+        
+        // Manejar errores específicos de token
+        if (response.status === 401 || errorData.error?.includes('Token de acceso inválido') || errorData.error?.includes('expirado')) {
+          handleTokenError('Tu sesión con Google ha expirado');
+          return [];
+        }
+        
         throw new Error(errorData.error || `Error HTTP: ${response.status}`);
       }
 
       const result = await response.json();
       const forms = result.data || [];
+      
+      console.log('✅ Forms retrieved successfully:', {
+        formsCount: forms.length,
+        formsPreview: forms.slice(0, 2).map((f: any) => ({ id: f.id, title: f.title }))
+      });
       
       setUserForms(forms);
       console.log(`✅ ${forms.length} formularios cargados exitosamente`);
@@ -381,13 +461,17 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al obtener formularios';
+      console.error('❌ getUserForms error:', {
+        error: err,
+        message: errorMessage,
+        stack: err instanceof Error ? err.stack : 'NO_STACK'
+      });
       setError(errorMessage);
-      console.error('❌ Error obteniendo formularios:', err);
       return [];
     } finally {
       setIsLoadingForms(false);
     }
-  }, [user, getAccessToken]);
+  }, [user, userEntity, getCurrentToken, handleTokenError]);
 
   // Helper para guardar en base de datos
   const saveFormToDatabase = useCallback(async (formResult: CreatedFormResult, options: FormCreationOptions): Promise<void> => {
@@ -444,6 +528,10 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     
     // OAuth
     requestGooglePermissions,
-    hasGooglePermissions
+    hasGooglePermissions,
+    renewSession,
+    
+    // Estado de renovación
+    needsSessionRenewal
   };
 };
