@@ -124,13 +124,13 @@ export default function HomePage() {
           {/* Left: Copy + CTAs + Social Proof */}
           <div className="order-2 lg:order-1">
             <Badge className="mb-4 sm:mb-6 bg-velocity/10 text-velocity border-velocity/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
-              3 Formas de Crear Google Forms
+              FastForm - La Plataforma Más Completa
             </Badge>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 leading-tight text-primary">
-              Crea formularios profesionales en segundos
+              FastForm: La plataforma más inteligente para crear Google Forms
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-xl leading-relaxed">
-              Tres métodos poderosos para crear formularios: importa archivos, construye manualmente o usa IA. Tu flujo, tu elección.
+              FastForm es la plataforma todo-en-uno para crear formularios profesionales. Con IA avanzada, constructor visual, plantillas premium y automatización completa. La herramienta definitiva para formularios inteligentes.
             </p>
             
             {/* 3 Methods Preview */}
@@ -139,22 +139,22 @@ export default function HomePage() {
                 <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <FileSpreadsheet className="h-4 w-4" />
                 </div>
-                <h4 className="font-semibold text-sm text-primary mb-1">Importar Archivos</h4>
-                <p className="text-xs text-muted-foreground">Excel y CSV</p>
+                <h4 className="font-semibold text-sm text-primary mb-1">FastForm IA</h4>
+                <p className="text-xs text-muted-foreground">Inteligencia Artificial</p>
               </div>
               <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 text-center sm:text-left">
                 <div className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <FormInput className="h-4 w-4" />
                 </div>
-                <h4 className="font-semibold text-sm text-primary mb-1">Constructor</h4>
-                <p className="text-xs text-muted-foreground">Manual y plantillas</p>
+                <h4 className="font-semibold text-sm text-primary mb-1">Constructor Visual</h4>
+                <p className="text-xs text-muted-foreground">Drag & Drop</p>
               </div>
               <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 text-center sm:text-left">
                 <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
                   <Sparkles className="h-4 w-4" />
                 </div>
-                <h4 className="font-semibold text-sm text-primary mb-1">Asistente IA</h4>
-                <p className="text-xs text-muted-foreground">Inteligente y rápido</p>
+                <h4 className="font-semibold text-sm text-primary mb-1">Importar Datos</h4>
+                <p className="text-xs text-muted-foreground">CSV, Excel y más</p>
               </div>
             </div>
             
@@ -179,7 +179,7 @@ export default function HomePage() {
             <div className="relative">
               <Image
                 src="/images/heroimage2.png"
-                alt="3 métodos de creación de formularios"
+                alt="FastForm - Plataforma inteligente para crear Google Forms con IA, constructor visual e importación de datos"
                 width={680}
                 height={420}
                 className="rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl border border-gray-200 bg-white w-full h-auto"
@@ -197,7 +197,7 @@ export default function HomePage() {
               3 Formas de Crear
             </Badge>
             <h2 className="text-4xl md:text-5xl font-black mb-4 text-primary">
-              Elige cómo crear tu formulario
+              FastForm: Tu plataforma todo-en-uno
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Tres métodos diseñados para adaptarse a tu flujo de trabajo. Desde archivos hasta IA, crea formularios como prefieras.

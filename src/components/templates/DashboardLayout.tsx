@@ -46,7 +46,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       name: 'Subir Archivo',
       href: '/create',
       icon: Upload,
-      description: 'Convertir CSV/Excel'
+      description: 'Importar datos'
     },
     {
       name: 'Mis Formularios',

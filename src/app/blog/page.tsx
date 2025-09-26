@@ -5,8 +5,8 @@ import { NewsletterSubscription } from '@/components/molecules/NewsletterSubscri
 const currentYear = 2024;
 
 export const metadata: Metadata = {
-  title: "Blog FastForm - Expertos en Google Forms, CSV y Excel | Recursos",
-  description: "Descubre cómo crear Google Forms más eficientemente con FastForm. Guías sobre conversión CSV/Excel, IA conversacional y mejores prácticas.",
+  title: "Blog FastForm - Expertos en Formularios Inteligentes con IA | Recursos",
+  description: "Descubre cómo crear formularios inteligentes más eficientemente con FastForm. Guías sobre IA conversacional, automatización, integraciones y mejores prácticas para formularios profesionales.",
   keywords: [
     "blog fastform",
     "google forms tutorial",

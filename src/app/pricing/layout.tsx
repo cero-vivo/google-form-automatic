@@ -1,19 +1,23 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Precios FastForm - Planes para Crear Google Forms desde CSV y Excel",
-  description: "Planes y precios de FastForm para convertir archivos CSV y Excel a Google Forms. Plan gratuito disponible para crear formularios automáticamente.",
+  title: "Precios FastForm - Planes para la Plataforma de Formularios Inteligentes",
+  description: "Planes y precios de FastForm para crear Google Forms con IA, formularios inteligentes y automatización avanzada. Plan gratuito disponible para empezar a crear formularios profesionales.",
   keywords: [
     "precios fastform",
-    "convertir csv google forms gratis",
-    "excel google forms precio",
-    "plan gratuito google forms",
-    "suscripcion fastform"
+    "planes formularios inteligentes",
+    "fastform precio",
+    "google forms con ia precio",
+    "plan gratuito formularios",
+    "suscripcion fastform",
+    "formularios empresariales precio",
+    "plataforma formularios costo"
   ],
   openGraph: {
-    title: "Precios FastForm - Convertir CSV y Excel a Google Forms",
-    description: "Planes flexibles para convertir archivos a Google Forms. Comienza gratis.",
+    title: "Precios FastForm - Plataforma Inteligente de Formularios",
+    description: "Planes flexibles para crear formularios inteligentes con IA. Desde plan gratuito hasta soluciones empresariales.",
     type: "website",
+    url: "https://fastform.pro/pricing"
   }
 };
 

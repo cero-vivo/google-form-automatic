@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'FAQ FastForm - Respuestas sobre CSV, Excel, Chat IA y Google Forms | Ayuda',
-  description: 'Respuestas a las preguntas más comunes sobre cómo convertir archivos CSV y Excel, chat IA a Google Forms. Guía completa de uso de FastForm.',
+  title: 'FAQ FastForm - Respuestas sobre Formularios Inteligentes con IA | Ayuda',
+  description: 'Respuestas a las preguntas más comunes sobre formularios inteligentes, IA conversacional, integraciones y automatización con FastForm. Guía completa de nuestra plataforma.',
   keywords: [
     'faq csv google forms',
     'preguntas frecuentes excel google forms',
