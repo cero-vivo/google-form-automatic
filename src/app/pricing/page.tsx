@@ -223,7 +223,7 @@ export default function PricingPage() {
       </header>
 
       {/* Banner Informativo de Países */}
-      <div className="bg-blue-50 border-b border-blue-200">
+      <div className="bg-blue-50 border-b border-blue-200 sticky top-[73px] z-40">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-center text-center">
             <div className="flex items-center space-x-2">
