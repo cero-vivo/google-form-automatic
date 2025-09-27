@@ -104,6 +104,29 @@ export default function LoginPage() {
               )}
             </Button>
 
+            {/* Legal Consent */}
+            <div className="space-y-3 text-center">
+              <p className="text-xs text-muted-foreground">
+                Al hacer clic en "Continuar con Google" aceptas nuestros{' '}
+                <Link 
+                  href="/legals/ttcc" 
+                  className="text-primary hover:underline font-medium"
+                  target="_blank"
+                >
+                  Términos y Condiciones
+                </Link>
+                {' '}y{' '}
+                <Link 
+                  href="/legals/pp" 
+                  className="text-primary hover:underline font-medium"
+                  target="_blank"
+                >
+                  Política de Privacidad
+                </Link>
+                .
+              </p>
+            </div>
+
             {/* Error Message */}
             {error && (
               <div className="space-y-3">

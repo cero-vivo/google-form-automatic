@@ -166,12 +166,7 @@ export default function HomePage() {
                 </Link>
               </Button>
             </div>
-            <div className="flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm mt-4 sm:mt-6">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 sm:h-5 w-4 sm:w-5 text-excel" />
-                <span className="font-semibold text-primary">Gratis</span>
-              </div>
-            </div>
+       
           </div>
 
           {/* Right: Promotional Images Showcase */}
