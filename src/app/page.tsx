@@ -14,7 +14,47 @@ export default function HomePage() {
   const { user, loading } = useAuthContext();
   const [isMounted, setIsMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<'ai' | 'upload' | 'visual'>('ai'); // Estado para método seleccionado
   useEffect(() => setIsMounted(true), []);
+
+  // Configuración de métodos con sus GIFs correspondientes
+  const methods = {
+    ai: {
+      id: 'ai',
+      title: 'IA',
+      subtitle: 'Inteligencia Artificial',
+      description: 'Crea formularios con IA conversacional',
+      desktopGif: '/images/demoIA.gif',
+      mobileGif: '/images/demoIAMobile.gif',
+      icon: Sparkles,
+      color: 'blue',
+      symbol: 'AI'
+    },
+    upload: {
+      id: 'upload', 
+      title: 'UPL',
+      subtitle: 'Importar Archivos',
+      description: 'Sube CSV/Excel y convierte a formulario',
+      desktopGif: '/images/demoCSV.gif', // Fallback hasta tener el GIF específico
+      mobileGif: '/images/demoCSVMobile.gif', // Fallback hasta tener el GIF específico
+      icon: FileSpreadsheet,
+      color: 'green',
+      symbol: 'UP'
+    },
+    visual: {
+      id: 'visual',
+      title: 'VIS', 
+      subtitle: 'Constructor Manual',
+      description: 'Arrastra y suelta elementos',
+      desktopGif: '/images/demoManual.gif', // Fallback hasta tener el GIF específico
+      mobileGif: '/images/demoManualMobile.gif', // Fallback hasta tener el GIF específico
+      icon: FormInput,
+      color: 'purple',
+      symbol: 'Manual'
+    }
+  };
+
+  const currentMethod = methods[selectedMethod];
 
   const AuthArea = () => {
     if (!isMounted) {
@@ -58,7 +98,7 @@ export default function HomePage() {
             <Logo className="w-8 h-8 sm:w-10 sm:h-10" />
             <span className="text-xl sm:text-2xl font-bold text-velocity">FastForm</span>
           </div>
-          
+
           <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
             <Link href="#features" className="text-primary hover:text-velocity transition-all duration-300 font-medium relative group text-sm lg:text-base">
               Características
@@ -82,7 +122,7 @@ export default function HomePage() {
             <div className="hidden md:block">
               <AuthArea />
             </div>
-            <button 
+            <button
               className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
               aria-label="Abrir menú"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -93,7 +133,7 @@ export default function HomePage() {
             </button>
           </div>
         </div>
-        
+
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-white/10">
@@ -132,32 +172,88 @@ export default function HomePage() {
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-xl leading-relaxed">
               FastForm es la plataforma todo-en-uno para crear formularios profesionales. Con IA avanzada, constructor visual, plantillas premium y automatización completa. La herramienta definitiva para formularios inteligentes.
             </p>
-            
-            {/* 3 Methods Preview */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-              <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 text-center sm:text-left">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
-                  <FileSpreadsheet className="h-4 w-4" />
-                </div>
-                <h4 className="font-semibold text-sm text-primary mb-1">FastForm IA</h4>
-                <p className="text-xs text-muted-foreground">Inteligencia Artificial</p>
-              </div>
-              <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 text-center sm:text-left">
-                <div className="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
-                  <FormInput className="h-4 w-4" />
-                </div>
-                <h4 className="font-semibold text-sm text-primary mb-1">Constructor Visual</h4>
-                <p className="text-xs text-muted-foreground">Drag & Drop</p>
-              </div>
-              <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-200 text-center sm:text-left">
-                <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-2 mx-auto sm:mx-0">
-                  <Sparkles className="h-4 w-4" />
-                </div>
-                <h4 className="font-semibold text-sm text-primary mb-1">Importar Datos</h4>
-                <p className="text-xs text-muted-foreground">CSV, Excel y más</p>
-              </div>
+
+            {/* Interactive Method Selector - Periodic Table Style */}
+            <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-6 sm:mb-8">
+              {Object.values(methods).map((method) => {
+                const IconComponent = method.icon;
+                const isSelected = selectedMethod === method.id;
+                
+                return (
+                  <button
+                    key={method.id}
+                    onClick={() => setSelectedMethod(method.id as 'ai' | 'upload' | 'visual')}
+                    className={`group relative overflow-hidden rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 ${
+                      isSelected 
+                        ? `border-${method.color}-500 bg-${method.color}-500 shadow-lg shadow-${method.color}-500/25` 
+                        : `border-gray-200 bg-white hover:border-${method.color}-300 hover:shadow-md`
+                    }`}
+                    style={{
+                      width: '120px',
+                      height: '120px',
+                      ...(isSelected && {
+                        borderColor: method.color === 'blue' ? '#3b82f6' : method.color === 'purple' ? '#a855f7' : '#10b981',
+                        backgroundColor: method.color === 'blue' ? '#3b82f6' : method.color === 'purple' ? '#a855f7' : '#10b981',
+                        boxShadow: `0 10px 25px ${method.color === 'blue' ? '#3b82f625' : method.color === 'purple' ? '#a855f725' : '#10b98125'}`
+                      })
+                    }}
+                  >
+                    {/* Atomic Symbol Style */}
+                    <div className="absolute top-2 left-2 text-xs font-mono opacity-60">
+                      {Object.keys(methods).indexOf(method.id) + 1}
+                    </div>
+                    
+                    {/* Main Content */}
+                    <div className="flex flex-col items-center justify-center h-full p-3">
+                      <IconComponent 
+                        className={`h-8 w-8 mb-2 transition-colors duration-300 ${
+                          isSelected ? 'text-white' : 'text-gray-600 group-hover:text-' + method.color + '-500'
+                        }`} 
+                      />
+                      <div className={`text-lg font-bold mb-1 transition-colors duration-300 ${
+                        isSelected ? 'text-white' : 'text-gray-800'
+                      }`}>
+                        {method.symbol}
+                      </div>
+                      <div className={`text-xs text-center leading-tight transition-colors duration-300 ${
+                        isSelected ? 'text-white/90' : 'text-gray-500'
+                      }`}>
+                        {method.title}
+                      </div>
+                    </div>
+
+                    {/* Selection Indicator */}
+                    {isSelected && (
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
+                        <CheckCircle className="h-3 w-3 text-green-500" />
+                      </div>
+                    )}
+
+                    {/* Hover Effect */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-br from-white to-transparent transition-opacity duration-300" />
+                  </button>
+                );
+              })}
             </div>
-            
+
+            {/* Selected Method Description */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 mb-6 border border-gray-200/50">
+              <div className="flex items-center gap-3 mb-2">
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center text-white"
+                  style={{
+                    backgroundColor: currentMethod.color === 'blue' ? '#3b82f6' : currentMethod.color === 'purple' ? '#a855f7' : '#10b981'
+                  }}
+                >
+                  <currentMethod.icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-primary">{currentMethod.subtitle}</h4>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">{currentMethod.description}</p>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button size="lg" className="btn-modern text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-5 w-full sm:w-auto">
                 <Link href="/dashboard" className="flex items-center justify-center">
@@ -166,30 +262,68 @@ export default function HomePage() {
                 </Link>
               </Button>
             </div>
-       
+
           </div>
 
-          {/* Right: Promotional Images Showcase */}
+          {/* Right: Dynamic Demo Showcase */}
           <div className="order-1 lg:order-2 relative max-w-md sm:max-w-lg md:max-w-xl w-full mx-auto">
             <div className="relative">
-              {/* Mobile Image - Optimized for smaller screens */}
+              {/* Method Indicator */}
+              <div className="absolute -top-4 left-4 z-10">
+                <div 
+                  className="px-3 py-1 rounded-full text-xs font-bold text-white shadow-lg"
+                  style={{
+                    backgroundColor: currentMethod.color === 'blue' ? '#3b82f6' : currentMethod.color === 'purple' ? '#a855f7' : '#10b981'
+                  }}
+                >
+                  {currentMethod.subtitle} Demo
+                </div>
+              </div>
+
+              {/* Mobile Image - Dynamic based on selection */}
               <Image
-                src="/images/demoIAMobile.gif"
-                alt="FastForm - Plataforma inteligente para crear Google Forms con IA, constructor visual e importación de datos"
+                key={`mobile-${selectedMethod}`} // Key para forzar re-render
+                src={currentMethod.mobileGif}
+                alt={`FastForm ${currentMethod.subtitle} - Demo en móvil`}
                 width={400}
                 height={300}
-                className="block sm:hidden rounded-xl shadow-lg border border-gray-200 bg-white w-full h-auto"
+                className="block sm:hidden rounded-xl shadow-lg bg-white w-full h-auto transition-all duration-500"
+                style={{
+                  borderWidth: '3px',
+                  borderStyle: 'solid',
+                  borderColor: currentMethod.color === 'blue' ? '#3b82f6' : currentMethod.color === 'purple' ? '#a855f7' : '#10b981',
+                  boxShadow: `0 10px 25px ${currentMethod.color === 'blue' ? '#3b82f625' : currentMethod.color === 'purple' ? '#a855f725' : '#10b98125'}`
+                }}
                 priority
+                onError={(e) => {
+                  // Fallback a demoIA si el GIF específico no existe
+                  e.currentTarget.src = '/images/demoIAMobile.gif';
+                }}
               />
-              {/* Desktop Image - Full size */}
+              
+              {/* Desktop Image - Dynamic based on selection */}
               <Image
-                src="/images/demoIA.gif"
-                alt="FastForm - Plataforma inteligente para crear Google Forms con IA, constructor visual e importación de datos"
+                key={`desktop-${selectedMethod}`} // Key para forzar re-render
+                src={currentMethod.desktopGif}
+                alt={`FastForm ${currentMethod.subtitle} - Demo completo`}
                 width={680}
                 height={420}
-                className="hidden sm:block rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl border border-gray-200 bg-white w-full h-auto"
+                className="hidden sm:block rounded-xl sm:rounded-2xl bg-white w-full h-auto transition-all duration-500"
+                style={{
+                  borderWidth: '4px',
+                  borderStyle: 'solid',
+                  borderColor: currentMethod.color === 'blue' ? '#3b82f6' : currentMethod.color === 'purple' ? '#a855f7' : '#10b981',
+                  boxShadow: `0 20px 40px ${currentMethod.color === 'blue' ? '#3b82f625' : currentMethod.color === 'purple' ? '#a855f725' : '#10b98125'}`
+                }}
                 priority
+                onError={(e) => {
+                  // Fallback a demoIA si el GIF específico no existe
+                  e.currentTarget.src = '/images/demoIA.gif';
+                }}
               />
+
+              {/* Loading Overlay */}
+              <div className="absolute inset-0 bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl opacity-0 transition-opacity duration-300 pointer-events-none" />
             </div>
           </div>
         </div>
@@ -314,7 +448,7 @@ export default function HomePage() {
                     Los 3 métodos definitivos para crear <span className="text-[#673ab7]">Google Forms</span> en {new Date().getFullYear()}
                   </h3>
                   <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4">
-                    Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, 
+                    Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel,
                     IA conversacional y builder manual avanzado. Guía práctica para todos los niveles.
                   </p>
                   <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
@@ -367,11 +501,11 @@ export default function HomePage() {
             <Logo className="w-10 h-10 sm:w-12 sm:h-12" />
             <span className="text-2xl sm:text-3xl font-black text-velocity">FastForm</span>
           </div>
-          
+
           <p className="text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-lg max-w-2xl mx-auto px-2">
             La forma más inteligente y rápida de crear formularios profesionales con <span className="text-[#673ab7]">Google Forms</span>.
           </p>
-          
+
           <div className="pt-6 sm:pt-8 border-t border-primary/10 text-muted-foreground">
             <p className="font-medium text-sm sm:text-base">© {new Date().getFullYear()} FastForm.</p>
           </div>
