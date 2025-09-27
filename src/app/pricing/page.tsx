@@ -24,6 +24,7 @@ import {
 import Link from 'next/link';
 import { useAuthContext } from '@/containers/useAuth';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { CONFIG } from '@/lib/config';
 
 interface PricingPack {
   packSize: number;
@@ -54,34 +55,14 @@ export default function PricingPage() {
     localStorage.setItem('fastform_country_modal_seen', 'true');
   };
 
-  // CONFIGURACIÓN CENTRALIZADA DE PRECIOS - CAMBIAR AQUÍ PARA ACTUALIZAR TODOS
-  const PRICING_CONFIG = {
-    unitPrice: 500, // ARS por formulario individual
-    additionalIncrementPercent: 3, // 2.5% por formulario adicional (solo para cantidad personalizada)
-    packs: {
-      pack20: {
-        size: 20,
-        discountPercent: 10
-      },
-      pack50: {
-        size: 50,
-        discountPercent: 20
-      },
-      pack100: {
-        size: 100,
-        discountPercent: 30
-      }
-    }
-  };
-
   // Función para calcular precio con incremento acumulativo (solo para cantidad personalizada)
   const calculatePrice = (qty: number): number => {
-    if (qty <= 1) return PRICING_CONFIG.unitPrice;
+    if (qty <= 1) return CONFIG.PRICING.unitPrice;
     
-    let totalPrice = PRICING_CONFIG.unitPrice;
+    let totalPrice = CONFIG.PRICING.unitPrice;
     for (let i = 2; i <= qty; i++) {
-      const increment = PRICING_CONFIG.unitPrice * (PRICING_CONFIG.additionalIncrementPercent / 100) * (i - 1);
-      totalPrice += PRICING_CONFIG.unitPrice + increment;
+      const increment = CONFIG.PRICING.unitPrice * (CONFIG.PRICING.additionalIncrementPercent / 100) * (i - 1);
+      totalPrice += CONFIG.PRICING.unitPrice + increment;
     }
     
     return Math.round(totalPrice);
@@ -89,31 +70,31 @@ export default function PricingPage() {
 
   // Función para calcular precio unitario de pack con descuento
   const calculatePackUnitPrice = (discountPercent: number): number => {
-    return Math.round(PRICING_CONFIG.unitPrice * (1 - discountPercent / 100));
+    return Math.round(CONFIG.PRICING.unitPrice * (1 - discountPercent / 100));
   };
 
   // Packs predefinidos con precios unitarios calculados automáticamente
   const predefinedPacks: PricingPack[] = [
     { 
-      packSize: PRICING_CONFIG.packs.pack20.size, 
-      discountPercent: PRICING_CONFIG.packs.pack20.discountPercent, 
-      originalPrice: PRICING_CONFIG.packs.pack20.size * PRICING_CONFIG.unitPrice, // Precio sin descuento
-      discountedPrice: PRICING_CONFIG.packs.pack20.size * calculatePackUnitPrice(PRICING_CONFIG.packs.pack20.discountPercent), // Precio con descuento
-      savings: (PRICING_CONFIG.packs.pack20.size * PRICING_CONFIG.unitPrice) - (PRICING_CONFIG.packs.pack20.size * calculatePackUnitPrice(PRICING_CONFIG.packs.pack20.discountPercent))
+      packSize: CONFIG.PRICING.packs.pack20.size, 
+      discountPercent: CONFIG.PRICING.packs.pack20.discountPercent, 
+      originalPrice: CONFIG.PRICING.packs.pack20.size * CONFIG.PRICING.unitPrice, // Precio sin descuento
+      discountedPrice: CONFIG.PRICING.packs.pack20.size * calculatePackUnitPrice(CONFIG.PRICING.packs.pack20.discountPercent), // Precio con descuento
+      savings: (CONFIG.PRICING.packs.pack20.size * CONFIG.PRICING.unitPrice) - (CONFIG.PRICING.packs.pack20.size * calculatePackUnitPrice(CONFIG.PRICING.packs.pack20.discountPercent))
     },
     { 
-      packSize: PRICING_CONFIG.packs.pack50.size, 
-      discountPercent: PRICING_CONFIG.packs.pack50.discountPercent, 
-      originalPrice: PRICING_CONFIG.packs.pack50.size * PRICING_CONFIG.unitPrice, // Precio sin descuento
-      discountedPrice: PRICING_CONFIG.packs.pack50.size * calculatePackUnitPrice(PRICING_CONFIG.packs.pack50.discountPercent), // Precio con descuento
-      savings: (PRICING_CONFIG.packs.pack50.size * PRICING_CONFIG.unitPrice) - (PRICING_CONFIG.packs.pack50.size * calculatePackUnitPrice(PRICING_CONFIG.packs.pack50.discountPercent))
+      packSize: CONFIG.PRICING.packs.pack50.size, 
+      discountPercent: CONFIG.PRICING.packs.pack50.discountPercent, 
+      originalPrice: CONFIG.PRICING.packs.pack50.size * CONFIG.PRICING.unitPrice, // Precio sin descuento
+      discountedPrice: CONFIG.PRICING.packs.pack50.size * calculatePackUnitPrice(CONFIG.PRICING.packs.pack50.discountPercent), // Precio con descuento
+      savings: (CONFIG.PRICING.packs.pack50.size * CONFIG.PRICING.unitPrice) - (CONFIG.PRICING.packs.pack50.size * calculatePackUnitPrice(CONFIG.PRICING.packs.pack50.discountPercent))
     },
     { 
-      packSize: PRICING_CONFIG.packs.pack100.size, 
-      discountPercent: PRICING_CONFIG.packs.pack100.discountPercent, 
-      originalPrice: PRICING_CONFIG.packs.pack100.size * PRICING_CONFIG.unitPrice, // Precio sin descuento
-      discountedPrice: PRICING_CONFIG.packs.pack100.size * calculatePackUnitPrice(PRICING_CONFIG.packs.pack100.discountPercent), // Precio con descuento
-      savings: (PRICING_CONFIG.packs.pack100.size * PRICING_CONFIG.unitPrice) - (PRICING_CONFIG.packs.pack100.size * calculatePackUnitPrice(PRICING_CONFIG.packs.pack100.discountPercent))
+      packSize: CONFIG.PRICING.packs.pack100.size, 
+      discountPercent: CONFIG.PRICING.packs.pack100.discountPercent, 
+      originalPrice: CONFIG.PRICING.packs.pack100.size * CONFIG.PRICING.unitPrice, // Precio sin descuento
+      discountedPrice: CONFIG.PRICING.packs.pack100.size * calculatePackUnitPrice(CONFIG.PRICING.packs.pack100.discountPercent), // Precio con descuento
+      savings: (CONFIG.PRICING.packs.pack100.size * CONFIG.PRICING.unitPrice) - (CONFIG.PRICING.packs.pack100.size * calculatePackUnitPrice(CONFIG.PRICING.packs.pack100.discountPercent))
     }
   ];
 
@@ -438,13 +419,13 @@ export default function PricingPage() {
               <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Precio base por formulario:</span>
-                    <span className="font-medium">${PRICING_CONFIG.unitPrice} ARS</span>
+                    <span className="font-medium">${CONFIG.PRICING.unitPrice} ARS</span>
                   </div>
                 
                 {quantity > 1 && (
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Incremento acumulativo:</span>
-                    <span className="font-medium">+{PRICING_CONFIG.additionalIncrementPercent}% por adicional</span>
+                    <span className="font-medium">+{CONFIG.PRICING.additionalIncrementPercent}% por adicional</span>
                   </div>
                 )}
                 

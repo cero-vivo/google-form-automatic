@@ -34,6 +34,24 @@ export const CONFIG = {
   MERCADOPAGO: {
     CURRENCY: 'ARS',
     BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'
+  },
+  PRICING: {
+    unitPrice: 500, // ARS por formulario individual
+    additionalIncrementPercent: 3, // 3% por formulario adicional (solo para cantidad personalizada)
+    packs: {
+      pack20: {
+        size: 20,
+        discountPercent: 10
+      },
+      pack50: {
+        size: 50,
+        discountPercent: 20
+      },
+      pack100: {
+        size: 100,
+        discountPercent: 30
+      }
+    }
   }
 } as const;
 
