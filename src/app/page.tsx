@@ -173,7 +173,7 @@ export default function HomePage() {
           <div className="order-1 lg:order-2 relative max-w-md sm:max-w-lg md:max-w-xl w-full mx-auto">
             <div className="relative">
               <Image
-                src="/images/heroimage2.png"
+                src="/images/demoIA.gif"
                 alt="FastForm - Plataforma inteligente para crear Google Forms con IA, constructor visual e importación de datos"
                 width={680}
                 height={420}

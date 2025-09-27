@@ -158,7 +158,7 @@ export default function RootLayout({
               {children}
             </div>
             <Footer />
-            <FloatingFeedbackButton position="bottom-right" />
+            <FloatingFeedbackButton position="bottom-left" />
           </GoogleAuthProvider>
         </AuthProvider>
       </body>
