@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthContext } from '@/containers/useAuth';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 interface PricingPack {
   packSize: number;
@@ -36,7 +37,22 @@ export default function PricingPage() {
   const [quantity, setQuantity] = useState(1);
   const [selectedPack, setSelectedPack] = useState<PricingPack | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showCountryModal, setShowCountryModal] = useState(false);
   const { user, loading: authLoading } = useAuthContext();
+
+  // Verificar si mostrar el modal de países (solo primera vez)
+  useEffect(() => {
+    const hasSeenCountryModal = localStorage.getItem('fastform_country_modal_seen');
+    if (!hasSeenCountryModal) {
+      setShowCountryModal(true);
+    }
+  }, []);
+
+  // Manejar cierre del modal de países
+  const handleCloseCountryModal = () => {
+    setShowCountryModal(false);
+    localStorage.setItem('fastform_country_modal_seen', 'true');
+  };
 
   // CONFIGURACIÓN CENTRALIZADA DE PRECIOS - CAMBIAR AQUÍ PARA ACTUALIZAR TODOS
   const PRICING_CONFIG = {
@@ -224,6 +240,56 @@ export default function PricingPage() {
           )}
         </div>
       </header>
+
+      {/* Banner Informativo de Países */}
+      <div className="bg-blue-50 border-b border-blue-200">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-center text-center">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
+              <p className="text-sm text-blue-800 font-medium">
+                <span className="font-semibold">Soporte de pagos disponible solo en:</span> AR, BR, CL, CO, MX, PE, UY
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal de Países Soportados */}
+      <Dialog open={showCountryModal} onOpenChange={setShowCountryModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-bold text-primary">
+              Información Importante
+            </DialogTitle>
+            <DialogDescription className="text-center pt-4">
+              Actualmente solo soportamos pagos en los siguientes países:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="pt-4 space-y-4">
+            <div className="bg-blue-50 rounded-lg p-4">
+              <div className="font-semibold text-blue-800 mb-2">Países soportados:</div>
+              <div className="text-blue-700 text-sm space-y-1">
+                <div>🇦🇷 Argentina (AR)</div>
+                <div>🇧🇷 Brasil (BR)</div>
+                <div>🇨🇱 Chile (CL)</div>
+                <div>🇨🇴 Colombia (CO)</div>
+                <div>🇲🇽 México (MX)</div>
+                <div>🇵🇪 Perú (PE)</div>
+                <div>🇺🇾 Uruguay (UY)</div>
+              </div>
+            </div>
+          </div>
+          <div className="pt-6">
+            <Button 
+              onClick={handleCloseCountryModal}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold"
+            >
+              Entendido
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
