@@ -119,7 +119,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section - 3 Creation Methods */}
-      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 bg-light-gray overflow-hidden">
+      <section className="relative py-8 sm:py-12 md:py-16 px-4 sm:px-6 bg-light-gray overflow-hidden">
         <div className="container mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left: Copy + CTAs + Social Proof */}
           <div className="order-2 lg:order-1">
