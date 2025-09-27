@@ -89,7 +89,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Logo */}
             <div className="px-3 py-2">
               <div className="flex items-center space-x-2">
-                <Logo className="w-8 h-8" />
+                <Logo className="w-8 h-8"/>
                 {!isCollapsed && (
                   <span className="text-lg font-bold">FastForm</span>
                 )}

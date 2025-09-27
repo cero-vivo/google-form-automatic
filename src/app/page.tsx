@@ -124,10 +124,11 @@ export default function HomePage() {
           {/* Left: Copy + CTAs + Social Proof */}
           <div className="order-2 lg:order-1">
             <Badge className="mb-4 sm:mb-6 bg-velocity/10 text-velocity border-velocity/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
-              FastForm - La Plataforma Más Completa
+              FastForm - Crea Google Forms en segundos
             </Badge>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 leading-tight text-primary">
-              FastForm: La plataforma más inteligente para crear Google Forms
+              La plataforma inteligente para crear tus <span className="text-[#673ab7]">Google Forms</span>
+              {/* La forma más rápida de crear <span className="text-[#673ab7]">Google Forms</span> */}
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-xl leading-relaxed">
               FastForm es la plataforma todo-en-uno para crear formularios profesionales. Con IA avanzada, constructor visual, plantillas premium y automatización completa. La herramienta definitiva para formularios inteligentes.
@@ -306,7 +307,7 @@ export default function HomePage() {
                 </div>
                 <div className="md:w-3/5 p-6 sm:p-8">
                   <h3 className="text-xl sm:text-2xl font-bold text-primary mb-2 sm:mb-3">
-                    Los 3 métodos definitivos para crear Google Forms en {new Date().getFullYear()}
+                    Los 3 métodos definitivos para crear <span className="text-[#673ab7]">Google Forms</span> en {new Date().getFullYear()}
                   </h3>
                   <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4">
                     Descubre cómo FastForm revoluciona la creación de formularios con conversión CSV/Excel, 
@@ -364,7 +365,7 @@ export default function HomePage() {
           </div>
           
           <p className="text-muted-foreground mb-6 sm:mb-8 text-sm sm:text-lg max-w-2xl mx-auto px-2">
-            La forma más inteligente y rápida de crear formularios profesionales con Google Forms.
+            La forma más inteligente y rápida de crear formularios profesionales con <span className="text-[#673ab7]">Google Forms</span>.
           </p>
           
           <div className="pt-6 sm:pt-8 border-t border-primary/10 text-muted-foreground">
