@@ -12,11 +12,40 @@ export default function TTCCPage() {
         <CardHeader>
           <Logo className="mb-2" />
           <CardTitle className="text-3xl font-bold mb-2">Terms and Conditions</CardTitle>
-          <Badge variant="outline" className="mb-2">Last updated: September 21, 2025</Badge>
+          <Badge variant="outline" className="mb-2">Last updated: September 26, 2025</Badge>
           <p className="text-muted-foreground">Please read these terms and conditions carefully before using Our Service.</p>
         </CardHeader>
         <CardContent className="space-y-8">
           {/* Personal Data Collected (Google Auth + Drive) */}
+          <section>
+            <h2 className="text-xl font-semibold mb-2">Google User Data and Services Integration</h2>
+            <p className="mb-4">FastForm integrates with Google services to provide form creation and management functionality. By using our service, you acknowledge and agree to the following:</p>
+            
+            <h3 className="font-medium mb-2">Google API Services</h3>
+            <ul className="list-disc ml-6 mb-4">
+              <li><strong>Google Forms API:</strong> We access Google Forms API to create, edit, and manage forms on your behalf</li>
+              <li><strong>Google Drive API:</strong> We access Google Drive to store and retrieve your Google Forms</li>
+              <li><strong>Required Permissions:</strong> The service requires specific Google API scopes including forms access, drive file access, and basic profile information</li>
+              <li><strong>Compliance:</strong> Our use of Google APIs complies with Google API Services User Data Policy</li>
+            </ul>
+            
+            <h3 className="font-medium mb-2">Data Access and Usage</h3>
+            <ul className="list-disc ml-6 mb-4">
+              <li><strong>Limited Access:</strong> We only access Google data necessary for the functionality you request</li>
+              <li><strong>No Unauthorized Access:</strong> We do not access or modify any Google data beyond what's necessary for our service</li>
+              <li><strong>User Control:</strong> You maintain full control over your Google data and can revoke access at any time</li>
+              <li><strong>Data Integrity:</strong> We do not alter or corrupt your existing Google Forms or Drive data</li>
+            </ul>
+            
+            <h3 className="font-medium mb-2">User Responsibilities</h3>
+            <ul className="list-disc ml-6 mb-4">
+              <li><strong>Google Account:</strong> You must have a valid Google account to use form-related features</li>
+              <li><strong>Permissions:</strong> You are responsible for granting and managing permissions to your Google data</li>
+              <li><strong>Data Ownership:</strong> You retain full ownership of all your Google Forms and related data</li>
+              <li><strong>Compliance:</strong> You must comply with Google's Terms of Service when using integrated features</li>
+            </ul>
+          </section>
+          
           <section>
             <h2 className="text-xl font-semibold mb-2">Personal Data Collected (Google Auth + Drive)</h2>
             <ul className="list-disc ml-6 mb-4">
