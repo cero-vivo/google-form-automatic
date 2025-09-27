@@ -172,12 +172,22 @@ export default function HomePage() {
           {/* Right: Promotional Images Showcase */}
           <div className="order-1 lg:order-2 relative max-w-md sm:max-w-lg md:max-w-xl w-full mx-auto">
             <div className="relative">
+              {/* Mobile Image - Optimized for smaller screens */}
+              <Image
+                src="/images/demoIAMobile.gif"
+                alt="FastForm - Plataforma inteligente para crear Google Forms con IA, constructor visual e importación de datos"
+                width={400}
+                height={300}
+                className="block sm:hidden rounded-xl shadow-lg border border-gray-200 bg-white w-full h-auto"
+                priority
+              />
+              {/* Desktop Image - Full size */}
               <Image
                 src="/images/demoIA.gif"
                 alt="FastForm - Plataforma inteligente para crear Google Forms con IA, constructor visual e importación de datos"
                 width={680}
                 height={420}
-                className="rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl border border-gray-200 bg-white w-full h-auto"
+                className="hidden sm:block rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl border border-gray-200 bg-white w-full h-auto"
                 priority
               />
             </div>
