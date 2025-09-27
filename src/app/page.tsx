@@ -127,8 +127,7 @@ export default function HomePage() {
               FastForm - Crea Google Forms en segundos
             </Badge>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 leading-tight text-primary">
-              La plataforma inteligente para crear tus <span className="text-[#673ab7]">Google Forms</span>
-              {/* La forma más rápida de crear <span className="text-[#673ab7]">Google Forms</span> */}
+              La forma más rápida de crear <span className="text-[#673ab7]">Google Forms</span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-xl leading-relaxed">
               FastForm es la plataforma todo-en-uno para crear formularios profesionales. Con IA avanzada, constructor visual, plantillas premium y automatización completa. La herramienta definitiva para formularios inteligentes.

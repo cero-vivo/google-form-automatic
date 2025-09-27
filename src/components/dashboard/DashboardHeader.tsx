@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Logo } from '@/components/ui/logo';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { FileText, CreditCard, Menu, X } from 'lucide-react';
 import { AuthUser } from '@/containers/useAuth';
 import { DraftModal } from '../organisms/DraftModal';
@@ -32,11 +32,31 @@ export function DashboardHeader({
 }: DashboardHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const logoClick = () => {
+    const normalized = pathname?.replace(/\/+$/, '') || '/';
+
+    if (normalized === '/dashboard') {
+      router.push('/');
+      return;
+    }
+
+    if (normalized.startsWith('/dashboard')) {
+      router.push('/dashboard');
+      return;
+    }
+
+    // default
+    router.push('/');
+  }
   return (
     <header className="border-b bg-white sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between ">
         <div className="flex items-center space-x-2 sm:space-x-3">
-          <Logo className="w-7 h-7 sm:w-8 sm:h-8" />
+          <span className='cursor-pointer' onClick={logoClick} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') logoClick(); }}>
+            <Logo className="w-7 h-7 sm:w-8 sm:h-8" />
+          </span>
           <div>
             <h1 className="text-lg sm:text-xl font-bold text-primary">Dashboard</h1>
             <p className="hidden sm:block text-sm text-muted-foreground">Crea y gestiona tus formularios</p>
@@ -81,11 +101,11 @@ export function DashboardHeader({
               const params = new URLSearchParams();
               params.set('draftId', draft.id);
               params.set('builder', builderType);
-              
+
               router.push(`/create?${params.toString()}`);
             }}
           />
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -101,8 +121,8 @@ export function DashboardHeader({
                 <Badge
                   variant={currentCredits > 0 ? "secondary" : "destructive"}
                   className={`ml-1 sm:ml-2 px-1.5 text-xs ${currentCredits > 0
-                      ? 'bg-primary text-white hover:bg-primary/90'
-                      : 'bg-red-600 text-white hover:bg-red-700'
+                    ? 'bg-primary text-white hover:bg-primary/90'
+                    : 'bg-red-600 text-white hover:bg-red-700'
                     }`}
                 >
                   {currentCredits > 0 ? currentCredits : '0'}
@@ -166,11 +186,11 @@ export function DashboardHeader({
                 const params = new URLSearchParams();
                 params.set('draftId', draft.id);
                 params.set('builder', builderType);
-                
+
                 router.push(`/create?${params.toString()}`);
               }}
             />
-            
+
             <Button
               variant="ghost"
               size="sm"
@@ -186,8 +206,8 @@ export function DashboardHeader({
                   <Badge
                     variant={currentCredits > 0 ? "secondary" : "destructive"}
                     className={`ml-2 px-1.5 text-xs ${currentCredits > 0
-                        ? 'bg-primary text-white hover:bg-primary/90'
-                        : 'bg-red-600 text-white hover:bg-red-700'
+                      ? 'bg-primary text-white hover:bg-primary/90'
+                      : 'bg-red-600 text-white hover:bg-red-700'
                       }`}
                   >
                     {currentCredits > 0 ? currentCredits : '0'}
