@@ -28,7 +28,7 @@ export default function HomePage() {
       mobileGif: '/images/demoIAMobile.gif',
       icon: Sparkles,
       color: 'blue',
-      symbol: 'AI'
+      symbol: 'CHAT AI'
     },
     upload: {
       id: 'upload', 
@@ -39,13 +39,13 @@ export default function HomePage() {
       mobileGif: '/images/demoCSVMobile.gif', // Fallback hasta tener el GIF específico
       icon: FileSpreadsheet,
       color: 'green',
-      symbol: 'UP'
+      symbol: 'Excel'
     },
     visual: {
       id: 'visual',
       title: 'VIS', 
       subtitle: 'Constructor Manual',
-      description: 'Arrastra y suelta elementos',
+      description: 'Crea desde cero o trabaja facilmente sobre tus borradores',
       desktopGif: '/images/demoManual.gif', // Fallback hasta tener el GIF específico
       mobileGif: '/images/demoManualMobile.gif', // Fallback hasta tener el GIF específico
       icon: FormInput,
@@ -180,58 +180,63 @@ export default function HomePage() {
                 const isSelected = selectedMethod === method.id;
                 
                 return (
-                  <button
-                    key={method.id}
-                    onClick={() => setSelectedMethod(method.id as 'ai' | 'upload' | 'visual')}
-                    className={`group relative overflow-hidden rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 ${
-                      isSelected 
-                        ? `border-${method.color}-500 bg-${method.color}-500 shadow-lg shadow-${method.color}-500/25` 
-                        : `border-gray-200 bg-white hover:border-${method.color}-300 hover:shadow-md`
-                    }`}
-                    style={{
-                      width: '120px',
-                      height: '120px',
-                      ...(isSelected && {
-                        borderColor: method.color === 'blue' ? '#3b82f6' : method.color === 'purple' ? '#a855f7' : '#10b981',
-                        backgroundColor: method.color === 'blue' ? '#3b82f6' : method.color === 'purple' ? '#a855f7' : '#10b981',
-                        boxShadow: `0 10px 25px ${method.color === 'blue' ? '#3b82f625' : method.color === 'purple' ? '#a855f725' : '#10b98125'}`
-                      })
-                    }}
-                  >
-                    {/* Atomic Symbol Style */}
-                    <div className="absolute top-2 left-2 text-xs font-mono opacity-60">
-                      {Object.keys(methods).indexOf(method.id) + 1}
-                    </div>
-                    
-                    {/* Main Content */}
-                    <div className="flex flex-col items-center justify-center h-full p-3">
-                      <IconComponent 
-                        className={`h-8 w-8 mb-2 transition-colors duration-300 ${
-                          isSelected ? 'text-white' : 'text-gray-600 group-hover:text-' + method.color + '-500'
-                        }`} 
-                      />
-                      <div className={`text-lg font-bold mb-1 transition-colors duration-300 ${
-                        isSelected ? 'text-white' : 'text-gray-800'
+                  <div className="relative">
+                    <button
+                      key={method.id}
+                      onClick={() => setSelectedMethod(method.id as 'ai' | 'upload' | 'visual')}
+                      className={`group relative overflow-hidden rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 ${
+                        isSelected 
+                          ? `bg-white shadow-lg` 
+                          : `border-gray-200 bg-white hover:border-${method.color}-300 hover:shadow-md`
+                      }`}
+                      style={{
+                        width: '120px',
+                        height: '120px',
+                        ...(isSelected && {
+                          borderColor: method.color === 'blue' ? '#3b82f6' : method.color === 'purple' ? '#a855f7' : '#10b981',
+                          backgroundColor: 'white',
+                          boxShadow: `0 10px 25px ${method.color === 'blue' ? '#3b82f625' : method.color === 'purple' ? '#a855f725' : '#10b98125'}`
+                        })
+                      }}
+                    >
+                      {/* Atomic Symbol Style */}
+                      <div className={`absolute top-2 left-2 text-xs font-mono transition-colors duration-300 ${
+                        isSelected 
+                          ? (method.color === 'blue' ? 'text-blue-500' : method.color === 'purple' ? 'text-purple-500' : 'text-green-500')
+                          : 'text-gray-400'
                       }`}>
-                        {method.symbol}
+                        {Object.keys(methods).indexOf(method.id) + 1}
                       </div>
-                      <div className={`text-xs text-center leading-tight transition-colors duration-300 ${
-                        isSelected ? 'text-white/90' : 'text-gray-500'
-                      }`}>
-                        {method.title}
+                      
+                      {/* Main Content */}
+                      <div className="flex flex-col items-center justify-center h-full p-3">
+                        <IconComponent 
+                          className={`h-8 w-8 mb-2 transition-colors duration-300 ${
+                            isSelected 
+                              ? (method.color === 'blue' ? 'text-blue-500' : method.color === 'purple' ? 'text-purple-500' : 'text-green-500')
+                              : 'text-gray-600 group-hover:text-' + method.color + '-500'
+                          }`} 
+                        />
+                        <div className={`text-lg font-bold mb-1 transition-colors duration-300 ${
+                          isSelected 
+                            ? (method.color === 'blue' ? 'text-blue-600' : method.color === 'purple' ? 'text-purple-600' : 'text-green-600')
+                            : 'text-gray-800'
+                        }`}>
+                          {method.symbol}
+                        </div>
+                        <div className={`text-xs text-center leading-tight transition-colors duration-300 ${
+                          isSelected 
+                            ? (method.color === 'blue' ? 'text-blue-500' : method.color === 'purple' ? 'text-purple-500' : 'text-green-500')
+                            : 'text-gray-500'
+                        }`}>
+                          {method.title}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Selection Indicator */}
-                    {isSelected && (
-                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
-                        <CheckCircle className="h-3 w-3 text-green-500" />
-                      </div>
-                    )}
-
-                    {/* Hover Effect */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-br from-white to-transparent transition-opacity duration-300" />
-                  </button>
+                      {/* Hover Effect */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-br from-white to-transparent transition-opacity duration-300" />
+                    </button>
+                  </div>
                 );
               })}
             </div>
