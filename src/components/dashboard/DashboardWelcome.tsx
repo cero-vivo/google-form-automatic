@@ -13,13 +13,15 @@ export function DashboardWelcome({ onQuestionsLoaded, currentCredits }: Dashboar
   return (
     <>
       {/* Welcome Section */}
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          ¡Bienvenido a FastForm!
+      <div className="text-center mb-12">
+        <h2 className="text-2xl font-semibold mb-3 text-velocity-600 tracking-tight">
+          Bienvenido a FastForm
         </h2>
-        <p className="text-xl text-muted-foreground mb-6 max-w-6xl mx-auto">
-          La forma más inteligente y rápida de crear formularios profesionales con Google Forms. 
-          Ahorra horas de trabajo con nuestra herramienta de creación de formularios, IA avanzada y herramientas de productividad.
+        <p className="text-lg text-slate-700 mb-2 max-w-4xl mx-auto leading-relaxed font-light">
+          La herramienta más <span className="text-forms-500 font-medium">inteligente</span> para crear formularios profesionales
+        </p>
+        <p className="text-base text-slate-500 max-w-3xl mx-auto leading-relaxed">
+          Ahorra tiempo con nuestra IA avanzada y herramientas de productividad
         </p>
       </div>
 
