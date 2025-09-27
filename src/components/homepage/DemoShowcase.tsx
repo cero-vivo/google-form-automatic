@@ -10,7 +10,7 @@ interface DemoShowcaseProps {
 
 export const DemoShowcase = ({ currentMethod, selectedMethod }: DemoShowcaseProps) => {
   return (
-    <div className="order-1 lg:order-2 relative max-w-md sm:max-w-lg md:max-w-xl w-full mx-auto">
+    <div className="order-1 lg:order-2 relative max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl w-full mx-auto">
       <div className="relative">
         {/* Method Indicator */}
         <div className="absolute -top-4 left-4 z-10">
@@ -49,8 +49,8 @@ export const DemoShowcase = ({ currentMethod, selectedMethod }: DemoShowcaseProp
           key={`desktop-${selectedMethod}`} // Key para forzar re-render
           src={currentMethod.desktopGif}
           alt={`FastForm ${currentMethod.subtitle} - Demo completo`}
-          width={680}
-          height={420}
+          width={1000}
+          height={700}
           className="hidden sm:block rounded-xl sm:rounded-2xl bg-white w-full h-auto transition-all duration-500"
           style={{
             borderWidth: '4px',
