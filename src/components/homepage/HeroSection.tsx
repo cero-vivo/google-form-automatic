@@ -71,15 +71,6 @@ export const HeroSection = () => {
             setSelectedMethod={setSelectedMethod}
             currentMethod={currentMethod}
           />
-          
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <Button size="lg" className="btn-modern text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-5 w-full sm:w-auto">
-              <Link href="/dashboard" className="flex items-center justify-center">
-                <Upload className="mr-2 sm:mr-3 h-5 sm:h-6 w-5 sm:w-6" />
-                Comenzar Gratis
-              </Link>
-            </Button>
-          </div>
         </div>
 
         <DemoShowcase 
