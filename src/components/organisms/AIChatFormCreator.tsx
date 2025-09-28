@@ -492,24 +492,24 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 
 
 	return (
-		<div className="flex h-screen bg-gray-50 w-full">
+		<div className="flex h-screen bg-white w-full">
 			{/* Chat Panel - Responsive width */}
-			<div className="w-full md:w-96 flex flex-col bg-white border-r border-gray-200 flex-shrink-1">
-				<div className="p-4 border-b border-gray-200 flex-shrink-0">
-					<h1 className="text-lg font-bold mb-1">Asistente IA</h1>
-					<p className="text-sm text-gray-600">
+			<div className="w-full md:w-96 flex flex-col bg-white border-r border-neutral-200/60 flex-shrink-1">
+				<div className="p-6 border-b border-neutral-100 flex-shrink-0 bg-white">
+					<h1 className="text-xl font-bold mb-2 text-forms-600 font-poppins">Asistente IA</h1>
+					<p className="text-sm text-neutral-600 font-inter">
 						Conversación continua para mejorar tu formulario
 					</p>
 
-					<div className="mt-3 flex items-center justify-between">
-						<div className="text-xs">
-							<span className="font-medium">Créditos:</span>
-							<span className="ml-1 font-bold">{credits || 0}</span>
+					<div className="mt-4 flex items-center justify-between p-4 bg-neutral-50/50 rounded-xl border border-neutral-100">
+						<div className="text-sm font-inter">
+							<span className="font-medium text-neutral-700">Créditos:</span>
+							<span className="ml-2 font-bold text-excel-600 text-lg">{credits || 0}</span>
 						</div>
 						{credits !== null && credits < 10 && (
-							<div className="ml-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md flex items-center">
-								<AlertCircle className="h-3 w-3 text-yellow-600 mr-1 flex-shrink-0" />
-								<span className="text-xs text-yellow-800">
+							<div className="ml-4 p-3 bg-velocity-50 border border-velocity-200 rounded-xl flex items-center">
+								<AlertCircle className="h-4 w-4 text-velocity-600 mr-2 flex-shrink-0" />
+								<span className="text-sm text-velocity-700 font-medium">
 									Pocos créditos
 								</span>
 							</div>
@@ -518,21 +518,21 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 				</div>
 
 				<div className="flex-1 flex flex-col min-h-0">
-					<div className="flex-1 p-4 overflow-y-auto">
-						<div className="space-y-3">
+					<div className="flex-1 p-5 overflow-y-auto bg-white">
+						<div className="space-y-4">
 							{messages.map((message) => (
 								<div
 									key={message.id}
 									className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
 								>
 									<div
-										className={`max-w-[85%] px-3 py-2 rounded-lg text-sm break-words ${message.role === 'user'
-												? 'bg-blue-600 text-white'
-												: 'bg-gray-100'
+										className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm break-words transition-all duration-200 ${message.role === 'user'
+												? 'bg-forms-500 hover:bg-forms-600 text-white font-medium shadow-md hover:shadow-lg'
+												: 'bg-white hover:bg-neutral-50 border border-neutral-200/80 text-neutral-700 shadow-sm hover:shadow-md'
 										}`}
 								>
-										<p className="break-words">{message.content}</p>
-										<p className="text-xs opacity-70 mt-1">
+										<p className="break-words leading-relaxed font-inter">{message.content}</p>
+										<p className="text-xs opacity-70 mt-2 font-inter">
 											{message.timestamp.toLocaleTimeString()}
 										</p>
 									</div>
@@ -540,30 +540,33 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 							))}
 							{isLoading && (
 								<div className="flex justify-start">
-									<div className="bg-gray-100 px-3 py-2 rounded-lg">
-										<div className="h-3 w-3 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></div>
+									<div className="bg-white border border-neutral-200/80 px-4 py-3 rounded-2xl shadow-md">
+										<div className="flex items-center space-x-2">
+											<div className="h-4 w-4 animate-spin rounded-full border-2 border-forms-300 border-t-forms-600"></div>
+											<span className="text-sm text-neutral-600 font-inter">Pensando...</span>
+										</div>
 									</div>
 								</div>
 							)}
 						</div>
 					</div>
 
-					<div className="p-4 border-t border-gray-200 flex-shrink-0">
-						<div className="flex items-center justify-between mb-2">
-							<span className="text-xs text-gray-500">
+					<div className="p-5 border-t border-neutral-100 flex-shrink-0 bg-white shadow-sm">
+						<div className="flex items-center justify-between mb-3">
+							<span className="text-sm text-neutral-500 font-inter">
 								{getCreditWarning()}
 							</span>
 						</div>
 
-						<div className="flex space-x-2 items-end">
+						<div className="flex space-x-3 items-end">
 							<textarea
 									value={inputValue}
 									onChange={(e) => setInputValue(e.target.value)}
 									placeholder="Agregar más preguntas o mejorar el formulario..."
 									disabled={isLoading || credits <= 0}
 									rows={1}
-									className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-0 resize-none overflow-hidden"
-									style={{ minHeight: '40px', maxHeight: '120px' }}
+									className="flex-1 px-4 py-3 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forms-200 focus:border-forms-400 min-w-0 resize-none overflow-hidden transition-all duration-200 hover:border-neutral-300 bg-white font-inter placeholder:text-neutral-400 shadow-sm focus:shadow-md"
+									style={{ minHeight: '44px', maxHeight: '120px' }}
 									onInput={(e) => {
 										const target = e.target as HTMLTextAreaElement;
 										target.style.height = 'auto';
@@ -573,7 +576,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 							<button
 								onClick={handleSendMessage}
 								disabled={isLoading || !inputValue.trim() || credits <= 0}
-								className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex-shrink-0"
+								className="px-4 py-3 bg-forms-500 text-white rounded-xl hover:bg-forms-600 focus:bg-forms-600 focus:outline-none focus:ring-2 focus:ring-forms-200 disabled:opacity-50 disabled:hover:bg-forms-500 flex-shrink-0 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
 							>
 								<Send className="h-4 w-4" />
 							</button>
@@ -584,25 +587,25 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 
 			{/* Builder Panel - Responsive visibility */}
 			<div className="hidden md:flex flex-1 flex-col min-h-0">
-				<div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
+				<div className="p-6 border-b border-neutral-100 bg-white flex-shrink-0">
 					<div className="flex items-center justify-between">
 						<div className="min-w-0">
-							<h2 className="text-lg font-bold">Editor Visual</h2>
-							<p className="text-sm text-gray-600">
+							<h2 className="text-xl font-bold text-forms-600 font-poppins">Editor Visual</h2>
+							<p className="text-sm text-neutral-600 font-inter mt-1">
 								Formulario actualizado en tiempo real
 							</p>
 						</div>
 						<button
 							onClick={handlePublishForm}
 							disabled={!user || !canAfford(calculateCost('ai_generation')) || formPreview.questions.length === 0}
-							className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 flex-shrink-0 ml-4"
+							className="px-6 py-3 bg-excel-500 text-white rounded-xl hover:bg-excel-600 focus:bg-excel-600 focus:outline-none focus:ring-2 focus:ring-excel-200 disabled:opacity-50 disabled:hover:bg-excel-500 flex-shrink-0 ml-4 transition-all duration-200 shadow-sm font-medium font-poppins"
 						>
 							Publicar formulario ({calculateCost('ai_generation')} créditos)
 						</button>
 					</div>
 				</div>
 
-				<div className="flex-1 overflow-y-auto p-4">
+				<div className="flex-1 overflow-y-auto p-6 bg-neutral-50/30">
 					<ReusableFormBuilder
 						ref={builderRef}
 						creationMethod="ai"
@@ -637,7 +640,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 			<div className="md:hidden fixed bottom-6 right-4 z-50">
 				<button
 					onClick={() => setShowMobileBuilder(!showMobileBuilder)}
-					className="px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700"
+					className="px-5 py-3 bg-forms-500 text-white rounded-full shadow-lg hover:bg-forms-600 focus:bg-forms-600 focus:outline-none focus:ring-2 focus:ring-forms-200 transition-all duration-200 font-medium font-poppins"
 				>
 					{showMobileBuilder ? 'Chat' : 'Editor'}
 				</button>
@@ -646,24 +649,24 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 			{/* Mobile Builder Panel */}
 			{showMobileBuilder && (
 				<div className="md:hidden fixed inset-0 bg-white z-40 flex flex-col">
-					<div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
+					<div className="p-6 border-b border-neutral-100 bg-white flex-shrink-0">
 						<div className="flex items-center justify-between">
 							<div className="min-w-0">
-								<h2 className="text-lg font-bold">Editor Visual</h2>
-								<p className="text-sm text-gray-600">
+								<h2 className="text-xl font-bold text-forms-600 font-poppins">Editor Visual</h2>
+								<p className="text-sm text-neutral-600 font-inter mt-1">
 									Formulario actualizado en tiempo real
 								</p>
 							</div>
 							<button
 								onClick={() => setShowMobileBuilder(false)}
-								className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+								className="px-4 py-2 bg-neutral-100 text-neutral-600 rounded-xl hover:bg-neutral-200 focus:bg-neutral-200 focus:outline-none transition-all duration-200 font-medium"
 							>
 								Cerrar
 							</button>
 						</div>
 					</div>
 
-					<div className="flex-1 overflow-y-auto p-4">
+					<div className="flex-1 overflow-y-auto p-6 bg-neutral-50/30">
 						<ReusableFormBuilder
 							ref={builderRef}
 							creationMethod="ai"
