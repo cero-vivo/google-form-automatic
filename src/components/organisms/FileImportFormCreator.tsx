@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Upload, CheckCircle, AlertCircle, Loader2, ArrowUp, ArrowDown, Replace } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, Loader2, ArrowUp, ArrowDown, Replace, BookOpen, Download } from 'lucide-react';
 import { Question } from '@/domain/entities/question';
 import { useFileUpload } from '@/containers/useFileUpload';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
@@ -241,12 +241,7 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h3 className="text-2xl font-bold mb-2">Crear Formulario</h3>
-        <p className="text-sm text-muted-foreground">
-          Crea tu formulario manualmente o importa desde un archivo CSV/Excel
-        </p>
-      </div>
+
 
       {/* File Upload Section - Always Visible */}
       <Card>
@@ -299,13 +294,31 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
             </div>
           </div>
 
-          <div className="mt-4 text-center">
-            <button
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Button
               onClick={downloadTemplate}
-              className="text-sm text-primary hover:underline"
+              variant="outline"
+              size="sm"
+              className="border-excel-300 text-excel-600 hover:bg-excel-50 font-inter"
             >
+              <Download className="w-4 h-4 mr-2" />
               Descargar plantilla de ejemplo
-            </button>
+            </Button>
+            <Button
+              onClick={() => {
+                // Scroll a la sección de documentación
+                const docSection = document.querySelector('[data-section="documentation"]');
+                if (docSection) {
+                  docSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              variant="ghost"
+              size="sm"
+              className="text-forms-600 hover:bg-forms-50 font-inter"
+            >
+              <BookOpen className="w-4 h-4 mr-2" />
+              Saber más
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -397,7 +410,9 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
         </DialogContent>
       </Dialog>
 
-      <FormInstructions />
+      <div data-section="documentation">
+        <FormInstructions />
+      </div>
     </div>
   );
 }
