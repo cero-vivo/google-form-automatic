@@ -54,7 +54,7 @@ export const HeroSection = () => {
     <section className="relative py-8 sm:py-12 md:py-16 px-4 sm:px-6 bg-light-gray overflow-hidden">
       <div className="container mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
         {/* Left: Copy + CTAs + Social Proof */}
-        <div className="order-2 lg:order-1">
+        <div className="order-1 lg:order-1">
           <Badge className="mb-4 sm:mb-6 bg-velocity/10 text-velocity border-velocity/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
             FastForm - Crea Google Forms en segundos
           </Badge>
