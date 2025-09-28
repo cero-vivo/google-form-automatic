@@ -2,6 +2,18 @@
 
 import React from 'react';
 
+type MethodColor = 'velocity' | 'green' | 'purple';
+
+interface MethodColorTheme {
+  accentColor: string;
+  hoverBorder: string;
+  selectedIndex: string;
+  selectedIcon: string;
+  hoverIcon: string;
+  selectedSymbol: string;
+  selectedSubtitle: string;
+}
+
 export interface Method {
   id: 'ai' | 'upload' | 'visual';
   title: string;
@@ -10,9 +22,39 @@ export interface Method {
   desktopGif: string;
   mobileGif: string;
   icon: React.ComponentType<any>;
-  color: 'blue' | 'green' | 'purple';
+  color: MethodColor;
   symbol: string;
 }
+
+export const methodColorThemes: Record<MethodColor, MethodColorTheme> = {
+  velocity: {
+    accentColor: 'hsl(38, 100%, 62%)',
+    hoverBorder: 'hover:border-velocity-300',
+    selectedIndex: 'text-velocity-500',
+    selectedIcon: 'text-velocity-500',
+    hoverIcon: 'group-hover:text-velocity-500',
+    selectedSymbol: 'text-velocity-600',
+    selectedSubtitle: 'text-velocity-500',
+  },
+  green: {
+    accentColor: '#10b981',
+    hoverBorder: 'hover:border-emerald-300',
+    selectedIndex: 'text-emerald-500',
+    selectedIcon: 'text-emerald-500',
+    hoverIcon: 'group-hover:text-emerald-500',
+    selectedSymbol: 'text-emerald-600',
+    selectedSubtitle: 'text-emerald-500',
+  },
+  purple: {
+    accentColor: '#a855f7',
+    hoverBorder: 'hover:border-purple-300',
+    selectedIndex: 'text-purple-500',
+    selectedIcon: 'text-purple-500',
+    hoverIcon: 'group-hover:text-purple-500',
+    selectedSymbol: 'text-purple-600',
+    selectedSubtitle: 'text-purple-500',
+  },
+};
 
 interface MethodSelectorProps {
   methods: Record<'ai' | 'upload' | 'visual', Method>;
@@ -27,6 +69,8 @@ export const MethodSelector = ({
   setSelectedMethod, 
   currentMethod 
 }: MethodSelectorProps) => {
+  const currentTheme = methodColorThemes[currentMethod.color];
+
   return (
     <div>
       {/* Interactive Method Selector - Periodic Table Style */}
@@ -34,55 +78,52 @@ export const MethodSelector = ({
         {Object.values(methods).map((method) => {
           const IconComponent = method.icon;
           const isSelected = selectedMethod === method.id;
+          const colorTheme = methodColorThemes[method.color];
           
           return (
             <div key={method.id} className="relative">
               <button
                 onClick={() => setSelectedMethod(method.id)}
                 className={`group relative overflow-hidden rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 active:scale-95 ${
-                  isSelected 
-                    ? `bg-white` 
-                    : `border-gray-200 bg-white hover:border-${method.color}-300`
-                }`}
+                  isSelected ? 'bg-white' : 'border-gray-200 bg-white'
+                } ${!isSelected ? colorTheme.hoverBorder : ''}`}
                 style={{
                   width: '120px',
                   height: '120px',
                   ...(isSelected && {
-                    borderColor: method.color === 'blue' ? '#3b82f6' : method.color === 'purple' ? '#a855f7' : '#10b981',
+                    borderColor: colorTheme.accentColor,
                     backgroundColor: 'white'
                   })
                 }}
               >
                 {/* Atomic Symbol Style */}
-                <div className={`absolute top-2 left-2 text-xs font-mono transition-colors duration-300 ${
-                  isSelected 
-                    ? (method.color === 'blue' ? 'text-blue-500' : method.color === 'purple' ? 'text-purple-500' : 'text-green-500')
-                    : 'text-gray-400'
-                }`}>
+                <div
+                  className={`absolute top-2 left-2 text-xs font-mono transition-colors duration-300 ${
+                    isSelected ? colorTheme.selectedIndex : 'text-gray-400'
+                  }`}
+                >
                   {Object.keys(methods).indexOf(method.id) + 1}
                 </div>
                 
                 {/* Main Content */}
                 <div className="flex flex-col items-center justify-center h-full p-3">
-                  <IconComponent 
+                  <IconComponent
                     className={`h-8 w-8 mb-2 transition-colors duration-300 ${
-                      isSelected 
-                        ? (method.color === 'blue' ? 'text-blue-500' : method.color === 'purple' ? 'text-purple-500' : 'text-green-500')
-                        : 'text-gray-600 group-hover:text-' + method.color + '-500'
-                    }`} 
+                      isSelected ? colorTheme.selectedIcon : 'text-gray-600'
+                    } ${!isSelected ? colorTheme.hoverIcon : ''}`}
                   />
-                  <div className={`text-lg font-bold mb-1 transition-colors duration-300 ${
-                    isSelected 
-                      ? (method.color === 'blue' ? 'text-blue-600' : method.color === 'purple' ? 'text-purple-600' : 'text-green-600')
-                      : 'text-gray-800'
-                  }`}>
+                  <div
+                    className={`text-lg font-bold mb-1 transition-colors duration-300 ${
+                      isSelected ? colorTheme.selectedSymbol : 'text-gray-800'
+                    }`}
+                  >
                     {method.symbol}
                   </div>
-                  <div className={`text-xs text-center leading-tight transition-colors duration-300 ${
-                    isSelected 
-                      ? (method.color === 'blue' ? 'text-blue-500' : method.color === 'purple' ? 'text-purple-500' : 'text-green-500')
-                      : 'text-gray-500'
-                  }`}>
+                  <div
+                    className={`text-xs text-center leading-tight transition-colors duration-300 ${
+                      isSelected ? colorTheme.selectedSubtitle : 'text-gray-500'
+                    }`}
+                  >
                     {method.title}
                   </div>
                 </div>
@@ -101,7 +142,7 @@ export const MethodSelector = ({
           <div 
             className="w-10 h-10 rounded-lg flex items-center justify-center text-white"
             style={{
-              backgroundColor: currentMethod.color === 'blue' ? '#3b82f6' : currentMethod.color === 'purple' ? '#a855f7' : '#10b981'
+              backgroundColor: currentTheme.accentColor
             }}
           >
             <currentMethod.icon className="h-5 w-5" />
@@ -115,4 +156,3 @@ export const MethodSelector = ({
     </div>
   );
 };
-

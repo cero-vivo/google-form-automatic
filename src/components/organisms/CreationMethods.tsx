@@ -2,9 +2,8 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, FileText, LayoutGrid, HelpCircle } from 'lucide-react';
-
+import { cn } from '@/lib/utils';
 
 interface CreationMethodsProps {
   onQuestionsLoaded?: (questions: any[]) => void;
@@ -12,65 +11,77 @@ interface CreationMethodsProps {
   className?: string;
 }
 
-export function CreationMethods({ onQuestionsLoaded, currentCredits = 0, className }: CreationMethodsProps) {
+type MethodAccent = {
+  hoverBorder: string;
+  icon: string;
+  badge: string;
+  button: string;
+};
 
+const accentStyles: Record<'ai' | 'file' | 'manual', MethodAccent> = {
+  ai: {
+    hoverBorder: 'hover:border-velocity-300',
+    icon: 'text-velocity-600',
+    badge: 'bg-velocity-50 text-velocity-600',
+    button: 'bg-velocity text-white hover:bg-velocity-600 focus-visible:ring-velocity-300'
+  },
+  file: {
+    hoverBorder: 'hover:border-emerald-300',
+    icon: 'text-emerald-600',
+    badge: 'bg-emerald-50 text-emerald-600',
+    button: 'bg-emerald-600 text-white hover:bg-emerald-500 focus-visible:ring-emerald-300'
+  },
+  manual: {
+    hoverBorder: 'hover:border-purple-300',
+    icon: 'text-purple-600',
+    badge: 'bg-purple-50 text-purple-600',
+    button: 'bg-purple-600 text-white hover:bg-purple-500 focus-visible:ring-purple-300'
+  }
+};
+
+export function CreationMethods({ onQuestionsLoaded: _onQuestionsLoaded, currentCredits = 0, className }: CreationMethodsProps) {
   const creationMethods = [
     {
-      id: 'ai',
+      id: 'ai' as const,
       name: 'Asistente IA',
       icon: Sparkles,
-      description: 'Crea formularios conversando con nuestra IA',
+      description: 'Genera formularios junto a nuestra IA y publícalos en segundos.',
       cost: 2,
-      colorClass: 'text-forms-500',
-      bgColor: 'bg-white',
-      borderColor: 'border-forms-200',
-      buttonBg: 'bg-forms-500',
+      badge: 'Recomendado',
       docsUrl: '/docs'
     },
     {
-      id: 'file',
+      id: 'file' as const,
       name: 'Importar Archivo',
       icon: FileText,
-      description: 'Sube archivos Excel, CSV o Google Sheets',
+      description: 'Convierte Excel, CSV o Sheets en formularios listos para usar.',
       cost: 1,
-      colorClass: 'text-velocity-500',
-      bgColor: 'bg-white',
-      borderColor: 'border-velocity-200',
-      buttonBg: 'bg-velocity-500',
       docsUrl: '/docs'
     },
     {
-      id: 'manual',
+      id: 'manual' as const,
       name: 'Constructor Manual',
       icon: LayoutGrid,
-      description: 'Editor visual con plantillas predefinidas',
+      description: 'Controla cada bloque con el editor visual de FastForm.',
       cost: 1,
-      colorClass: 'text-accent',
-      bgColor: 'bg-white',
-      borderColor: 'border-accent/20',
-      buttonBg: 'bg-accent',
       docsUrl: '/docs'
     }
   ];
 
-  const canCreateMethod = (methodCost: number) => {
-    return currentCredits >= methodCost;
-  };
+  const canCreateMethod = (methodCost: number) => currentCredits >= methodCost;
 
-  const handleMethodSelect = (methodId: string) => {
-    const routes = {
-      'ai': '/create/ai',
-      'file': '/create/file',
-      'manual': '/create/manual'
+  const handleMethodSelect = (methodId: 'ai' | 'file' | 'manual') => {
+    const routes: Record<typeof methodId, string> = {
+      ai: '/create/ai',
+      file: '/create/file',
+      manual: '/create/manual'
     };
 
-    const route = routes[methodId as keyof typeof routes];
+    const route = routes[methodId];
     if (route) {
       window.location.href = route;
     }
   };
-
-
 
   const handleDocsClick = (docsUrl: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -78,65 +89,90 @@ export function CreationMethods({ onQuestionsLoaded, currentCredits = 0, classNa
   };
 
   return (
-    <div className={`space-y-6 ${className}`}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {creationMethods.map((method) => (
-          <Card
-            key={method.id}
-            className={`relative overflow-hidden border-2 ${method.borderColor} ${method.bgColor} hover:shadow-xl cursor-pointer group min-h-[280px]`}
-            onClick={() => handleMethodSelect(method.id)}
-          >
-            {/* Header con icono grande */}
-            <CardHeader className="pb-6 pt-8">
-              <div className="flex flex-col items-center text-center space-y-4">
+    <div className={cn('space-y-8', className)}>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {creationMethods.map((method) => {
+          const accent = accentStyles[method.id];
+          const isDisabled = !canCreateMethod(method.cost);
 
-                  <method.icon className={`h-12 w-12 ${method.colorClass}`} />
-
-                <div>
-                  <CardTitle className={`text-2xl ${method.colorClass} font-bold mb-2`}>
-                    {method.name}
-                  </CardTitle>
-                  <div className={`inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-sm font-medium text-slate-700`}>
-                    {method.cost} crédito{method.cost > 1 ? 's' : ''}
+          return (
+            <div
+              key={method.id}
+              onClick={() => {
+                if (isDisabled) return;
+                handleMethodSelect(method.id);
+              }}
+              className={cn(
+                'flex h-full flex-col gap-6 rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 transition-all duration-300 shadow-[0_16px_35px_-28px_rgba(15,23,42,0.35)]',
+                isDisabled
+                  ? 'cursor-not-allowed opacity-60'
+                  : cn('cursor-pointer hover:-translate-y-1', accent.hoverBorder)
+              )}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 ring-2 ring-slate-100">
+                    <method.icon className={cn('h-6 w-6', accent.icon)} />
+                  </span>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-2 text-slate-900">
+                      <h3 className="text-xl font-semibold leading-tight sm:text-2xl">
+                        {method.name}
+                      </h3>
+                      {method.badge && (
+                        <span className="rounded-full border border-white/60 bg-white px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm">
+                          {method.badge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-600">
+                      {method.description}
+                    </p>
                   </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
+                  onClick={(e) => handleDocsClick(method.docsUrl, e)}
+                >
+                  <HelpCircle className="h-4 w-4" />
+                </Button>
               </div>
-              
-              {/* Botón de documentación en esquina */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => handleDocsClick(method.docsUrl, e)}
-                className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full"
-              >
-                <HelpCircle className="h-4 w-4 text-slate-500" />
-              </Button>
-            </CardHeader>
-            
-            <CardContent className="pt-0 pb-8 px-6">
-              <CardDescription className="text-slate-600 text-center mb-8 text-base leading-relaxed">
-                {method.description}
-              </CardDescription>
-              
-              <Button
-                disabled={!canCreateMethod(method.cost)}
-                size="lg"
-                className={`w-full ${
-                  canCreateMethod(method.cost)
-                    ? `${method.buttonBg} hover:opacity-90 text-white border-0 shadow-md`
-                    : 'bg-slate-200 text-slate-500 cursor-not-allowed border-0'
-                }`}
-              >
-                <method.icon className="mr-2 h-5 w-5" />
-                {canCreateMethod(method.cost) ? (
-                  'Comenzar'
-                ) : (
-                  `Necesitas ${method.cost} créditos`
+
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={cn('inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em]', accent.badge)}>
+                  {method.cost} crédito{method.cost > 1 ? 's' : ''}
+                </span>
+              </div>
+
+              <div className="mt-auto flex flex-col gap-2">
+                <Button
+                  disabled={isDisabled}
+                  className={cn(
+                    'w-full justify-center text-base font-medium transition-shadow duration-300',
+                    isDisabled
+                      ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                      : accent.button
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isDisabled) return;
+                    handleMethodSelect(method.id);
+                  }}
+                >
+                  <method.icon className="mr-2 h-5 w-5" />
+                  {isDisabled ? `Necesitas ${method.cost} crédito${method.cost > 1 ? 's' : ''}` : 'Crear formulario'}
+                </Button>
+                {isDisabled && (
+                  <p className="text-center text-xs font-medium text-slate-500">
+                    Obtén más créditos para desbloquear este método.
+                  </p>
                 )}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

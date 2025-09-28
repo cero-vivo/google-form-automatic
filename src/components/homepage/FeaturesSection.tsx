@@ -35,24 +35,24 @@ const methodThemes: Record<MethodTheme, {
   button: string;
 }> = {
   ai: {
-    iconBg: 'bg-blue-50',
-    iconColor: 'text-blue-600',
-    tagColor: 'text-blue-600',
-    borderHover: 'hover:border-blue-300',
-    bulletColor: 'text-blue-500',
-    insightBorder: 'border-blue-200 text-blue-700',
-    insightText: 'text-blue-600',
-    button: 'border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white',
+    iconBg: 'bg-velocity-50',
+    iconColor: 'text-velocity-600',
+    tagColor: 'text-velocity-600',
+    borderHover: 'hover:border-velocity-300',
+    bulletColor: 'text-velocity-500',
+    insightBorder: 'border-velocity-200 text-velocity-700',
+    insightText: 'text-velocity-600',
+    button: 'border-velocity-200 text-velocity-600 hover:bg-velocity-600 hover:text-white',
   },
   upload: {
-    iconBg: 'bg-velocity/10',
-    iconColor: 'text-velocity',
-    tagColor: 'text-velocity',
-    borderHover: 'hover:border-velocity/40',
-    bulletColor: 'text-velocity',
-    insightBorder: 'border-velocity/30 text-velocity',
-    insightText: 'text-velocity/90',
-    button: 'border-velocity/40 text-velocity hover:bg-velocity hover:text-white',
+    iconBg: 'bg-excel/10',
+    iconColor: 'text-excel',
+    tagColor: 'text-excel',
+    borderHover: 'hover:border-excel/40',
+    bulletColor: 'text-excel',
+    insightBorder: 'border-excel/30 text-excel',
+    insightText: 'text-excel/90',
+    button: 'border-excel/40 text-excel hover:bg-excel hover:text-white',
   },
   manual: {
     iconBg: 'bg-forms/10',
@@ -116,14 +116,14 @@ export const FeaturesSection = () => {
     <section id="features" className="bg-white px-6 py-24">
       <div className="container mx-auto">
         <div className="mb-12 text-center">
-          <Badge className="mb-4 border border-velocity/30 bg-velocity/10 px-4 py-2 font-semibold text-velocity">
+          <Badge className="mb-4 border border-excel/30 bg-excel/10 px-4 py-2 font-semibold text-excel">
             Tres caminos, un mismo resultado
           </Badge>
           <h2 className="mb-4 text-4xl font-black text-primary md:text-5xl">
             Selecciona tu flujo y lanza en minutos
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-            IA, importación masiva o constructor visual: FastForm mantiene tu identidad, automatiza la lógica y entrega formularios listos para tu equipo y clientes.
+            Conversación inteligente, importación automática o control total: tú decides cómo crear formularios que realmente funcionen.
           </p>
         </div>
 

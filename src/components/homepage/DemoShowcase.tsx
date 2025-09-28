@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import { Method } from "./MethodSelector";
+import { Method, methodColorThemes } from "./MethodSelector";
 
 interface DemoShowcaseProps {
   currentMethod: Method;
@@ -9,6 +9,8 @@ interface DemoShowcaseProps {
 }
 
 export const DemoShowcase = ({ currentMethod, selectedMethod }: DemoShowcaseProps) => {
+  const colorTheme = methodColorThemes[currentMethod.color];
+
   return (
     <div className="order-2 lg:order-2 relative max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl w-full mx-auto">
       <div className="relative">
@@ -17,7 +19,7 @@ export const DemoShowcase = ({ currentMethod, selectedMethod }: DemoShowcaseProp
           <div 
             className="px-3 py-1 rounded-full text-xs font-bold text-white"
             style={{
-              backgroundColor: currentMethod.color === 'blue' ? '#3b82f6' : currentMethod.color === 'purple' ? '#a855f7' : '#10b981'
+              backgroundColor: colorTheme.accentColor
             }}
           >
             {currentMethod.subtitle} Demo
@@ -35,7 +37,7 @@ export const DemoShowcase = ({ currentMethod, selectedMethod }: DemoShowcaseProp
           style={{
             borderWidth: '3px',
             borderStyle: 'solid',
-            borderColor: currentMethod.color === 'blue' ? '#3b82f6' : currentMethod.color === 'purple' ? '#a855f7' : '#10b981'
+            borderColor: colorTheme.accentColor
           }}
           priority
           onError={(e) => {
@@ -55,7 +57,7 @@ export const DemoShowcase = ({ currentMethod, selectedMethod }: DemoShowcaseProp
           style={{
             borderWidth: '4px',
             borderStyle: 'solid',
-            borderColor: currentMethod.color === 'blue' ? '#3b82f6' : currentMethod.color === 'purple' ? '#a855f7' : '#10b981'
+            borderColor: colorTheme.accentColor
           }}
           priority
           onError={(e) => {

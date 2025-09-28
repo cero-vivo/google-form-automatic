@@ -19,7 +19,7 @@ export const HeroSection = () => {
       desktopGif: '/images/demoIA.gif',
       mobileGif: '/images/demoIAMobile.gif',
       icon: Sparkles,
-      color: 'blue',
+      color: 'velocity',
       symbol: 'CHAT AI'
     },
     upload: {
@@ -53,7 +53,7 @@ export const HeroSection = () => {
       <div className="container mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
         {/* Left: Copy + CTAs + Social Proof */}
         <div className="order-1 lg:order-1">
-          <Badge className="mb-4 sm:mb-6 bg-velocity/10 text-velocity border-velocity/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
+          <Badge className="mb-4 sm:mb-6 bg-excel/10 text-excel border-excel/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold">
             FastForm - Crea Google Forms en segundos
           </Badge>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6 leading-tight text-primary">
@@ -79,4 +79,3 @@ export const HeroSection = () => {
     </section>
   );
 };
-

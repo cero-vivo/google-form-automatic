@@ -56,7 +56,7 @@ export const Header = ({ isMenuOpen, setIsMenuOpen }: HeaderProps) => {
       <div className="container mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2 sm:space-x-3">
           <Logo className="w-8 h-8 sm:w-10 sm:h-10" />
-          <span className="text-xl sm:text-2xl font-bold text-velocity">FastForm</span>
+          <span className="text-xl sm:text-2xl font-bold text-excel">FastForm</span>
         </div>
         
         <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">

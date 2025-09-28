@@ -91,7 +91,7 @@ function DashboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <DashboardHeader
         user={user}
         currentCredits={currentCredits}
@@ -101,8 +101,8 @@ function DashboardContent() {
         onToggleFormsList={handleToggleFormsList}
         onSignOut={signOut}
       />
-      
-      <div className="container mx-auto px-4 pb-4 py-6">
+
+      <div className="max-w-6xl mx-auto px-4 pt-6 pb-4">
         <CreditsAlert currentCredits={currentCredits} loading={creditsLoading} />
       </div>
 
@@ -113,9 +113,8 @@ function DashboardContent() {
         forms={userForms}
       />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 pb-12">
         {/* El modal de autenticación aparecerá automáticamente si es necesario */}
-        
         <DashboardWelcome
           onQuestionsLoaded={handleQuestionsLoaded}
           currentCredits={currentCredits}

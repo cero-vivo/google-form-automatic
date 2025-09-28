@@ -51,8 +51,8 @@ export function DashboardHeader({
     router.push('/');
   }
   return (
-    <header className="border-b bg-white sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between ">
+    <header className="sticky top-0 z-50 border-b border-white/40 bg-white/70 backdrop-blur-xl shadow-sm">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2 sm:space-x-3">
           <span className='cursor-pointer' onClick={logoClick} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') logoClick(); }}>
             <Logo className="w-7 h-7 sm:w-8 sm:h-8" />
