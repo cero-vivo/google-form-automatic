@@ -103,7 +103,7 @@ export function CreationMethods({ onQuestionsLoaded: _onQuestionsLoaded, current
                 handleMethodSelect(method.id);
               }}
               className={cn(
-                'flex h-full flex-col gap-6 rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 transition-all duration-300 shadow-[0_16px_35px_-28px_rgba(15,23,42,0.35)]',
+                'flex h-full flex-col gap-8 rounded-3xl border border-slate-200 bg-white p-8 sm:p-9 lg:p-10 transition-all duration-300 shadow-[0_16px_35px_-28px_rgba(15,23,42,0.35)]',
                 isDisabled
                   ? 'cursor-not-allowed opacity-60'
                   : cn('cursor-pointer hover:-translate-y-1', accent.hoverBorder)
@@ -111,8 +111,8 @@ export function CreationMethods({ onQuestionsLoaded: _onQuestionsLoaded, current
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 ring-2 ring-slate-100">
-                    <method.icon className={cn('h-6 w-6', accent.icon)} />
+                  <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-slate-50 ring-2 ring-slate-100">
+                    <method.icon className={cn('h-7 w-7', accent.icon)} />
                   </span>
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-wrap items-center gap-2 text-slate-900">
@@ -133,7 +133,7 @@ export function CreationMethods({ onQuestionsLoaded: _onQuestionsLoaded, current
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
+                  className="h-9 w-9 rounded-full border border-slate-200 bg-white p-0 text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
                   onClick={(e) => handleDocsClick(method.docsUrl, e)}
                 >
                   <HelpCircle className="h-4 w-4" />
