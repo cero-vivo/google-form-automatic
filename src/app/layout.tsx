@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GoogleAuthProvider } from "@/providers/GoogleAuthProvider";
 import { Footer } from "@/components/ui/footer";
 import { FloatingFeedbackButton } from "@/components/FloatingFeedbackButton";
+import ZoomPreventionScript from "@/components/ZoomPreventionScript";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
   authors: [{ name: "FastForm Team", url: "https://fastform.pro" }],
   creator: "FastForm Team",
   publisher: "FastForm",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   robots: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
   icons: {
     icon: [
@@ -154,11 +155,12 @@ export default function RootLayout({
         />
         <AuthProvider>
           <GoogleAuthProvider>
+            <ZoomPreventionScript />
             <div className="flex-1">
               {children}
             </div>
             <Footer />
-            <FloatingFeedbackButton position="bottom-left" />
+            {/* <FloatingFeedbackButton position="bottom-left" /> */}
           </GoogleAuthProvider>
         </AuthProvider>
       </body>
