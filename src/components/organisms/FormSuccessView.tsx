@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useBrandToast } from '@/hooks/useBrandToast';
 
 interface FormSuccessData {
   title: string;
@@ -21,10 +22,20 @@ interface FormSuccessViewProps {
 }
 
 export function FormSuccessView({ formData, onCreateNewForm, onDuplicateForm }: FormSuccessViewProps) {
-  const handleCopyToClipboard = (text: string, message: string) => {
-    navigator.clipboard.writeText(text);
-    alert(message);
-  };
+  const { showSuccess, showError } = useBrandToast();
+
+  const handleCopyToClipboard = React.useCallback(
+    async (text: string, message: string) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        showSuccess('Enlace copiado', message);
+      } catch (error) {
+        console.error('Error copying to clipboard:', error);
+        showError('No pudimos copiar el enlace', 'Copia el enlace manualmente mientras resolvemos el problema.');
+      }
+    },
+    [showSuccess, showError]
+  );
 
   return (
     <div className="space-y-4 md:space-y-6 max-w-full mx-auto px-2 sm:px-4">
@@ -131,7 +142,7 @@ export function FormSuccessView({ formData, onCreateNewForm, onDuplicateForm }: 
                 />
                 <Button
                   size="sm"
-                  onClick={() => handleCopyToClipboard(formData.formUrl, '¡Enlace copiado!')}
+                  onClick={() => { void handleCopyToClipboard(formData.formUrl, 'Comparte este enlace con tu equipo o clientes.'); }}
                   className="bg-excel hover:bg-excel/90 text-white shrink-0 px-2 md:px-3 h-auto py-1.5 md:py-2"
                 >
                   <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,7 +184,7 @@ export function FormSuccessView({ formData, onCreateNewForm, onDuplicateForm }: 
                 />
                 <Button
                   size="sm"
-                  onClick={() => handleCopyToClipboard(formData.editUrl, '¡Enlace copiado!')}
+                  onClick={() => { void handleCopyToClipboard(formData.editUrl, 'Usa este enlace para seguir editando tu formulario en Google.'); }}
                   className="bg-forms hover:bg-forms/90 text-white shrink-0 px-2 md:px-3 h-auto py-1.5 md:py-2"
                 >
                   <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

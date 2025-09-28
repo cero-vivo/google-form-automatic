@@ -4,17 +4,7 @@ import { useState } from 'react';
 import { X, Bug, Lightbulb, Heart, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { submitFeedback } from '@/services/feedbackService';
-
-// Simple toast implementation
-const useToast = () => {
-  const toast = ({ title, description, variant }: { title: string; description: string; variant?: string }) => {
-    console.log(`${variant?.toUpperCase() || 'INFO'}: ${title} - ${description}`);
-    if (typeof window !== 'undefined') {
-      alert(`${title}\n${description}`);
-    }
-  };
-  return { toast };
-};
+import { useBrandToast } from '@/hooks/useBrandToast';
 
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -28,7 +18,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
   const [description, setDescription] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
+  const { showSuccess, showError } = useBrandToast();
 
   const feedbackTypes = [
     { value: 'bug', label: 'Reportar Bug', icon: Bug, description: 'Error o problema en la aplicación' },
@@ -41,11 +31,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
     e.preventDefault();
     
     if (!description.trim()) {
-      toast({
-        title: "Error",
-        description: "Por favor describe tu feedback",
-        variant: "destructive",
-      });
+      showError('Feedback incompleto', 'Por favor describe tu feedback para que podamos ayudarte.');
       return;
     }
 
@@ -61,10 +47,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
         timestamp: new Date().toISOString(),
       });
 
-      toast({
-        title: "¡Gracias por tu feedback!",
-        description: "Tu mensaje ha sido enviado exitosamente.",
-      });
+      showSuccess('¡Gracias por tu feedback!', 'Tu mensaje nos ayuda a mejorar la experiencia en FastForm.');
 
       // Reset form and close
       setDescription('');
@@ -72,11 +55,8 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
       setFeedbackType('bug');
       onClose();
     } catch (error) {
-      toast({
-        title: "Error al enviar",
-        description: "Hubo un problema al enviar tu feedback. Por favor intenta de nuevo.",
-        variant: "destructive",
-      });
+      console.error('Error al enviar feedback:', error);
+      showError('No pudimos enviar tu feedback', 'Intenta de nuevo en unos segundos mientras revisamos qué ocurrió.');
     } finally {
       setIsSubmitting(false);
     }

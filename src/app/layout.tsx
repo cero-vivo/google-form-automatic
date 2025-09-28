@@ -6,6 +6,7 @@ import { GoogleAuthProvider } from "@/providers/GoogleAuthProvider";
 import { Footer } from "@/components/ui/footer";
 import { FloatingFeedbackButton } from "@/components/FloatingFeedbackButton";
 import ZoomPreventionScript from "@/components/ZoomPreventionScript";
+import { AppToaster } from "@/components/ui/app-toaster";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -160,6 +161,7 @@ export default function RootLayout({
               {children}
             </div>
             <Footer />
+            <AppToaster />
             {/* <FloatingFeedbackButton position="bottom-left" /> */}
           </GoogleAuthProvider>
         </AuthProvider>

@@ -16,6 +16,7 @@ import { DraftService } from '@/infrastructure/firebase/DraftService';
 import { DraftModal } from './DraftModal';
 import { FormSuccessView } from './FormSuccessView';
 import { CONFIG } from '@/lib/config';
+import { useBrandToast } from '@/hooks/useBrandToast';
 
 interface ReusableFormBuilderProps {
   initialQuestions?: Question[];
@@ -130,6 +131,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [showDraftModal, setShowDraftModal] = useState(false);
   const { user } = useAuth();
+  const { showSuccess, showError } = useBrandToast();
 
   // Load draft automatically when draftId is provided
   React.useEffect(() => {
@@ -443,10 +445,11 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
       });
 
       // Show success feedback
-      alert('¡Borrador guardado exitosamente!');
+      showSuccess('Borrador guardado', 'Puedes retomarlo desde tus borradores en cualquier momento.');
     } catch (error) {
       setError('Error al guardar el borrador');
       console.error('Error saving draft:', error);
+      showError('No pudimos guardar el borrador', 'Revisa tu conexión e inténtalo nuevamente.');
     } finally {
       setIsSavingDraft(false);
     }

@@ -186,10 +186,11 @@ const getUserForms = async () => {
 // Antes
 const MyComponent = () => {
   const { userEntity } = useAuth();
+  const { showError } = useBrandToast();
   
   const createForm = async () => {
     if (!userEntity?.googleAccessToken) {
-      alert('Debes iniciar sesión');
+      showError('Necesitas iniciar sesión', 'Conecta tu cuenta de Google para continuar.');
       return;
     }
     // ... lógica

@@ -16,9 +16,11 @@ import { Logo } from '@/components/ui/logo';
 import Link from 'next/link';
 import { useAuthContext } from '@/containers/useAuth';
 import { useRouter } from 'next/navigation';
+import { useBrandToast } from '@/hooks/useBrandToast';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { showError } = useBrandToast();
   
   const { 
     signInWithGoogle, 
@@ -31,7 +33,7 @@ export default function LoginPage() {
     try {
       // Verificar conexión a internet
       if (!navigator.onLine) {
-        alert('No hay conexión a internet. Por favor, verifica tu conexión.');
+        showError('Sin conexión a internet', 'Verifica tu red e inténtalo de nuevo.');
         return;
       }
 
@@ -40,7 +42,7 @@ export default function LoginPage() {
       setTimeout(() => {
         router.refresh();
       }, 500);
-    } catch (err) {
+    } catch {
       // Error ya manejado por useAuth - no necesitamos hacer nada aquí
     }
   };

@@ -25,6 +25,7 @@ import Link from 'next/link';
 import { useAuthContext } from '@/containers/useAuth';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { CONFIG } from '@/lib/config';
+import { useBrandToast } from '@/hooks/useBrandToast';
 
 interface PricingPack {
   packSize: number;
@@ -40,6 +41,7 @@ export default function PricingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showCountryModal, setShowCountryModal] = useState(false);
   const { user, loading: authLoading } = useAuthContext();
+  const { showError } = useBrandToast();
 
   // Verificar si mostrar el modal de países (solo primera vez)
   useEffect(() => {
@@ -177,8 +179,8 @@ export default function PricingPage() {
       }
     } catch (error) {
       console.error('Error en handlePurchase:', error);
-      // Aquí podrías mostrar un toast o alert al usuario
-      alert(`Error al procesar la compra: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      const message = error instanceof Error ? error.message : 'Intenta nuevamente en unos segundos.';
+      showError('No pudimos procesar tu compra', message);
     } finally {
       setIsLoading(false);
     }
