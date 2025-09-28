@@ -15,7 +15,7 @@ export const HeroSection = () => {
   const methods: Record<'ai' | 'upload' | 'visual', Method> = {
     ai: {
       id: 'ai',
-      title: 'IA',
+      title: '',
       subtitle: 'Inteligencia Artificial',
       description: 'Crea formularios con IA conversacional',
       desktopGif: '/images/demoIA.gif',
@@ -26,7 +26,7 @@ export const HeroSection = () => {
     },
     upload: {
       id: 'upload', 
-      title: 'UPL',
+      title: '',
       subtitle: 'Importar Archivos',
       description: 'Sube CSV/Excel y convierte a formulario',
       desktopGif: '/images/demoCSV.gif',
@@ -37,7 +37,7 @@ export const HeroSection = () => {
     },
     visual: {
       id: 'visual',
-      title: 'VIS', 
+      title: '', 
       subtitle: 'Constructor Manual',
       description: 'Crea desde cero o trabaja facilmente sobre tus borradores',
       desktopGif: '/images/demoManual.gif',
