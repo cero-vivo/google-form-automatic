@@ -10,7 +10,7 @@ interface DemoShowcaseProps {
 
 export const DemoShowcase = ({ currentMethod, selectedMethod }: DemoShowcaseProps) => {
   return (
-    <div className="order-1 lg:order-2 relative max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl w-full mx-auto">
+    <div className="order-2 lg:order-2 relative max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-4xl w-full mx-auto">
       <div className="relative">
         {/* Method Indicator */}
         <div className="absolute -top-4 left-4 z-10">
