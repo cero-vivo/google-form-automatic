@@ -4,6 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, FileText, LayoutGrid, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 interface CreationMethodsProps {
   onQuestionsLoaded?: (questions: any[]) => void;
@@ -85,7 +86,7 @@ export function CreationMethods({ onQuestionsLoaded: _onQuestionsLoaded, current
 
   const handleDocsClick = (docsUrl: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(docsUrl, '_blank');
+    window.open(docsUrl);
   };
 
   return (
@@ -111,9 +112,9 @@ export function CreationMethods({ onQuestionsLoaded: _onQuestionsLoaded, current
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-slate-50 ring-2 ring-slate-100">
-                    <method.icon className={cn('h-7 w-7', accent.icon)} />
-                  </span>
+                  <method.icon className={cn('h-20 w-20', accent.icon)} />
+
+
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-wrap items-center gap-2 text-slate-900">
                       <h3 className="text-xl font-semibold leading-tight sm:text-2xl">
@@ -130,14 +131,13 @@ export function CreationMethods({ onQuestionsLoaded: _onQuestionsLoaded, current
                     </p>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 rounded-full border border-slate-200 bg-white p-0 text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+                <Link
+                  href={""}
+                  className="p-0 text-slate-500 transition-colors hover:border-slate-100 hover:text-slate-700"
                   onClick={(e) => handleDocsClick(method.docsUrl, e)}
                 >
-                  <HelpCircle className="h-4 w-4" />
-                </Button>
+                  <HelpCircle className="h-5 w-5" />
+                </Link>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">

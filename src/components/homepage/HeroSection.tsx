@@ -1,8 +1,10 @@
 'use client';
 
 import { Badge } from "@/components/ui/badge";
-import { FileSpreadsheet, FormInput, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FileSpreadsheet, FormInput, Sparkles, ArrowRight, Play } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
 import { MethodSelector, Method } from "./MethodSelector";
 import { DemoShowcase } from "./DemoShowcase";
 
@@ -62,6 +64,19 @@ export const HeroSection = () => {
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-xl leading-relaxed">
             FastForm es la plataforma todo-en-uno para crear formularios profesionales. Con IA avanzada, constructor visual, plantillas premium y automatización completa. La herramienta definitiva para formularios inteligentes.
           </p>
+
+          {/* Call to Actions */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-8 sm:mb-10">
+            <Link href="/create">
+              <Button 
+                size="lg" 
+                className={`w-full sm:w-auto text-base px-8 py-3 bg-${currentMethod.color === "green" ? "excel" : currentMethod.color === "purple" ? "forms" : "velocity"} hover:bg-${currentMethod.color === "green" ? "excel" : currentMethod.color === "purple" ? "forms" : "velocity"}/90 transition-colors duration-300`}
+              >
+                Comenzar
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+          </div>
           
           <MethodSelector 
             methods={methods}
