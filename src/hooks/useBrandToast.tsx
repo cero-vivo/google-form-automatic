@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
+import React from 'react';
 import { CheckCircle2, AlertTriangle, Info } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -45,6 +46,16 @@ export function useBrandToast() {
       const config = TOAST_CONFIG[tone];
       const Icon = config.icon;
 
+      // Create the title element
+      const titleElement = (
+        <div className="flex items-center gap-2">
+          <span className={cn('inline-flex h-8 w-8 items-center justify-center rounded-full', config.pillClass)}>
+            <Icon className="h-4 w-4" />
+          </span>
+          <span className={cn('text-sm font-semibold leading-tight', config.accentClass)}>{title}</span>
+        </div>
+      );
+
       toast({
         duration: options?.duration ?? 5000,
         className: cn(
@@ -52,14 +63,7 @@ export function useBrandToast() {
           'ring-1 ring-black/5',
           config.containerClass
         ),
-        title: (
-          <div className="flex items-center gap-2">
-            <span className={cn('inline-flex h-8 w-8 items-center justify-center rounded-full', config.pillClass)}>
-              <Icon className="h-4 w-4" />
-            </span>
-            <span className={cn('text-sm font-semibold leading-tight', config.accentClass)}>{title}</span>
-          </div>
-        ),
+        title: titleElement as any,
         description: description ? (
           <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{description}</p>
         ) : undefined,
