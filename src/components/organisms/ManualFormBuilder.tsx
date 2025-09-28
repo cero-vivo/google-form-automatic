@@ -28,20 +28,7 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0, draftId }
 
   return (
     <div className="max-w-5xl mx-auto px-4">
-      <div className="text-center space-y-4">
-        <div className="mx-auto w-16 h-16 bg-forms/10 rounded-full flex items-center justify-center">
-          <LayoutGrid className="w-8 h-8 text-forms" />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-forms">
-            Constructor de Formularios
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Crea formularios personalizados desde cero
-          </p>
-        </div>
-      </div>
-
+      
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
