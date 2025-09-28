@@ -159,33 +159,34 @@ export const DraftModal: React.FC<DraftModalProps> = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[85vh] w-[95vw] sm:w-[90vw] md:w-[80vw] mx-auto overflow-y-auto rounded-lg p-4 sm:p-6">
+      <DialogContent className="max-w-2xl max-h-[85vh] w-[95vw] sm:w-[90vw] md:w-[80vw] mx-auto rounded-lg p-0 flex flex-col">
         {!showBuilderSelection ? (
           <>
-            <DialogHeader className="pb-2 sm:pb-4 px-1 sm:px-2">
+            <DialogHeader className="pb-2 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6 flex-shrink-0">
               <DialogTitle className="text-lg sm:text-xl font-semibold pr-8">
                 Mis Borradores
               </DialogTitle>
             </DialogHeader>
             
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6">
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-            {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
-            ) : drafts.length === 0 ? (
-              <div className="text-center py-8 text-slate-500">
-                <FileText className="w-12 h-12 mx-auto mb-3 text-slate-400" />
-                <p className="text-sm">No tienes borradores guardados</p>
-                <p className="text-xs mt-1">Los formularios guardados como borrador aparecerán aquí</p>
-              </div>
-            ) : (
-              <div className="space-y-4 overflow-hidden">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+              ) : drafts.length === 0 ? (
+                <div className="text-center py-8 text-slate-500">
+                  <FileText className="w-12 h-12 mx-auto mb-3 text-slate-400" />
+                  <p className="text-sm">No tienes borradores guardados</p>
+                  <p className="text-xs mt-1">Los formularios guardados como borrador aparecerán aquí</p>
+                </div>
+              ) : (
+                <div className="space-y-4 pb-4">
                 {drafts.map((draft) => (
                   <Card key={draft.id} className="border-slate-200 hover:shadow-sm transition-shadow overflow-hidden">
                     <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-4 pt-3 sm:pt-4">
@@ -241,12 +242,13 @@ export const DraftModal: React.FC<DraftModalProps> = ({
                     </CardContent>
                   </Card>
                 ))}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <>
-            <DialogHeader className="pb-2 sm:pb-4">
+            <DialogHeader className="pb-2 sm:pb-4 px-4 sm:px-6 pt-4 sm:pt-6 flex-shrink-0">
               <DialogTitle className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2 pr-8">
                 Seleccionar Builder
               </DialogTitle>
@@ -255,39 +257,41 @@ export const DraftModal: React.FC<DraftModalProps> = ({
               </p>
             </DialogHeader>
             
-            <div className="space-y-3 py-2 sm:py-4">
-              {(['ai', 'manual', 'file'] as const).map((builderType) => (
-                <Button
-                  key={builderType}
-                  onClick={() => handleSelectBuilder(builderType)}
-                  className="w-full justify-start h-auto py-3 sm:py-4 px-3 sm:px-4 text-left transition-colors hover:bg-slate-50 rounded-md"
-                  variant="outline"
-                >
-                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                    <div className="text-blue-600 flex-shrink-0 sm:scale-110">
-                      {getBuilderIcon(builderType)}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium text-slate-800 text-sm sm:text-base mb-0.5 sm:mb-1">
-                        {getBuilderName(builderType)}
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6">
+              <div className="space-y-3 py-2 sm:py-4">
+                {(['ai', 'manual', 'file'] as const).map((builderType) => (
+                  <Button
+                    key={builderType}
+                    onClick={() => handleSelectBuilder(builderType)}
+                    className="w-full justify-start h-auto py-3 sm:py-4 px-3 sm:px-4 text-left transition-colors hover:bg-slate-50 rounded-md"
+                    variant="outline"
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <div className="text-blue-600 flex-shrink-0 sm:scale-110">
+                        {getBuilderIcon(builderType)}
                       </div>
-                      <div className="text-xs sm:text-sm text-slate-600 line-clamp-2 leading-relaxed">
-                        {getBuilderDescription(builderType)}
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium text-slate-800 text-sm sm:text-base mb-0.5 sm:mb-1">
+                          {getBuilderName(builderType)}
+                        </div>
+                        <div className="text-xs sm:text-sm text-slate-600 line-clamp-2 leading-relaxed">
+                          {getBuilderDescription(builderType)}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Button>
-              ))}
-            </div>
+                  </Button>
+                ))}
+              </div>
 
-            <div className="flex justify-center mt-4 sm:mt-6">
-              <Button
-                variant="ghost"
-                onClick={() => setShowBuilderSelection(false)}
-                className="text-slate-600 hover:bg-slate-100 px-6 py-2 sm:py-2.5 text-sm sm:text-base"
-              >
-                Volver
-              </Button>
+              <div className="flex justify-center mt-4 sm:mt-6 pb-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowBuilderSelection(false)}
+                  className="text-slate-600 hover:bg-slate-100 px-6 py-2 sm:py-2.5 text-sm sm:text-base"
+                >
+                  Volver
+                </Button>
+              </div>
             </div>
           </>
         )}
