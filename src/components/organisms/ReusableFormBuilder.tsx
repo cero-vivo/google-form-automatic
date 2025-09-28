@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
-import { Plus, Trash2, LayoutGrid, Type, List, CheckSquare, Calendar, Mail, Hash, Globe, ChevronDown, ChevronUp, Save, Loader2, FileText } from 'lucide-react';
+import { Plus, Trash2, LayoutGrid, Type, List, CheckSquare, Calendar, Mail, Hash, Globe, ChevronDown, ChevronUp, Save, Loader2, FileText, ClipboardList, HelpCircle, Settings } from 'lucide-react';
 import { Question } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
@@ -527,24 +527,24 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
     if (!isEditing) {
       return (
         <div
-          className="p-4 border rounded-lg bg-white cursor-pointer hover:border-blue-300 transition-colors"
+          className="p-5 border border-neutral-200 rounded-xl bg-white cursor-pointer hover:border-forms-300 hover:shadow-sm transition-all duration-200"
           onClick={() => setIsEditing(true)}
           tabIndex={0}
           onFocus={handleFocus}
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h4 className="font-medium text-foreground">{question.title}</h4>
+              <h4 className="font-medium text-neutral-800 font-inter">{question.title}</h4>
               {question.description && (
-                <p className="text-sm text-muted-foreground mt-1">{question.description}</p>
+                <p className="text-sm text-neutral-600 mt-1 font-inter">{question.description}</p>
               )}
-              <div className="flex items-center space-x-2 mt-2">
-                <Badge variant="outline" className="text-xs">
+              <div className="flex items-center space-x-2 mt-3">
+                <Badge variant="outline" className="text-xs font-medium border-forms-200 text-forms-600 bg-forms-50">
                   {questionTypes.find(t => t.value === question.type)?.label || question.type}
                 </Badge>
-                {question.required && <Badge variant="secondary" className="text-xs">Requerido</Badge>}
+                {question.required && <Badge variant="secondary" className="text-xs bg-excel-100 text-excel-700 border-excel-200">Requerido</Badge>}
                 {(question.type === 'multiple_choice' || question.type === 'checkboxes' || question.type === 'dropdown') && (
-                  <Badge variant="outline" className="text-xs bg-blue-50">
+                  <Badge variant="outline" className="text-xs bg-velocity-50 border-velocity-200 text-velocity-700">
                     {question.options?.length || 0} opción{question.options?.length !== 1 ? 'es' : ''}
                   </Badge>
                 )}
@@ -558,6 +558,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                   e.stopPropagation();
                   setIsEditing(true);
                 }}
+                className="border-neutral-300 text-neutral-600 hover:bg-neutral-50 font-inter"
               >
                 Editar
               </Button>
@@ -568,7 +569,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                   e.stopPropagation();
                   onDelete(question.id);
                 }}
-                className="text-red-600 hover:text-red-700"
+                className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
@@ -580,7 +581,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
     return (
       <div
-        className="p-4 border rounded-lg bg-white border-blue-300"
+        className="p-5 border-2 border-forms-300 rounded-xl bg-white shadow-sm"
         onBlur={(e) => {
           // Solo guardar si el clic fue fuera del contenedor
           if (!e.currentTarget.contains(e.relatedTarget as Node)) {
@@ -592,11 +593,12 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
       >
         <div className="space-y-4">
           <div>
-            <Label>Pregunta *</Label>
+            <Label className="text-sm font-medium text-neutral-700 font-inter">Pregunta *</Label>
             <Input
               value={localQuestion.title}
               onChange={(e) => setLocalQuestion({ ...localQuestion, title: e.target.value })}
               placeholder="Escribe tu pregunta aquí"
+              className="mt-1 border-neutral-200 focus:ring-forms-200 focus:border-forms-400 font-inter"
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   handleCancel();
@@ -607,11 +609,12 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
           </div>
 
           <div>
-            <Label>Descripción (opcional)</Label>
+            <Label className="text-sm font-medium text-neutral-700 font-inter">Descripción (opcional)</Label>
             <Input
               value={localQuestion.description || ''}
               onChange={(e) => setLocalQuestion({ ...localQuestion, description: e.target.value })}
               placeholder="Proporciona más contexto para esta pregunta"
+              className="mt-1 border-neutral-200 focus:ring-forms-200 focus:border-forms-400 font-inter"
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   handleCancel();
@@ -622,7 +625,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Tipo de pregunta</Label>
+              <Label className="text-sm font-medium text-neutral-700 font-inter">Tipo de pregunta</Label>
               <select
                 value={localQuestion.type}
                 onChange={(e) => {
@@ -640,7 +643,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
                   setLocalQuestion(updatedQuestion);
                 }}
-                className="w-full p-2 border rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 mt-1 border border-neutral-200 rounded-xl bg-white focus:ring-2 focus:ring-forms-200 focus:border-forms-400 font-inter transition-all duration-200"
               >
                 {questionTypes.map(type => (
                   <option key={type.value} value={type.value}>
@@ -650,15 +653,15 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               </select>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center mt-6">
               <input
                 type="checkbox"
                 id={`required-${question.id}`}
                 checked={localQuestion.required}
                 onChange={(e) => setLocalQuestion({ ...localQuestion, required: e.target.checked })}
-                className="mr-2"
+                className="h-4 w-4 text-forms-500 rounded border-neutral-300 focus:ring-forms-200 mr-3"
               />
-              <Label htmlFor={`required-${question.id}`} className="mb-0">
+              <Label htmlFor={`required-${question.id}`} className="mb-0 text-sm font-medium text-neutral-700 cursor-pointer font-inter">
                 Requerido
               </Label>
             </div>
@@ -666,8 +669,8 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
           {['multiple_choice', 'checkboxes', 'dropdown'].includes(localQuestion.type) && (
             <div>
-              <Label>Opciones</Label>
-              <div className="space-y-2">
+              <Label className="text-sm font-medium text-neutral-700 font-inter">Opciones</Label>
+              <div className="space-y-3 mt-2">
                 {(localQuestion.options || []).map((option, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <Input
@@ -678,7 +681,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                         setLocalQuestion({ ...localQuestion, options: newOptions });
                       }}
                       placeholder={`Opción ${index + 1}`}
-                      className="flex-1"
+                      className="flex-1 border-neutral-200 focus:ring-forms-200 focus:border-forms-400 font-inter"
                     />
                     <Button
                       size="sm"
@@ -687,7 +690,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                         const newOptions = (localQuestion.options || []).filter((_, i) => i !== index);
                         setLocalQuestion({ ...localQuestion, options: newOptions });
                       }}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
                     >
                       <Trash2 className="w-3 h-3" />
                     </Button>
@@ -700,6 +703,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                     const newOptions = [...(localQuestion.options || []), `Opción ${(localQuestion.options || []).length + 1}`];
                     setLocalQuestion({ ...localQuestion, options: newOptions });
                   }}
+                  className="border-forms-300 text-forms-600 hover:bg-forms-50 font-inter"
                 >
                   <Plus className="w-3 h-3 mr-1" />
                   Agregar opción
@@ -713,7 +717,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Mínimo</Label>
+                  <Label className="text-sm font-medium text-neutral-700 font-inter">Mínimo</Label>
                   <Input
                     type="number"
                     value={localQuestion.linearScaleConfig?.min || 1}
@@ -731,10 +735,11 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                     }}
                     min={0}
                     max={10}
+                    className="border-neutral-200 focus:ring-forms-200 focus:border-forms-400 font-inter"
                   />
                 </div>
                 <div>
-                  <Label>Máximo</Label>
+                  <Label className="text-sm font-medium text-neutral-700 font-inter">Máximo</Label>
                   <Input
                     type="number"
                     value={localQuestion.linearScaleConfig?.max || 5}
@@ -752,37 +757,65 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                     }}
                     min={2}
                     max={10}
+                    className="border-neutral-200 focus:ring-forms-200 focus:border-forms-400 font-inter"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label>Etiqueta mínima</Label>
+                  <Label className="text-sm font-medium text-neutral-700 font-inter">Etiqueta mínima</Label>
                   <Input
                     value={localQuestion.linearScaleConfig?.minLabel || ''}
                     onChange={(e) => setLocalQuestion({
-                      ...localQuestion
+                      ...localQuestion,
+                      linearScaleConfig: {
+                        min: localQuestion.linearScaleConfig?.min || 1,
+                        max: localQuestion.linearScaleConfig?.max || 5,
+                        minLabel: e.target.value,
+                        maxLabel: localQuestion.linearScaleConfig?.maxLabel || ''
+                      }
                     })}
                     placeholder="Ej: Muy malo"
+                    className="border-neutral-200 focus:ring-forms-200 focus:border-forms-400 font-inter"
                   />
                 </div>
                 <div>
-                  <Label>Etiqueta máxima</Label>
+                  <Label className="text-sm font-medium text-neutral-700 font-inter">Etiqueta máxima</Label>
                   <Input
                     value={localQuestion.linearScaleConfig?.maxLabel || ''}
                     onChange={(e) => setLocalQuestion({
                       ...localQuestion,
+                      linearScaleConfig: {
+                        min: localQuestion.linearScaleConfig?.min || 1,
+                        max: localQuestion.linearScaleConfig?.max || 5,
+                        minLabel: localQuestion.linearScaleConfig?.minLabel || '',
+                        maxLabel: e.target.value
+                      }
                     })}
                     placeholder="Ej: Excelente"
+                    className="border-neutral-200 focus:ring-forms-200 focus:border-forms-400 font-inter"
                   />
                 </div>
               </div>
             </div>
           )}
 
-          <div className="flex space-x-2">
-            <Button size="sm" onClick={handleSave}>Guardar</Button>
-            <Button size="sm" variant="outline" onClick={handleCancel}>Cancelar</Button>
+          <div className="flex space-x-3 pt-2">
+            <Button 
+              size="sm" 
+              onClick={handleSave}
+              className="bg-forms-500 hover:bg-forms-600 text-white font-medium font-poppins"
+            >
+              Guardar
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={handleCancel}
+              className="border-neutral-300 text-neutral-600 hover:bg-neutral-50 font-inter"
+            >
+              Cancelar
+            </Button>
           </div>
         </div>
       </div>
@@ -834,10 +867,10 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]">
-        <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="text-lg font-medium text-slate-700">Creando formulario...</p>
-          <p className="text-sm text-slate-500">Por favor espera, esto puede tomar unos segundos</p>
+        <div className="bg-white p-8 rounded-xl shadow-2xl flex flex-col items-center space-y-4 border border-neutral-200">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forms-500"></div>
+          <p className="text-lg font-medium text-neutral-800 font-poppins">Creando formulario...</p>
+          <p className="text-sm text-neutral-600 font-inter">Por favor espera, esto puede tomar unos segundos</p>
         </div>
       </div>
     );
@@ -846,13 +879,16 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="space-y-6">
-        <Card className="border-slate-200">
-          <CardHeader className="bg-slate-50">
-            <CardTitle className="text-lg text-slate-800">📋 Información del formulario</CardTitle>
+        <Card className="border-neutral-200/60 shadow-sm">
+          <CardHeader className="bg-neutral-50/50 border-b border-neutral-100">
+            <CardTitle className="text-lg text-forms-600 flex items-center gap-2 font-poppins">
+              <ClipboardList className="h-5 w-5 text-forms-500" />
+              Información del formulario
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-6">
             <div>
-              <Label htmlFor="form-title" className="text-sm font-semibold text-slate-700">
+              <Label htmlFor="form-title" className="text-sm font-semibold text-neutral-700 font-inter">
                 Título del formulario *
               </Label>
               <Input
@@ -863,12 +899,12 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                   onTitleChange?.(e.target.value);
                 }}
                 placeholder="Ej: Encuesta de satisfacción del cliente"
-                className="mt-1"
+                className="mt-1 border-neutral-200 focus:ring-forms-200 focus:border-forms-400 font-inter"
               />
-              <p className="text-xs text-slate-500 mt-1">Este será el título visible en Google Forms</p>
+              <p className="text-xs text-neutral-500 mt-1 font-inter">Este será el título visible en Google Forms</p>
             </div>
             <div>
-              <Label htmlFor="form-description" className="text-sm font-semibold text-slate-700">
+              <Label htmlFor="form-description" className="text-sm font-semibold text-neutral-700 font-inter">
                 Descripción (opcional)
               </Label>
               <Input
@@ -879,9 +915,9 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                   onDescriptionChange?.(e.target.value);
                 }}
                 placeholder="Describe brevemente el propósito de este formulario"
-                className="mt-1"
+                className="mt-1 border-neutral-200 focus:ring-forms-200 focus:border-forms-400 font-inter"
               />
-              <p className="text-xs text-slate-500 mt-1">Ayuda a los usuarios a entender el objetivo del formulario</p>
+              <p className="text-xs text-neutral-500 mt-1 font-inter">Ayuda a los usuarios a entender el objetivo del formulario</p>
             </div>
             <div className="flex items-center space-x-2">
               <input
@@ -893,9 +929,9 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                   setCollectEmail(newValue);
                   onCollectEmailChange?.(newValue);
                 }}
-                className="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                className="h-4 w-4 text-forms-500 rounded border-neutral-300 focus:ring-forms-200"
               />
-              <Label htmlFor="collect-email" className="text-sm font-medium text-slate-700 cursor-pointer">
+              <Label htmlFor="collect-email" className="text-sm font-medium text-neutral-700 cursor-pointer font-inter">
                 Recopilar emails de quienes respondan el formulario
               </Label>
             </div>
@@ -906,7 +942,10 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
           <CardHeader className="bg-slate-50">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg text-slate-800">❓ Preguntas</CardTitle>
+                <CardTitle className="text-lg text-slate-800 flex items-center gap-2">
+                  <HelpCircle className="h-5 w-5 text-slate-600" />
+                  Preguntas
+                </CardTitle>
                 <p className="text-sm text-slate-600 mt-1">
                   {questions.length === 0
                     ? "Comienza agregando tu primera pregunta"
@@ -915,7 +954,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               </div>
               <Button
                 onClick={addQuestion}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-forms-600 hover:bg-blue-700 text-white"
                 size="sm"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -937,10 +976,10 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
             )}
 
             {questions.length === 0 ? (
-              <div className="text-center py-8 text-slate-500">
-                <LayoutGrid className="w-12 h-12 mx-auto mb-3 text-slate-400" />
-                <p className="text-sm">No hay preguntas aún</p>
-                <p className="text-xs mt-1">Haz clic en "Agregar pregunta" para comenzar</p>
+              <div className="text-center py-12 text-neutral-500">
+                <LayoutGrid className="w-16 h-16 mx-auto mb-4 text-neutral-400" />
+                <p className="text-base font-medium font-inter mb-2">No hay preguntas aún</p>
+                <p className="text-sm font-inter">Haz clic en "Agregar pregunta" para comenzar</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -949,20 +988,20 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                     <div className="absolute -left-6 top-4 flex flex-col space-y-1">
                       <button
                         onClick={() => moveQuestion(index, 'up')}
-                        className="p-1 hover:bg-slate-100 rounded"
+                        className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
                         disabled={index === 0}
                       >
-                        <ChevronUp className="w-3 h-3" />
+                        <ChevronUp className="w-3 h-3 text-neutral-500" />
                       </button>
-                      <span className="text-xs text-slate-500 text-center font-medium">
+                      <span className="text-xs text-neutral-500 text-center font-medium font-inter">
                         {index + 1}
                       </span>
                       <button
                         onClick={() => moveQuestion(index, 'down')}
-                        className="p-1 hover:bg-slate-100 rounded"
+                        className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
                         disabled={index === questions.length - 1}
                       >
-                        <ChevronDown className="w-3 h-3" />
+                        <ChevronDown className="w-3 h-3 text-neutral-500" />
                       </button>
                     </div>
 
@@ -985,7 +1024,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               <DraftModal 
                 onLoadDraft={handleLoadDraft}
                 trigger={
-                  <Button variant="outline" className="border-slate-300 text-slate-700 w-full sm:w-auto justify-center">
+                  <Button variant="outline" className="border-neutral-300 text-neutral-700 hover:bg-neutral-50 w-full sm:w-auto justify-center font-inter">
                     <FileText className="w-4 h-4 mr-2 flex-shrink-0" />
                     <span className="truncate">Ver Borradores</span>
                   </Button>
@@ -995,7 +1034,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                 <Button
                   variant="outline"
                   onClick={onCancel}
-                  className="border-slate-300 text-slate-700 w-full sm:w-auto"
+                  className="border-neutral-300 text-neutral-700 hover:bg-neutral-50 w-full sm:w-auto font-inter"
                 >
                   Cancelar
                 </Button>
@@ -1006,7 +1045,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                 variant="outline"
                 onClick={handleSaveDraft}
                 disabled={isSavingDraft || !formTitle.trim()}
-                className="border-blue-600 text-blue-600 hover:bg-blue-50 w-full sm:w-auto justify-center"
+                className="border-forms-400 text-forms-600 hover:bg-forms-50 focus:bg-forms-50 w-full sm:w-auto justify-center font-medium font-poppins transition-all duration-200"
               >
                 {isSavingDraft ? (
                   <>
@@ -1023,7 +1062,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               <Button
                 onClick={handleSubmit}
                 disabled={isCreating || questions.length === 0 || !formTitle.trim()}
-                className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto justify-center"
+                className="bg-excel-500 hover:bg-excel-600 focus:bg-excel-600 text-white w-full sm:w-auto justify-center font-medium font-poppins shadow-sm transition-all duration-200"
               >
                 <span className="truncate">{isCreating ? 'Creando...' : submitButtonText}</span>
               </Button>

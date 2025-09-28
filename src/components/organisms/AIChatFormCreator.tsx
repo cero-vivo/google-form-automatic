@@ -517,7 +517,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 					</div>
 				</div>
 
-				<div className="flex-1 flex flex-col min-h-0">
+				<div className="flex-[0.90] flex flex-col min-h-0">
 					<div className="flex-1 p-5 overflow-y-auto bg-white">
 						<div className="space-y-4">
 							{messages.map((message) => (
@@ -558,13 +558,13 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 							</span>
 						</div>
 
-						<div className="flex space-x-3 items-end">
+						<div className="flex space-x-3 items-center">
 							<textarea
 									value={inputValue}
 									onChange={(e) => setInputValue(e.target.value)}
 									placeholder="Agregar más preguntas o mejorar el formulario..."
 									disabled={isLoading || credits <= 0}
-									rows={1}
+									rows={5}
 									className="flex-1 px-4 py-3 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forms-200 focus:border-forms-400 min-w-0 resize-none overflow-hidden transition-all duration-200 hover:border-neutral-300 bg-white font-inter placeholder:text-neutral-400 shadow-sm focus:shadow-md"
 									style={{ minHeight: '44px', maxHeight: '120px' }}
 									onInput={(e) => {

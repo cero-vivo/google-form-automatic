@@ -13,9 +13,9 @@ function AIChatPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { currentCredits } = useCredits();
-  
+
   const draftId = searchParams.get('draftId');
-  
+
   const handleFormCreated = (formData: any) => {
     const onFormCreated = searchParams.get('onFormCreated');
     if (onFormCreated) {
@@ -46,7 +46,7 @@ function AIChatPageContent() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center flex-shrink-0">
               <div className="text-right">
                 <p className="text-sm font-medium text-purple-600 hidden sm:block">Creación Inteligente</p>
@@ -59,8 +59,18 @@ function AIChatPageContent() {
           </div>
         </div>
       </header>
-      
-      <main className="container mx-auto px-4 py-8">
+{/*       <main className="container mx-auto px-4 py-8">
+
+   
+
+
+      </main> */}
+
+           <AIChatFormCreator
+          onFormCreated={handleFormCreated}
+          draftId={draftId || undefined}
+        />
+      {/*   <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mb-4">
@@ -80,7 +90,7 @@ function AIChatPageContent() {
             draftId={draftId || undefined}
           />
         </div>
-      </main>
+      </main> */}
     </div>
   );
 }
