@@ -1,9 +1,7 @@
 'use client';
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Upload, FileSpreadsheet, FormInput, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { FileSpreadsheet, FormInput, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { MethodSelector, Method } from "./MethodSelector";
 import { DemoShowcase } from "./DemoShowcase";
