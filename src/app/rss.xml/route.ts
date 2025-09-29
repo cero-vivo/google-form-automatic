@@ -7,9 +7,9 @@ export async function GET() {
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>FastForm - Convertir CSV y Excel a Google Forms</title>
+    <title>FastForm - Crea Google Forms en Segundos</title>
     <link>${baseUrl}</link>
-    <description>Noticias y actualizaciones sobre FastForm, la herramienta #1 para convertir CSV y Excel a Google Forms automáticamente.</description>
+    <description>Noticias y actualizaciones sobre FastForm, la plataforma #1 de inteligencia artificial para crear Google Forms ultrarrápidos.</description>
     <language>es-ES</language>
     <lastBuildDate>${currentDate}</lastBuildDate>
     <atom:link href="${baseUrl}/rss.xml" rel="self" type="application/rss+xml" />
@@ -20,9 +20,9 @@ export async function GET() {
     </image>
     
     <item>
-      <title>FastForm - La mejor herramienta para convertir CSV a Google Forms</title>
+      <title>FastForm - Crea Google Forms con IA en Segundos | Plataforma Inteligente</title>
       <link>${baseUrl}</link>
-      <description>Descubre cómo FastForm revoluciona la forma de crear Google Forms desde archivos CSV y Excel. Gratuito, rápido y con IA.</description>
+      <description>Descubre cómo FastForm revoluciona la creación de Google Forms con inteligencia artificial ultrarrápida. Genera formularios en segundos, no horas.</description>
       <pubDate>${currentDate}</pubDate>
       <guid>${baseUrl}#main</guid>
     </item>
