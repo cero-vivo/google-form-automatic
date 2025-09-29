@@ -65,33 +65,45 @@ export const metadata: Metadata = {
     ]
   },
   openGraph: {
-    title: "FastForm - Plataforma Inteligente para Google Forms",
-    description: "Convierte archivos CSV y Excel a Google Forms automáticamente. Herramienta gratuita y fácil de usar.",
+    title: "FastForm - Convertir CSV y Excel a Google Forms | #1 Herramienta Gratuita",
+    description: "🚀 Convierte archivos CSV y Excel a Google Forms automáticamente en segundos. ✅ Gratuito ✅ Sin código ✅ Con IA. Más de 10,000 formularios creados.",
     url: "https://fastform.pro",
     siteName: "FastForm",
     type: "website",
     locale: "es_ES",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "https://fastform.pro/images/heroimage1.png",
         width: 1200,
         height: 630,
-        alt: "FastForm - Convertir CSV y Excel a Google Forms"
+        alt: "FastForm - Convertir CSV y Excel a Google Forms automáticamente",
+        type: "image/png"
+      },
+      {
+        url: "https://fastform.pro/images/heroimage2.png", 
+        width: 1200,
+        height: 630,
+        alt: "FastForm Dashboard - Crear formularios con IA",
+        type: "image/png"
       }
     ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "FastForm - Convertir CSV a Google Forms | Excel a Google Forms",
-    description: "Convierte archivos CSV y Excel a Google Forms automáticamente. Gratis y sin código.",
-    images: ["/twitter-image.jpg"],
-    creator: "@fastform_app"
+    title: "🚀 FastForm - Convertir CSV a Google Forms | Excel a Google Forms",
+    description: "Convierte archivos CSV y Excel a Google Forms automáticamente. ✅ Gratuito ✅ Sin código ✅ Con IA. Pruébalo ahora!",
+    images: ["https://fastform.pro/images/heroimage1.png"],
+    creator: "@fastform_app",
+    site: "@fastform_app"
   },
   alternates: {
     canonical: "https://fastform.pro",
     languages: {
       'es': 'https://fastform.pro/es',
       'en': 'https://fastform.pro/en'
+    },
+    types: {
+      'application/rss+xml': 'https://fastform.pro/rss.xml'
     }
   },
   manifest: "/site.webmanifest",
@@ -102,13 +114,14 @@ export const metadata: Metadata = {
     title: "FastForm - Plataforma Inteligente para Google Forms"
   },
   other: {
-    "google-site-verification": "tu-codigo-de-verificacion-aqui",
+    "google-site-verification": "REPLACE_WITH_YOUR_GOOGLE_VERIFICATION_CODE",
     "copyright": "©2025 FastForm. Todos los derechos reservados.",
     "revised": new Date().toISOString(),
     "subject": "Conversión de CSV y Excel a Google Forms",
     "language": "es",
     "rating": "general",
-    "reply-to": "hola@fastform.pro"
+    "reply-to": "hola@fastform.pro",
+    "msvalidate.01": "REPLACE_WITH_BING_VERIFICATION_CODE"
   }
 };
 
@@ -124,34 +137,91 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "FastForm",
-              "description": "Convierte archivos CSV y Excel a Google Forms automáticamente. Herramienta gratuita para crear formularios desde CSV, Excel hacia Google Forms en segundos.",
-              "url": "https://fastform.pro",
-              "applicationCategory": "BusinessApplication",
-              "operatingSystem": "Web Browser",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD",
-                "availability": "https://schema.org/InStock"
-              },
-              "creator": {
+            __html: JSON.stringify([
+              // Organización
+              {
+                "@context": "https://schema.org",
                 "@type": "Organization",
-                "name": "FastForm Team"
+                "name": "FastForm",
+                "url": "https://fastform.pro",
+                "logo": "https://fastform.pro/icons/logo.svg",
+                "sameAs": [
+                  "https://twitter.com/fastform_app"
+                ],
+                "contactPoint": {
+                  "@type": "ContactPoint",
+                  "email": "hola@fastform.pro",
+                  "contactType": "customer service",
+                  "availableLanguage": ["Spanish", "English"]
+                }
               },
-              "keywords": "csv a google forms, excel a google forms, convertir csv google forms, convertir excel google forms, crear formularios desde csv, crear formularios desde excel",
-              "featureList": [
-                "Convertir CSV a Google Forms",
-                "Convertir Excel a Google Forms", 
-                "Interfaz intuitiva",
-                "Sin registro requerido",
-                "Procesamiento en segundos",
-                "Compatible con Google Workspace"
-              ]
-            })
+              // Aplicación Web
+              {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": "FastForm - Convertir CSV y Excel a Google Forms",
+                "description": "Convierte archivos CSV y Excel a Google Forms automáticamente. Herramienta gratuita para crear formularios desde CSV, Excel hacia Google Forms en segundos.",
+                "url": "https://fastform.pro",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "Web Browser",
+                "browserRequirements": "Requires JavaScript",
+                "softwareVersion": "2.0",
+                "offers": [
+                  {
+                    "@type": "Offer",
+                    "name": "Plan Gratuito",
+                    "price": "0",
+                    "priceCurrency": "USD",
+                    "availability": "https://schema.org/InStock",
+                    "description": "Acceso gratuito a funciones básicas"
+                  },
+                  {
+                    "@type": "Offer",
+                    "name": "Plan Premium", 
+                    "price": "9.99",
+                    "priceCurrency": "USD",
+                    "availability": "https://schema.org/InStock",
+                    "description": "Acceso completo con funciones avanzadas"
+                  }
+                ],
+                "creator": {
+                  "@type": "Organization",
+                  "name": "FastForm Team",
+                  "url": "https://fastform.pro"
+                },
+                "keywords": "csv a google forms, excel a google forms, convertir csv google forms, convertir excel google forms, crear formularios desde csv, crear formularios desde excel",
+                "featureList": [
+                  "Convertir CSV a Google Forms",
+                  "Convertir Excel a Google Forms", 
+                  "Asistente IA para formularios",
+                  "Interfaz intuitiva",
+                  "Sin registro requerido",
+                  "Procesamiento en segundos",
+                  "Compatible con Google Workspace",
+                  "Soporte para múltiples tipos de preguntas",
+                  "Vista previa en tiempo real",
+                  "Exportación directa a Google Forms"
+                ],
+                "screenshot": "https://fastform.pro/images/heroimage1.png"
+              },
+              // Website
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "FastForm",
+                "url": "https://fastform.pro",
+                "potentialAction": {
+                  "@type": "SearchAction",
+                  "target": "https://fastform.pro/search?q={search_term_string}",
+                  "query-input": "required name=search_term_string"
+                },
+                "inLanguage": "es-ES",
+                "author": {
+                  "@type": "Organization",
+                  "name": "FastForm Team"
+                }
+              }
+            ])
           }}
         />
         <AuthProvider>
