@@ -5,7 +5,6 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { GoogleAuthProvider } from "@/providers/GoogleAuthProvider";
 import { Footer } from "@/components/ui/footer";
 import { FloatingFeedbackButton } from "@/components/FloatingFeedbackButton";
-import ZoomPreventionScript from "@/components/ZoomPreventionScript";
 import { AppToaster } from "@/components/ui/app-toaster";
 
 const poppins = Poppins({
@@ -228,7 +227,6 @@ export default function RootLayout({
         />
         <AuthProvider>
           <GoogleAuthProvider>
-            <ZoomPreventionScript />
             <div className="flex-1">
               {children}
             </div>
