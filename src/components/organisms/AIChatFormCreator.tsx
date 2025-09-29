@@ -492,9 +492,9 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 
 
 	return (
-		<div className="flex flex-col md:flex-row w-full bg-white overflow-hidden min-h-[calc(100dvh-7rem)] md:min-h-[560px] md:h-[calc(100vh-8rem)]">
+		<div className="flex flex-col md:flex-row w-full bg-white overflow-hidden min-h-[calc(100dvh-7rem)] md:min-h-[560px] md:h-[calc(100vh-8rem)] min-w-0">
 			{/* Chat Panel - Responsive width */}
-			<div className="w-full md:w-96 md:max-w-md flex flex-col bg-white border-neutral-200/60 border-b md:border-b-0 md:border-r flex-1 md:flex-none">
+			<div className="w-full md:w-96 md:max-w-md flex flex-col bg-white border-neutral-200/60 border-b md:border-b-0 md:border-r flex-1 md:flex-none min-w-0">
 				<div className="p-5 sm:p-6 border-b border-neutral-100 flex-shrink-0 bg-white">
 					<h1 className="text-xl font-bold mb-2 text-forms-600 font-poppins">Asistente IA</h1>
 					<p className="text-sm text-neutral-600 font-inter">
@@ -517,8 +517,8 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 					</div>
 				</div>
 
-			<div className="flex-1 flex flex-col min-h-0">
-				<div ref={scrollAreaRef} className="flex-1 p-4 sm:p-5 overflow-y-auto bg-white">
+			<div className="flex-1 flex flex-col min-h-0 min-w-0">
+				<div ref={scrollAreaRef} className="flex-1 p-4 sm:p-5 overflow-y-auto bg-white min-w-0">
 						<div className="space-y-4">
 							{messages.map((message) => (
 								<div
@@ -586,7 +586,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 			</div>
 
 			{/* Builder Panel - Responsive visibility */}
-			<div className="hidden md:flex flex-1 flex-col min-h-0">
+			<div className="hidden md:flex flex-1 flex-col min-h-0 min-w-0">
 				<div className="p-6 border-b border-neutral-100 bg-white flex-shrink-0">
 					<div className="flex items-center justify-between">
 						<div className="min-w-0">
@@ -605,7 +605,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 					</div>
 				</div>
 
-				<div className="flex-1 overflow-y-auto p-6 bg-neutral-50/30">
+				<div className="flex-1 overflow-y-auto p-6 bg-neutral-50/30 min-w-0">
 					<ReusableFormBuilder
 						ref={builderRef}
 						creationMethod="ai"

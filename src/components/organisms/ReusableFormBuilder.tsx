@@ -525,18 +525,18 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
     }, [question.title, question.description]);
 
     if (!isEditing) {
-      return (
-        <div
-          className="p-4 sm:p-5 border border-neutral-200 rounded-xl bg-white cursor-pointer hover:border-forms-300 hover:shadow-sm transition-all duration-200"
-          onClick={() => setIsEditing(true)}
-          tabIndex={0}
-          onFocus={handleFocus}
-        >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex-1">
-              <h4 className="font-medium text-neutral-800 font-inter">{question.title}</h4>
-              {question.description && (
-                <p className="text-sm text-neutral-600 mt-1 font-inter">{question.description}</p>
+    return (
+      <div
+        className="p-4 sm:p-5 border border-neutral-200 rounded-xl bg-white cursor-pointer hover:border-forms-300 hover:shadow-sm transition-all duration-200 min-w-0"
+        onClick={() => setIsEditing(true)}
+        tabIndex={0}
+        onFocus={handleFocus}
+      >
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between min-w-0">
+          <div className="flex-1 min-w-0">
+            <h4 className="font-medium text-neutral-800 font-inter">{question.title}</h4>
+            {question.description && (
+              <p className="text-sm text-neutral-600 mt-1 font-inter">{question.description}</p>
               )}
               <div className="flex flex-wrap items-center gap-2 mt-3">
                 <Badge variant="outline" className="text-xs font-medium border-forms-200 text-forms-600 bg-forms-50">
@@ -581,7 +581,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
     return (
       <div
-        className="p-4 sm:p-5 border-2 border-forms-300 rounded-xl bg-white shadow-sm"
+        className="p-4 sm:p-5 border-2 border-forms-300 rounded-xl bg-white shadow-sm min-w-0"
         onBlur={(e) => {
           // Solo guardar si el clic fue fuera del contenedor
           if (!e.currentTarget.contains(e.relatedTarget as Node)) {
@@ -591,7 +591,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
           }
         }}
       >
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           <div>
             <Label className="text-sm font-medium text-neutral-700 font-inter">Pregunta *</Label>
             <Input
@@ -878,9 +878,9 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   }
 
   return (
-    <div className="space-y-6 w-full max-w-4xl mx-auto">
+    <div className="space-y-6 w-full max-w-4xl mx-auto min-w-0">
       <div className="space-y-6">
-        <Card className="border-neutral-200/60 shadow-sm">
+        <Card className="border-neutral-200/60 shadow-sm w-full">
           <CardHeader className="bg-neutral-50/50 border-b border-neutral-100">
             <CardTitle className="text-lg text-forms-600 flex items-center gap-2 font-poppins">
               <ClipboardList className="h-5 w-5 text-forms-500" />
@@ -939,7 +939,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200">
+        <Card className="border-slate-200 w-full">
           <CardHeader className="bg-slate-50">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -985,7 +985,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
             ) : (
               <div className="space-y-4">
                 {questions.map((question, index) => (
-                  <div key={question.id} className="relative sm:pl-12">
+                  <div key={question.id} className="min-w-0">
                     <div className="flex items-center justify-between sm:hidden mb-3">
                       <span className="text-xs font-medium text-neutral-500 font-inter">
                         Pregunta {index + 1}
@@ -1009,34 +1009,38 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                         </button>
                       </div>
                     </div>
-                    <div className="absolute left-0 top-4 hidden sm:flex flex-col space-y-1">
-                      <button
-                        onClick={() => moveQuestion(index, 'up')}
-                        className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
-                        disabled={index === 0}
-                        aria-label="Mover pregunta hacia arriba"
-                      >
-                        <ChevronUp className="w-3 h-3 text-neutral-500" />
-                      </button>
-                      <span className="text-xs text-neutral-500 text-center font-medium font-inter">
-                        {index + 1}
-                      </span>
-                      <button
-                        onClick={() => moveQuestion(index, 'down')}
-                        className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
-                        disabled={index === questions.length - 1}
-                        aria-label="Mover pregunta hacia abajo"
-                      >
-                        <ChevronDown className="w-3 h-3 text-neutral-500" />
-                      </button>
-                    </div>
 
-                    <QuestionEditor
-                      key={question.id}
-                      question={question}
-                      onUpdate={updateQuestion}
-                      onDelete={deleteQuestion}
-                    />
+                    <div className="sm:flex sm:items-start sm:gap-4">
+                      <div className="hidden sm:flex sm:flex-col sm:space-y-1 sm:pt-2 sm:w-8 sm:flex-shrink-0">
+                        <button
+                          onClick={() => moveQuestion(index, 'up')}
+                          className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
+                          disabled={index === 0}
+                          aria-label="Mover pregunta hacia arriba"
+                        >
+                          <ChevronUp className="w-3 h-3 text-neutral-500" />
+                        </button>
+                        <span className="text-xs text-neutral-500 text-center font-medium font-inter">
+                          {index + 1}
+                        </span>
+                        <button
+                          onClick={() => moveQuestion(index, 'down')}
+                          className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
+                          disabled={index === questions.length - 1}
+                          aria-label="Mover pregunta hacia abajo"
+                        >
+                          <ChevronDown className="w-3 h-3 text-neutral-500" />
+                        </button>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <QuestionEditor
+                          question={question}
+                          onUpdate={updateQuestion}
+                          onDelete={deleteQuestion}
+                        />
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
