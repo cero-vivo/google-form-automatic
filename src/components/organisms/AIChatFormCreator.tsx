@@ -598,7 +598,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 						<button
 							onClick={handlePublishForm}
 							disabled={!user || !canAfford(calculateCost('ai_generation')) || formPreview.questions.length === 0}
-							className="px-6 py-3 bg-excel-500 text-white rounded-xl hover:bg-excel-600 focus:bg-excel-600 focus:outline-none focus:ring-2 focus:ring-excel-200 disabled:opacity-50 disabled:hover:bg-excel-500 flex-shrink-0 ml-4 transition-all duration-200 shadow-sm font-medium font-poppins"
+							className="px-4 sm:px-6 py-3 bg-excel-500 text-white rounded-xl hover:bg-excel-600 focus:bg-excel-600 focus:outline-none focus:ring-2 focus:ring-excel-200 disabled:opacity-50 disabled:hover:bg-excel-500 transition-all duration-200 shadow-sm font-medium font-poppins text-sm sm:text-base text-center leading-snug whitespace-normal md:ml-4 shrink min-w-0"
 						>
 							Publicar formulario ({calculateCost('ai_generation')} créditos)
 						</button>
