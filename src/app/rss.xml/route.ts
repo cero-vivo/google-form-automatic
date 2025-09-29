@@ -28,6 +28,30 @@ export async function GET() {
     </item>
     
     <item>
+      <title>Guía Completa: Cómo Convertir CSV a Google Forms</title>
+      <link>${baseUrl}/blog/csv-a-google-forms-guia</link>
+      <description>Aprende paso a paso cómo convertir archivos CSV a Google Forms de manera automática. Guía completa con ejemplos y mejores prácticas.</description>
+      <pubDate>2025-09-29T00:00:00.000Z</pubDate>
+      <guid>${baseUrl}/blog/csv-a-google-forms-guia</guid>
+    </item>
+    
+    <item>
+      <title>Crear Formularios con IA: El Futuro de Google Forms</title>
+      <link>${baseUrl}/blog/crear-formularios-ia</link>
+      <description>Descubre cómo la inteligencia artificial está revolucionando la creación de formularios. Crea Google Forms inteligentes en segundos.</description>
+      <pubDate>2025-09-29T00:00:00.000Z</pubDate>
+      <guid>${baseUrl}/blog/crear-formularios-ia</guid>
+    </item>
+    
+    <item>
+      <title>3 Métodos para Crear Google Forms: Manual, CSV y con IA</title>
+      <link>${baseUrl}/blog/3-metodos-crear-google-forms</link>
+      <description>Compara los 3 métodos principales para crear Google Forms: manual, desde CSV y con inteligencia artificial. ¿Cuál es mejor?</description>
+      <pubDate>2025-09-29T00:00:00.000Z</pubDate>
+      <guid>${baseUrl}/blog/3-metodos-crear-google-forms</guid>
+    </item>
+    
+    <item>
       <title>Dashboard FastForm - Gestiona todos tus formularios</title>
       <link>${baseUrl}/dashboard</link>
       <description>Accede a tu dashboard personalizado para gestionar, editar y monitorear todos tus Google Forms creados con FastForm.</description>
