@@ -24,6 +24,28 @@ export async function GET() {
     { url: '/legals/ttcc', priority: '0.4', changefreq: 'yearly' },
   ];
 
+  // Artículos del blog - URLs dinámicas
+  const blogPosts = [
+    { 
+      url: '/blog/csv-a-google-forms-guia', 
+      priority: '0.8', 
+      changefreq: 'monthly',
+      lastmod: '2025-09-29T00:00:00.000Z' // Actualiza con la fecha real del post
+    },
+    { 
+      url: '/blog/crear-formularios-ia', 
+      priority: '0.8', 
+      changefreq: 'monthly',
+      lastmod: '2025-09-29T00:00:00.000Z'
+    },
+    { 
+      url: '/blog/3-metodos-crear-google-forms', 
+      priority: '0.8', 
+      changefreq: 'monthly',
+      lastmod: '2025-09-29T00:00:00.000Z'
+    }
+  ];
+
   let sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
@@ -36,6 +58,17 @@ export async function GET() {
     <lastmod>${currentDate}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
+  </url>`;
+  });
+
+  // Agregar artículos del blog
+  blogPosts.forEach(post => {
+    sitemapXml += `
+  <url>
+    <loc>${baseUrl}${post.url}</loc>
+    <lastmod>${post.lastmod}</lastmod>
+    <changefreq>${post.changefreq}</changefreq>
+    <priority>${post.priority}</priority>
   </url>`;
   });
 

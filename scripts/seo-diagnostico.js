@@ -14,6 +14,8 @@ const tests = [
   { url: '/robots.txt', name: 'Robots.txt', critical: true },
   { url: '/dashboard', name: 'Dashboard', critical: true },
   { url: '/pricing', name: 'Pricing', critical: true },
+  { url: '/blog', name: 'Blog Index', critical: false },
+  { url: '/blog/csv-a-google-forms-guia', name: 'Blog: CSV a Google Forms', critical: false },
   { url: '/rss.xml', name: 'RSS Feed', critical: false }
 ];
 
