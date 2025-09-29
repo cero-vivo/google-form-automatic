@@ -953,14 +953,6 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                     : `${questions.length} pregunta${questions.length !== 1 ? 's' : ''} agregada${questions.length !== 1 ? 's' : ''}`}
                 </p>
               </div>
-              <Button
-                onClick={addQuestion}
-                className="bg-forms-600 hover:bg-blue-700 text-white w-full sm:w-auto"
-                size="sm"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Agregar pregunta
-              </Button>
             </div>
           </CardHeader>
           <CardContent className="pt-6">
@@ -1043,6 +1035,18 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                     </div>
                   </div>
                 ))}
+                
+                {/* Botón adicional para agregar pregunta al final (mejor UX en móvil) */}
+                <div className="pt-4 border-t border-neutral-100">
+                  <Button
+                    onClick={addQuestion}
+                    className="bg-forms-500 hover:bg-forms-700 text-white w-full font-medium"
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Agregar otra pregunta
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
