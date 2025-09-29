@@ -4,7 +4,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, FileText, LayoutGrid, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 
 interface CreationMethodsProps {
   onQuestionsLoaded?: (questions: any[]) => void;
@@ -104,56 +103,66 @@ export function CreationMethods({ onQuestionsLoaded: _onQuestionsLoaded, current
                 handleMethodSelect(method.id);
               }}
               className={cn(
-                'flex h-full flex-col gap-8 rounded-3xl border border-slate-200 bg-white p-8 sm:p-9 lg:p-10 transition-all duration-300 shadow-[0_16px_35px_-28px_rgba(15,23,42,0.35)]',
+                'group relative flex h-full flex-col rounded-2xl border border-slate-200 bg-white transition-all duration-300 hover:shadow-lg',
                 isDisabled
                   ? 'cursor-not-allowed opacity-60'
-                  : cn('cursor-pointer hover:-translate-y-1', accent.hoverBorder)
+                  : cn('cursor-pointer hover:-translate-y-1 hover:shadow-xl', accent.hoverBorder)
               )}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <method.icon className={cn('h-20 w-20', accent.icon)} />
-
-
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-wrap items-center gap-2 text-slate-900">
-                      <h3 className="text-xl font-semibold leading-tight sm:text-2xl">
-                        {method.name}
-                      </h3>
-                      {method.badge && (
-                        <span className="rounded-full border border-white/60 bg-white px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm">
-                          {method.badge}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-slate-600">
-                      {method.description}
-                    </p>
-                  </div>
+              {/* Header with Icon and Help */}
+              <div className="flex items-start justify-between p-8 pb-5">
+                <div className={cn('flex h-16 w-16 items-center justify-center rounded-xl transition-colors', accent.badge)}>
+                  <method.icon className={cn('h-8 w-8', accent.icon)} />
                 </div>
-                <Link
-                  href={""}
-                  className="p-0 text-slate-500 transition-colors hover:border-slate-100 hover:text-slate-700"
+                <button
+                  className="rounded-lg p-2.5 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-600"
                   onClick={(e) => handleDocsClick(method.docsUrl, e)}
                 >
                   <HelpCircle className="h-5 w-5" />
-                </Link>
+                </button>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <span className={cn('inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em]', accent.badge)}>
-                  {method.cost} crédito{method.cost > 1 ? 's' : ''}
-                </span>
+              {/* Content */}
+              <div className="flex flex-1 flex-col px-8">
+                {/* Title and Badge */}
+                <div className="mb-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <h3 className="text-xl font-semibold text-slate-900 leading-tight">
+                      {method.name}
+                    </h3>
+                    {method.badge && (
+                      <span className="rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 px-3 py-1 text-xs font-medium text-blue-700">
+                        {method.badge}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-base text-slate-600 leading-relaxed">
+                    {method.description}
+                  </p>
+                </div>
+
+                {/* Cost Badge */}
+                <div className="mb-7">
+                  <span className={cn(
+                    'inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium',
+                    accent.badge,
+                    'border-current/20'
+                  )}>
+                    <div className="h-2 w-2 rounded-full bg-current opacity-60" />
+                    {method.cost} crédito{method.cost > 1 ? 's' : ''}
+                  </span>
+                </div>
               </div>
 
-              <div className="mt-auto flex flex-col gap-2">
+              {/* Action Button */}
+              <div className="p-8 pt-0">
                 <Button
                   disabled={isDisabled}
                   className={cn(
-                    'w-full justify-center text-base font-medium transition-shadow duration-300',
+                    'w-full h-12 text-base font-medium transition-all duration-200',
                     isDisabled
-                      ? 'bg-slate-200 text-slate-500 cursor-not-allowed'
-                      : accent.button
+                      ? 'bg-slate-100 text-slate-500 cursor-not-allowed border border-slate-200'
+                      : cn(accent.button, 'shadow-sm hover:shadow-md')
                   )}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -161,12 +170,21 @@ export function CreationMethods({ onQuestionsLoaded: _onQuestionsLoaded, current
                     handleMethodSelect(method.id);
                   }}
                 >
-                  <method.icon className="mr-2 h-5 w-5" />
-                  {isDisabled ? `Necesitas ${method.cost} crédito${method.cost > 1 ? 's' : ''}` : 'Crear formulario'}
+                  {isDisabled ? (
+                    <>
+                      <method.icon className="mr-2 h-5 w-5 opacity-50" />
+                      Necesitas {method.cost} crédito{method.cost > 1 ? 's' : ''}
+                    </>
+                  ) : (
+                    <>
+                      <method.icon className="mr-2 h-5 w-5" />
+                      Crear formulario
+                    </>
+                  )}
                 </Button>
                 {isDisabled && (
-                  <p className="text-center text-xs font-medium text-slate-500">
-                    Obtén más créditos para desbloquear este método.
+                  <p className="mt-3 text-center text-sm text-slate-500">
+                    Obtén más créditos para usar este método
                   </p>
                 )}
               </div>
