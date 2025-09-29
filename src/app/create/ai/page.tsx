@@ -59,38 +59,14 @@ function AIChatPageContent() {
           </div>
         </div>
       </header>
-{/*       <main className="container mx-auto px-4 py-8">
-
-   
 
 
-      </main> */}
+		  <AIChatFormCreator
+			onFormCreated={handleFormCreated}
+			draftId={draftId || undefined}
+		  />
 
-           <AIChatFormCreator
-          onFormCreated={handleFormCreated}
-          draftId={draftId || undefined}
-        />
-      {/*   <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mb-4">
-              <span className="text-2xl font-bold text-blue-600">AI</span>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Asistente Inteligente para Formularios
-            </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Describe en el chat el formulario que necesitas y nuestra IA te ayudará a crearlo paso a paso. 
-              Los primeros 15 mensajes son gratuitos, luego se cobran 2 créditos adicionales.
-            </p>
-          </div>
-          
-          <AIChatFormCreator 
-            onFormCreated={handleFormCreated} 
-            draftId={draftId || undefined}
-          />
-        </div>
-      </main> */}
+
     </div>
   );
 }

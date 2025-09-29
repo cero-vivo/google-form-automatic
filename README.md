@@ -34,7 +34,7 @@
 
 ## 🎯 Descripción del Proyecto
 
-**FastForm** es una aplicación web moderna que permite convertir automáticamente archivos Excel y CSV en formularios de Google Forms. Diseñada para equipos, educadores y profesionales que necesitan crear formularios de manera eficiente y escalable.
+**FastForm** es una aplicación web moderna que permite convertir agilizar la contruccion de formularios Google Forms. Diseñada para equipos, educadores y profesionales que necesitan crear formularios de manera eficiente y escalable.
 
 ### 🎬 Demo y Screenshots
 

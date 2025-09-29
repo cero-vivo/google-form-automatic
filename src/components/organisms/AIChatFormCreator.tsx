@@ -492,22 +492,22 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 
 
 	return (
-		<div className="flex h-screen bg-white w-full">
+		<div className="flex flex-col md:flex-row w-full bg-white overflow-hidden min-h-[calc(100dvh-7rem)] md:min-h-[560px] md:h-[calc(100vh-8rem)]">
 			{/* Chat Panel - Responsive width */}
-			<div className="w-full md:w-96 flex flex-col bg-white border-r border-neutral-200/60 flex-shrink-1">
-				<div className="p-6 border-b border-neutral-100 flex-shrink-0 bg-white">
+			<div className="w-full md:w-96 md:max-w-md flex flex-col bg-white border-neutral-200/60 border-b md:border-b-0 md:border-r flex-1 md:flex-none">
+				<div className="p-5 sm:p-6 border-b border-neutral-100 flex-shrink-0 bg-white">
 					<h1 className="text-xl font-bold mb-2 text-forms-600 font-poppins">Asistente IA</h1>
 					<p className="text-sm text-neutral-600 font-inter">
 						Conversación continua para mejorar tu formulario
 					</p>
 
-					<div className="mt-4 flex items-center justify-between p-4 bg-neutral-50/50 rounded-xl border border-neutral-100">
+				<div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-neutral-50/50 rounded-xl border border-neutral-100">
 						<div className="text-sm font-inter">
 							<span className="font-medium text-neutral-700">Créditos:</span>
 							<span className="ml-2 font-bold text-excel-600 text-lg">{credits || 0}</span>
 						</div>
-						{credits !== null && credits < 10 && (
-							<div className="ml-4 p-3 bg-velocity-50 border border-velocity-200 rounded-xl flex items-center">
+					{credits !== null && credits < 10 && (
+						<div className="sm:ml-4 w-full sm:w-auto p-3 bg-velocity-50 border border-velocity-200 rounded-xl flex items-center justify-between sm:justify-start">
 								<AlertCircle className="h-4 w-4 text-velocity-600 mr-2 flex-shrink-0" />
 								<span className="text-sm text-velocity-700 font-medium">
 									Pocos créditos
@@ -517,8 +517,8 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 					</div>
 				</div>
 
-				<div className="flex-[0.90] flex flex-col min-h-0">
-					<div className="flex-1 p-5 overflow-y-auto bg-white">
+			<div className="flex-1 flex flex-col min-h-0">
+				<div ref={scrollAreaRef} className="flex-1 p-4 sm:p-5 overflow-y-auto bg-white">
 						<div className="space-y-4">
 							{messages.map((message) => (
 								<div
@@ -551,21 +551,21 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 						</div>
 					</div>
 
-					<div className="p-5 border-t border-neutral-100 flex-shrink-0 bg-white shadow-sm">
-						<div className="flex items-center justify-between mb-3">
+					<div className="p-4 sm:p-5 border-t border-neutral-100 flex-shrink-0 bg-white shadow-sm">
+						<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
 							<span className="text-sm text-neutral-500 font-inter">
 								{getCreditWarning()}
 							</span>
 						</div>
 
-						<div className="flex space-x-3 items-center">
+						<div className="flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0 items-stretch sm:items-center">
 							<textarea
 									value={inputValue}
 									onChange={(e) => setInputValue(e.target.value)}
 									placeholder="Agregar más preguntas o mejorar el formulario..."
 									disabled={isLoading || credits <= 0}
 									rows={5}
-									className="flex-1 px-4 py-3 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forms-200 focus:border-forms-400 min-w-0 resize-none overflow-hidden transition-all duration-200 hover:border-neutral-300 bg-white font-inter placeholder:text-neutral-400 shadow-sm focus:shadow-md"
+									className="w-full flex-1 px-4 py-3 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forms-200 focus:border-forms-400 min-w-0 resize-none overflow-hidden transition-all duration-200 hover:border-neutral-300 bg-white font-inter placeholder:text-neutral-400 shadow-sm focus:shadow-md"
 									style={{ minHeight: '44px', maxHeight: '120px' }}
 									onInput={(e) => {
 										const target = e.target as HTMLTextAreaElement;
@@ -576,7 +576,7 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 							<button
 								onClick={handleSendMessage}
 								disabled={isLoading || !inputValue.trim() || credits <= 0}
-								className="px-4 py-3 bg-forms-500 text-white rounded-xl hover:bg-forms-600 focus:bg-forms-600 focus:outline-none focus:ring-2 focus:ring-forms-200 disabled:opacity-50 disabled:hover:bg-forms-500 flex-shrink-0 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
+								className="px-4 py-3 bg-forms-500 text-white rounded-xl hover:bg-forms-600 focus:bg-forms-600 focus:outline-none focus:ring-2 focus:ring-forms-200 disabled:opacity-50 disabled:hover:bg-forms-500 transition-all duration-200 shadow-md hover:shadow-lg font-medium w-full sm:w-auto"
 							>
 								<Send className="h-4 w-4" />
 							</button>

@@ -527,18 +527,18 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
     if (!isEditing) {
       return (
         <div
-          className="p-5 border border-neutral-200 rounded-xl bg-white cursor-pointer hover:border-forms-300 hover:shadow-sm transition-all duration-200"
+          className="p-4 sm:p-5 border border-neutral-200 rounded-xl bg-white cursor-pointer hover:border-forms-300 hover:shadow-sm transition-all duration-200"
           onClick={() => setIsEditing(true)}
           tabIndex={0}
           onFocus={handleFocus}
         >
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-1">
               <h4 className="font-medium text-neutral-800 font-inter">{question.title}</h4>
               {question.description && (
                 <p className="text-sm text-neutral-600 mt-1 font-inter">{question.description}</p>
               )}
-              <div className="flex items-center space-x-2 mt-3">
+              <div className="flex flex-wrap items-center gap-2 mt-3">
                 <Badge variant="outline" className="text-xs font-medium border-forms-200 text-forms-600 bg-forms-50">
                   {questionTypes.find(t => t.value === question.type)?.label || question.type}
                 </Badge>
@@ -550,7 +550,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                 )}
               </div>
             </div>
-            <div className="flex space-x-2">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 sm:space-x-2">
               <Button
                 size="sm"
                 variant="outline"
@@ -581,7 +581,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
     return (
       <div
-        className="p-5 border-2 border-forms-300 rounded-xl bg-white shadow-sm"
+        className="p-4 sm:p-5 border-2 border-forms-300 rounded-xl bg-white shadow-sm"
         onBlur={(e) => {
           // Solo guardar si el clic fue fuera del contenedor
           if (!e.currentTarget.contains(e.relatedTarget as Node)) {
@@ -623,7 +623,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label className="text-sm font-medium text-neutral-700 font-inter">Tipo de pregunta</Label>
               <select
@@ -653,7 +653,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               </select>
             </div>
 
-            <div className="flex items-center mt-6">
+            <div className="flex items-center mt-4 sm:mt-6">
               <input
                 type="checkbox"
                 id={`required-${question.id}`}
@@ -715,7 +715,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
           {/* Configuración para escala lineal */}
           {localQuestion.type === 'linear_scale' && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-neutral-700 font-inter">Mínimo</Label>
                   <Input
@@ -761,7 +761,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium text-neutral-700 font-inter">Etiqueta mínima</Label>
                   <Input
@@ -800,17 +800,17 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
             </div>
           )}
 
-          <div className="flex space-x-3 pt-2">
-            <Button 
-              size="sm" 
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Button
+              size="sm"
               onClick={handleSave}
               className="bg-forms-500 hover:bg-forms-600 text-white font-medium font-poppins"
             >
               Guardar
             </Button>
-            <Button 
-              size="sm" 
-              variant="outline" 
+            <Button
+              size="sm"
+              variant="outline"
               onClick={handleCancel}
               className="border-neutral-300 text-neutral-600 hover:bg-neutral-50 font-inter"
             >
@@ -820,6 +820,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
         </div>
       </div>
     );
+
   };
 
   const handleCreateNewForm = () => {
@@ -877,7 +878,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 w-full max-w-4xl mx-auto">
       <div className="space-y-6">
         <Card className="border-neutral-200/60 shadow-sm">
           <CardHeader className="bg-neutral-50/50 border-b border-neutral-100">
@@ -919,7 +920,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               />
               <p className="text-xs text-neutral-500 mt-1 font-inter">Ayuda a los usuarios a entender el objetivo del formulario</p>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-start sm:items-center space-x-2">
               <input
                 id="collect-email"
                 type="checkbox"
@@ -940,7 +941,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
         <Card className="border-slate-200">
           <CardHeader className="bg-slate-50">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle className="text-lg text-slate-800 flex items-center gap-2">
                   <HelpCircle className="h-5 w-5 text-slate-600" />
@@ -954,7 +955,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               </div>
               <Button
                 onClick={addQuestion}
-                className="bg-forms-600 hover:bg-blue-700 text-white"
+                className="bg-forms-600 hover:bg-blue-700 text-white w-full sm:w-auto"
                 size="sm"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -984,12 +985,36 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
             ) : (
               <div className="space-y-4">
                 {questions.map((question, index) => (
-                  <div key={question.id} className="relative">
-                    <div className="absolute -left-6 top-4 flex flex-col space-y-1">
+                  <div key={question.id} className="relative sm:pl-12">
+                    <div className="flex items-center justify-between sm:hidden mb-3">
+                      <span className="text-xs font-medium text-neutral-500 font-inter">
+                        Pregunta {index + 1}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => moveQuestion(index, 'up')}
+                          className="p-1.5 rounded-lg border border-neutral-200 text-neutral-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                          disabled={index === 0}
+                          aria-label="Mover pregunta hacia arriba"
+                        >
+                          <ChevronUp className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => moveQuestion(index, 'down')}
+                          className="p-1.5 rounded-lg border border-neutral-200 text-neutral-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                          disabled={index === questions.length - 1}
+                          aria-label="Mover pregunta hacia abajo"
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="absolute left-0 top-4 hidden sm:flex flex-col space-y-1">
                       <button
                         onClick={() => moveQuestion(index, 'up')}
                         className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
                         disabled={index === 0}
+                        aria-label="Mover pregunta hacia arriba"
                       >
                         <ChevronUp className="w-3 h-3 text-neutral-500" />
                       </button>
@@ -1000,6 +1025,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                         onClick={() => moveQuestion(index, 'down')}
                         className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
                         disabled={index === questions.length - 1}
+                        aria-label="Mover pregunta hacia abajo"
                       >
                         <ChevronDown className="w-3 h-3 text-neutral-500" />
                       </button>
@@ -1017,7 +1043,6 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
             )}
           </CardContent>
         </Card>
-
         {!hideSubmitButton && (
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
