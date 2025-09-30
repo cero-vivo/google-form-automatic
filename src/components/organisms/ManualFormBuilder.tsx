@@ -21,7 +21,7 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0, draftId }
   const [collectEmail, setCollectEmail] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoadingDraft, setIsLoadingDraft] = useState(false);
-  const { user } = useAuth();
+  const { user } = useAuth()
 
   // Load draft automatically when draftId is provided
   useEffect(() => {
