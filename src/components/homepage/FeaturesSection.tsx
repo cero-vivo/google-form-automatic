@@ -1,182 +1,159 @@
 'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
-import { ArrowRight, CheckCircle, FileSpreadsheet, FormInput, Sparkles, Upload } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
-type MethodTheme = 'ai' | 'upload' | 'manual';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
-type MethodCard = {
+type FeatureTheme = {
+  gradient: string;
+  badge: string;
+  chip: string;
+  button: string;
+};
+
+type Feature = {
   id: 'upload' | 'manual' | 'ai';
-  order: string;
-  symbol: string;
-  tagline: string;
+  label: string;
   title: string;
   description: string;
-  insight: string;
+  highlights: string[];
+  imageSrc: string;
+  imageAlt: string;
   href: string;
-  ctaLabel: string;
-  icon: LucideIcon;
-  ctaIcon: LucideIcon;
-  theme: MethodTheme;
+  cta: string;
+  theme: FeatureTheme;
 };
 
-const methodThemes: Record<MethodTheme, {
-  iconBg: string;
-  iconColor: string;
-  tagColor: string;
-  borderHover: string;
-  bulletColor: string;
-  insightBorder: string;
-  insightText: string;
-  button: string;
-}> = {
-  ai: {
-    iconBg: 'bg-velocity-50',
-    iconColor: 'text-velocity-600',
-    tagColor: 'text-velocity-600',
-    borderHover: 'hover:border-velocity-300',
-    bulletColor: 'text-velocity-500',
-    insightBorder: 'border-velocity-200 text-velocity-700',
-    insightText: 'text-velocity-600',
-    button: 'border-velocity-200 text-velocity-600 hover:bg-velocity-600 hover:text-white',
-  },
-  upload: {
-    iconBg: 'bg-excel/10',
-    iconColor: 'text-excel',
-    tagColor: 'text-excel',
-    borderHover: 'hover:border-excel/40',
-    bulletColor: 'text-excel',
-    insightBorder: 'border-excel/30 text-excel',
-    insightText: 'text-excel/90',
-    button: 'border-excel/40 text-excel hover:bg-excel hover:text-white',
-  },
-  manual: {
-    iconBg: 'bg-forms/10',
-    iconColor: 'text-forms',
-    tagColor: 'text-forms',
-    borderHover: 'hover:border-forms/40',
-    bulletColor: 'text-forms',
-    insightBorder: 'border-forms/30 text-forms',
-    insightText: 'text-forms/90',
-    button: 'border-forms/40 text-forms hover:bg-forms hover:text-white',
-  },
-};
-
-const methodCards: MethodCard[] = [
-  {
+const features: Feature[] = [
+    {
     id: 'ai',
-    order: '01',
-    symbol: 'CHAT IA',
-    tagline: 'Asistente inteligente',
-    title: 'Describe tu idea y deja que la IA la produzca',
-    description: 'Conversaciones naturales que generan formularios completos con secciones, lógica condicional y validaciones en cuestión de segundos.',
-    insight: 'Perfecto para lanzar campañas rápidas o validar nuevas encuestas sin bloquear al equipo técnico.',
+    label: 'Asistente IA',
+    title: 'Describe tu idea y la IA arma el formulario',
+    description: 'Conversaciones naturales que generan secciones, lógica y tono adaptado en cuestión de segundos.',
+    highlights: ['Habla en tu idioma', 'Genera flujos completos', 'Perfecto para lanzar hoy'],
+    imageSrc: '/images/featureIA.png',
+    imageAlt: 'Asistente de inteligencia artificial creando un formulario en FastForm',
     href: '/create/ai',
-    ctaLabel: 'Probar asistente IA',
-    icon: Sparkles,
-    ctaIcon: Sparkles,
-    theme: 'ai',
+    cta: 'Probar asistente IA',
+    theme: {
+      gradient: 'from-white via-white to-velocity/10',
+      badge: 'border border-velocity/30 bg-velocity/10 text-velocity-600',
+      chip: 'border border-velocity/30 bg-white/90 text-velocity-600',
+      button: 'bg-velocity-500 text-white hover:bg-velocity-600',
+    },
   },
   {
     id: 'upload',
-    order: '02',
-    symbol: 'Excel',
-    tagline: 'Importar archivos',
-    title: 'Conecta tu CSV/Excel y obtén un formulario espejo',
-    description: 'Crea tu archivo excel o CSV con todas las preguntas, opciones, lógica, y súbelo para generar un formulario en segundos.',
-    insight: 'Ideal cuando tus equipos trabajan con bases vivas y necesitan formularios consistentes en minutos.',
+    label: 'CSV · Excel',
+    title: 'Importa tu base y publícala sin copiar y pegar',
+    description: 'Sube tu archivo y FastForm crea un formulario espejo listo para compartir con tu equipo o clientes.',
+    highlights: ['Detecta preguntas automáticamente', 'Actualiza cuando cambie tu archivo', 'Ideal para bases vivas'],
+    imageSrc: '/images/featureCSV.png',
+    imageAlt: 'Proceso de importación de CSV o Excel a formulario FastForm',
     href: '/create/file',
-    ctaLabel: 'Probar importación',
-    icon: FileSpreadsheet,
-    ctaIcon: Upload,
-    theme: 'upload',
+    cta: 'Probar importación',
+    theme: {
+      gradient: 'from-white via-white to-excel/10',
+      badge: 'border border-excel/30 bg-excel/10 text-excel',
+      chip: 'border border-excel/30 bg-white/90 text-excel',
+      button: 'bg-excel text-white hover:bg-excel/90',
+    },
   },
   {
     id: 'manual',
-    order: '03',
-    symbol: 'Manual',
-    tagline: 'Constructor manual',
-    title: 'Diseña cada detalle con componentes FastForm',
-    description: 'Editor manual con componentes avanzados para crear o editar formularios.',
-    insight: 'Cuando necesitas personalización total y control visual para experiencias únicas.',
+    label: 'Editor manual',
+    title: 'Diseña cada bloque con control total',
+    description: 'Construye formularios pixel perfect con componentes drag & drop, temas y vistas previas en vivo.',
+    highlights: ['Componentes personalizados', 'Organiza preguntas al instante', 'Ideal para lanzamientos premium'],
+    imageSrc: '/images/featureManual.png',
+    imageAlt: 'Editor manual de FastForm con herramientas visuales',
     href: '/create/manual',
-    ctaLabel: 'Abrir constructor',
-    icon: FormInput,
-    ctaIcon: FormInput,
-    theme: 'manual',
+    cta: 'Abrir editor manual',
+    theme: {
+      gradient: 'from-white via-white to-forms/10',
+      badge: 'border border-forms/30 bg-forms/10 text-forms',
+      chip: 'border border-forms/30 bg-white/90 text-forms',
+      button: 'bg-forms text-white hover:bg-forms/90',
+    },
   },
 ];
 
 export const FeaturesSection = () => {
   return (
     <section id="features" className="bg-white px-6 py-24">
-      <div className="container mx-auto">
-        <div className="mb-12 text-center">
-          <Badge className="mb-4 border border-excel/30 bg-excel/10 px-4 py-2 font-semibold text-excel">
-            Tres caminos, un mismo resultado
+      <div className="mx-auto max-w-6xl space-y-16">
+        <div className="text-center">
+          <Badge className="mb-4 border border-velocity/30 bg-velocity/10 px-4 py-2 text-sm font-semibold text-velocity">
+            Tres caminos, una experiencia fluida
           </Badge>
-          <h2 className="mb-4 text-4xl font-black text-primary md:text-5xl">
-            Selecciona tu flujo y lanza en minutos
+          <h2 className="text-4xl font-black text-excel md:text-5xl">
+            Crea formularios con la energía que tengas hoy
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-            Conversación inteligente, importación automática o control total: tú decides cómo crear formularios que realmente funcionen.
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+            IA conversacional, importación automática o edición manual pensadas para equipos que quieren lanzar sin tanta fricción.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-          {methodCards.map((method) => {
-            const theme = methodThemes[method.theme];
-            const Icon = method.icon;
-            const CtaIcon = method.ctaIcon;
+        <div className="space-y-16">
+          {features.map((feature, index) => (
+            <div
+              key={feature.id}
+              className={`flex flex-col gap-10 rounded-3xl border border-slate-100 bg-gradient-to-br p-8 shadow-sm transition-shadow duration-300 hover:shadow-lg sm:p-12 lg:flex-row ${feature.theme.gradient} ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}
+            >
+              <div className="relative flex-1">
+                <div className="relative aspect-[3/2] w-full overflow-hidden rounded-2xl border border-slate-100 bg-white/70 shadow-sm">
+                  <Image
+                    src={feature.imageSrc}
+                    alt={feature.imageAlt}
+                    fill
+                    className="object-contain"
+                    sizes="(min-width: 1280px) 540px, (min-width: 768px) 50vw, 100vw"
+                    priority={index === 0}
+                  />
+                </div>
+              </div>
 
-            return (
-              <Card
-                key={method.id}
-                className={`h-full border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${theme.borderHover}`}
-              >
-                <CardContent className="flex h-full flex-col gap-5 p-6">
-                  <div className="flex items-start gap-4">
-                    <span className={`flex p-2 items-center justify-center rounded-full ${theme.iconBg}`}>
-                      <Icon className={`h-6 w-6 ${theme.iconColor}`} />
+              <div className="flex flex-1 flex-col justify-center gap-6">
+                <div>
+                  <Badge className={`mb-4 inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-wide ${feature.theme.badge}`}>
+                    {feature.label}
+                  </Badge>
+                  <h3 className="text-3xl font-bold text-slate-900">
+                    {feature.title}
+                  </h3>
+                  <p className="mt-4 max-w-xl text-lg text-muted-foreground">
+                    {feature.description}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  {feature.highlights.map((highlight) => (
+                    <span
+                      key={highlight}
+                      className={`rounded-full px-4 py-2 text-sm font-medium shadow-sm backdrop-blur ${feature.theme.chip}`}
+                    >
+                      {highlight}
                     </span>
-                    <div>
-                      <p className={`text-xs font-semibold uppercase tracking-wide ${theme.tagColor}`}>
-                        Método {method.order} · {method.symbol}
-                      </p>
-                      <h3 className="mt-1 text-xl font-bold text-foreground">
-                        {method.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                        {method.description}
-                      </p>
-                    </div>
-                  </div>
+                  ))}
+                </div>
 
-                  <div className={`rounded-lg border px-4 py-3 ${theme.insightBorder}`}>
-                    <p className={`text-sm font-medium leading-snug ${theme.insightText}`}>
-                      {method.insight}
-                    </p>
-                  </div>
-
+                <div>
                   <Button
                     asChild
-                    variant="outline"
-                    className={`group mt-auto justify-center gap-2 text-sm font-semibold ${theme.button}`}
+                    className={`group w-fit gap-2 px-6 text-sm font-semibold ${feature.theme.button}`}
                   >
-                    <Link href={method.href} className="flex items-center gap-2">
-                      <CtaIcon className="h-4 w-4" />
-                      {method.ctaLabel}
+                    <Link href={feature.href}>
+                      {feature.cta}
                       <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </Link>
                   </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
