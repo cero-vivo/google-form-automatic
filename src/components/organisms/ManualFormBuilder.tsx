@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LayoutGrid, AlertCircle } from 'lucide-react';
 import { Question } from '@/domain/entities/question';
 import { ReusableFormBuilder } from './ReusableFormBuilder';
+import { DraftService } from '@/infrastructure/firebase/DraftService';
+import { useAuth } from '@/containers/useAuth';
 
 interface ManualFormBuilderProps {
   onFormCreated?: (formData: any) => void;
@@ -18,6 +20,33 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0, draftId }
   const [formDescription, setFormDescription] = useState('');
   const [collectEmail, setCollectEmail] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLoadingDraft, setIsLoadingDraft] = useState(false);
+  const { user } = useAuth();
+
+  // Load draft automatically when draftId is provided
+  useEffect(() => {
+    const loadDraftById = async () => {
+      if (!draftId || !user) return;
+      
+      setIsLoadingDraft(true);
+      try {
+        const draft = await DraftService.getDraftById(user.id, draftId);
+        if (draft) {
+          setFormTitle(draft.title);
+          setFormDescription(draft.description);
+          setQuestions(draft.questions);
+          setCollectEmail(draft.collectEmail);
+        }
+      } catch (error) {
+        console.error('Error loading draft:', error);
+        setError('Error al cargar el borrador');
+      } finally {
+        setIsLoadingDraft(false);
+      }
+    };
+
+    loadDraftById();
+  }, [draftId, user]);
 
   // Función para manejar el resultado de la creación del formulario desde ReusableFormBuilder
   const handleFormCreated = (formData: any) => {
@@ -25,6 +54,17 @@ export function ManualFormBuilder({ onFormCreated, currentCredits = 0, draftId }
     // Solo necesitamos notificar al componente padre
     onFormCreated?.(formData);
   };
+
+  if (isLoadingDraft) {
+    return (
+      <div className="max-w-5xl mx-auto px-4">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="ml-2">Cargando borrador...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4">

@@ -11,6 +11,8 @@ import { Question } from '@/domain/entities/question';
 import { useFileUpload } from '@/containers/useFileUpload';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
 import { ReusableFormBuilder } from './ReusableFormBuilder';
+import { DraftService } from '@/infrastructure/firebase/DraftService';
+import { useAuth } from '@/containers/useAuth';
 import FormInstructions from './FormInstructions';
 import { FormSuccessView } from './FormSuccessView';
 import {
@@ -46,10 +48,12 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
   const [showImportOptions, setShowImportOptions] = useState(false);
   const [pendingFileQuestions, setPendingFileQuestions] = useState<Question[]>([]);
   const [lastUploadedFileName, setLastUploadedFileName] = useState<string>('');
+  const [isLoadingDraft, setIsLoadingDraft] = useState(false);
 
   // Hooks
   const { handleFileSelect, questions: fileQuestions, loading, progress, error } = useFileUpload();
   const { createGoogleForm, isCreating: creatingForm, error: formError } = useGoogleFormsIntegration();
+  const { user } = useAuth();
 
   // Handlers para cambios en el formulario
   const handleFormUpdate = useCallback((updates: Partial<typeof formData>) => {
@@ -95,6 +99,33 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
     maxSize: 10 * 1024 * 1024,
     disabled: loading
   });
+
+  // Load draft automatically when draftId is provided
+  useEffect(() => {
+    const loadDraftById = async () => {
+      if (!draftId || !user) return;
+      
+      setIsLoadingDraft(true);
+      try {
+        const draft = await DraftService.getDraftById(user.id, draftId);
+        if (draft) {
+          setFormData({
+            title: draft.title,
+            description: draft.description,
+            questions: draft.questions,
+            collectEmail: draft.collectEmail,
+            creationMethod: draft.creationMethod === 'excel' ? 'excel' : 'manual'
+          });
+        }
+      } catch (error) {
+        console.error('Error loading draft:', error);
+      } finally {
+        setIsLoadingDraft(false);
+      }
+    };
+
+    loadDraftById();
+  }, [draftId, user]);
 
   // Efecto para manejar preguntas nuevas del archivo
   useEffect(() => {
@@ -236,6 +267,17 @@ export function FileImportFormCreator({ onFormCreated, currentCredits = 0, draft
         onCreateNewForm={handleCreateNewForm}
         onDuplicateForm={handleDuplicateForm}
       />
+    );
+  }
+
+  if (isLoadingDraft) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="ml-2">Cargando borrador...</span>
+        </div>
+      </div>
     );
   }
 
