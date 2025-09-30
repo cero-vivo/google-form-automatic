@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
-import { Plus, Trash2, LayoutGrid, Type, List, CheckSquare, Calendar, Mail, Hash, Globe, ChevronDown, ChevronUp, Save, Loader2, FileText, ClipboardList, HelpCircle, Settings } from 'lucide-react';
+import { Plus, Trash2, LayoutGrid, Type, List, CheckSquare, Calendar, Mail, Hash, Globe, ChevronDown, ChevronUp, GripVertical, Save, Loader2, FileText, ClipboardList, HelpCircle, Settings } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { Question } from '@/domain/entities/question';
 import { QuestionType } from '@/domain/types';
 import { useGoogleFormsIntegration } from '@/containers/useGoogleFormsIntegration';
@@ -261,8 +262,13 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
   }, [initialCollectEmail]);
 
   const updateQuestions = (newQuestions: Question[]) => {
-    setQuestions(newQuestions);
-    onQuestionsChange?.(newQuestions);
+    const normalizedQuestions = newQuestions.map((question, index) => ({
+      ...question,
+      order: index,
+    }));
+
+    setQuestions(normalizedQuestions);
+    onQuestionsChange?.(normalizedQuestions);
   };
   const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -347,6 +353,20 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
 
     [newQuestions[index], newQuestions[newIndex]] = [newQuestions[newIndex], newQuestions[index]];
     updateQuestions(newQuestions);
+  };
+
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const { source, destination } = result;
+
+    if (destination.index === source.index) return;
+
+    const reorderedQuestions = Array.from(questions);
+    const [movedQuestion] = reorderedQuestions.splice(source.index, 1);
+    reorderedQuestions.splice(destination.index, 0, movedQuestion);
+
+    updateQuestions(reorderedQuestions);
   };
 
   const handleSubmit = async () => {
@@ -975,67 +995,74 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                 <p className="text-sm font-inter">Haz clic en "Agregar pregunta" para comenzar</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {questions.map((question, index) => (
-                  <div key={question.id} className="min-w-0">
-                    <div className="flex items-center justify-between sm:hidden mb-3">
-                      <span className="text-xs font-medium text-neutral-500 font-inter">
-                        Pregunta {index + 1}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => moveQuestion(index, 'up')}
-                          className="p-1.5 rounded-lg border border-neutral-200 text-neutral-500 disabled:opacity-40 disabled:cursor-not-allowed"
-                          disabled={index === 0}
-                          aria-label="Mover pregunta hacia arriba"
-                        >
-                          <ChevronUp className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => moveQuestion(index, 'down')}
-                          className="p-1.5 rounded-lg border border-neutral-200 text-neutral-500 disabled:opacity-40 disabled:cursor-not-allowed"
-                          disabled={index === questions.length - 1}
-                          aria-label="Mover pregunta hacia abajo"
-                        >
-                          <ChevronDown className="w-4 h-4" />
-                        </button>
+              <>
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId="questions">
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className="space-y-4"
+                      >
+                        {questions.map((question, index) => (
+                          <Draggable key={question.id} draggableId={String(question.id)} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className={`min-w-0 transition-shadow duration-200 ${snapshot.isDragging ? 'rounded-xl bg-white shadow-lg ring-2 ring-forms-200' : ''}`}
+                              >
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+                                  <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-center sm:justify-start sm:gap-3 sm:w-16 sm:flex-shrink-0">
+                                    <button
+                                      type="button"
+                                      {...provided.dragHandleProps}
+                                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-700 focus:outline-none focus:ring-2 focus:ring-forms-300"
+                                      aria-label={`Arrastrar para reordenar la pregunta ${index + 1}`}
+                                    >
+                                      <GripVertical className="h-4 w-4" />
+                                    </button>
+                                    <span className="text-sm font-medium text-neutral-600 font-inter sm:text-xs sm:text-neutral-500">
+                                      <span className="sm:hidden">Pregunta </span>
+                                      {index + 1}
+                                    </span>
+                                    <div className="flex items-center gap-2 sm:flex-col sm:gap-1">
+                                      <button
+                                        onClick={() => moveQuestion(index, 'up')}
+                                        className="p-1.5 rounded-lg border border-neutral-200 text-neutral-500 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                        disabled={index === 0}
+                                        aria-label="Mover pregunta hacia arriba"
+                                      >
+                                        <ChevronUp className="h-3.5 w-3.5" />
+                                      </button>
+                                      <button
+                                        onClick={() => moveQuestion(index, 'down')}
+                                        className="p-1.5 rounded-lg border border-neutral-200 text-neutral-500 transition hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                        disabled={index === questions.length - 1}
+                                        aria-label="Mover pregunta hacia abajo"
+                                      >
+                                        <ChevronDown className="h-3.5 w-3.5" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <QuestionEditor
+                                      question={question}
+                                      onUpdate={updateQuestion}
+                                      onDelete={deleteQuestion}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
                       </div>
-                    </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
 
-                    <div className="sm:flex sm:items-start sm:gap-4">
-                      <div className="hidden sm:flex sm:flex-col sm:space-y-1 sm:pt-2 sm:w-8 sm:flex-shrink-0">
-                        <button
-                          onClick={() => moveQuestion(index, 'up')}
-                          className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
-                          disabled={index === 0}
-                          aria-label="Mover pregunta hacia arriba"
-                        >
-                          <ChevronUp className="w-3 h-3 text-neutral-500" />
-                        </button>
-                        <span className="text-xs text-neutral-500 text-center font-medium font-inter">
-                          {index + 1}
-                        </span>
-                        <button
-                          onClick={() => moveQuestion(index, 'down')}
-                          className="p-1 hover:bg-neutral-100 rounded transition-colors duration-200"
-                          disabled={index === questions.length - 1}
-                          aria-label="Mover pregunta hacia abajo"
-                        >
-                          <ChevronDown className="w-3 h-3 text-neutral-500" />
-                        </button>
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <QuestionEditor
-                          question={question}
-                          onUpdate={updateQuestion}
-                          onDelete={deleteQuestion}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                
                 {/* Botón adicional para agregar pregunta al final (mejor UX en móvil) */}
                 <div className="pt-4 border-t border-neutral-100">
                   <Button
@@ -1047,7 +1074,7 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
                     Agregar otra pregunta
                   </Button>
                 </div>
-              </div>
+              </>
             )}
           </CardContent>
         </Card>
