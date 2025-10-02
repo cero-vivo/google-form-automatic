@@ -333,11 +333,11 @@ export function AIChatFormCreator({ onFormCreated, draftId }: { onFormCreated?: 
 
 			// Asegurar que las opciones estén presentes para tipos que las necesitan
 			let options = q.options || [];
-			
+
 			// Si no hay opciones y es un tipo que las necesita, crear opciones por defecto
-			if ((mappedType === QuestionType.MULTIPLE_CHOICE || 
-				 mappedType === QuestionType.CHECKBOXES || 
-				 mappedType === QuestionType.DROPDOWN) && 
+			if ((mappedType === QuestionType.MULTIPLE_CHOICE ||
+				mappedType === QuestionType.CHECKBOXES ||
+				mappedType === QuestionType.DROPDOWN) &&
 				(!options || options.length === 0)) {
 			}
 
@@ -501,13 +501,13 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 						Conversación continua para mejorar tu formulario
 					</p>
 
-				<div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-neutral-50/50 rounded-xl border border-neutral-100">
+					<div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-neutral-50/50 rounded-xl border border-neutral-100">
 						<div className="text-sm font-inter">
 							<span className="font-medium text-neutral-700">Créditos:</span>
 							<span className="ml-2 font-bold text-excel-600 text-lg">{credits || 0}</span>
 						</div>
-					{credits !== null && credits < 10 && (
-						<div className="sm:ml-4 w-full sm:w-auto p-3 bg-velocity-50 border border-velocity-200 rounded-xl flex items-center justify-between sm:justify-start">
+						{credits !== null && credits < 10 && (
+							<div className="sm:ml-4 w-full sm:w-auto p-3 bg-velocity-50 border border-velocity-200 rounded-xl flex items-center justify-between sm:justify-start">
 								<AlertCircle className="h-4 w-4 text-velocity-600 mr-2 flex-shrink-0" />
 								<span className="text-sm text-velocity-700 font-medium">
 									Pocos créditos
@@ -517,8 +517,8 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 					</div>
 				</div>
 
-			<div className="flex-1 flex flex-col min-h-0 min-w-0">
-				<div ref={scrollAreaRef} className="flex-1 p-4 sm:p-5 overflow-y-auto bg-white min-w-0">
+				<div className="flex-1 flex flex-col min-h-0 min-w-0">
+					<div ref={scrollAreaRef} className="flex-1 p-4 sm:p-5 overflow-y-auto bg-white min-w-0">
 						<div className="space-y-4">
 							{messages.map((message) => (
 								<div
@@ -527,10 +527,10 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 								>
 									<div
 										className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm break-words transition-all duration-200 ${message.role === 'user'
-												? 'bg-forms-500 hover:bg-forms-600 text-white font-medium shadow-md hover:shadow-lg'
-												: 'bg-white hover:bg-neutral-50 border border-neutral-200/80 text-neutral-700 shadow-sm hover:shadow-md'
-										}`}
-								>
+											? 'bg-forms-500 hover:bg-forms-600 text-white font-medium shadow-md hover:shadow-lg'
+											: 'bg-white hover:bg-neutral-50 border border-neutral-200/80 text-neutral-700 shadow-sm hover:shadow-md'
+											}`}
+									>
 										<p className="break-words leading-relaxed font-inter">{message.content}</p>
 										<p className="text-xs opacity-70 mt-2 font-inter">
 											{message.timestamp.toLocaleTimeString()}
@@ -560,19 +560,24 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 
 						<div className="flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0 items-stretch sm:items-center">
 							<textarea
-									value={inputValue}
-									onChange={(e) => setInputValue(e.target.value)}
-									placeholder="Agregar más preguntas o mejorar el formulario..."
-									disabled={isLoading || credits <= 0}
-									rows={5}
-									className="w-full flex-1 px-4 py-3 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forms-200 focus:border-forms-400 min-w-0 resize-none overflow-hidden transition-all duration-200 hover:border-neutral-300 bg-white font-inter placeholder:text-neutral-400 shadow-sm focus:shadow-md"
-									style={{ minHeight: '44px', maxHeight: '120px' }}
-									onInput={(e) => {
-										const target = e.target as HTMLTextAreaElement;
-										target.style.height = 'auto';
-										target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
-									}}
-								/>
+								value={inputValue}
+								onChange={(e) => setInputValue(e.target.value)}
+								placeholder="Agregar más preguntas o mejorar el formulario..."
+								disabled={isLoading || credits <= 0}
+								rows={5}
+								className="w-full flex-1 px-4 py-3 text-sm border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-forms-200 focus:border-forms-400 min-w-0 resize-none overflow-hidden transition-all duration-200 hover:border-neutral-300 bg-white font-inter placeholder:text-neutral-400 shadow-sm focus:shadow-md"
+								style={{ minHeight: '44px', maxHeight: '120px' }}
+								onInput={(e) => {
+									const target = e.target as HTMLTextAreaElement;
+									target.style.height = 'auto';
+									target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
+								}}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter') {
+										handleSendMessage();
+									}
+								}}
+							/>
 							<button
 								onClick={handleSendMessage}
 								disabled={isLoading || !inputValue.trim() || credits <= 0}
@@ -698,4 +703,5 @@ Por ejemplo, podrías decirme: "Quiero crear una encuesta de satisfacción para 
 				</div>
 			)}
 		</div>
-	)}
+	)
+}

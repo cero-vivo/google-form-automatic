@@ -35,7 +35,7 @@ class FirebaseAuthService implements AuthService {
     this.googleProvider.addScope('profile');
     // Agregar scopes específicos para Google Forms API
     this.googleProvider.addScope('https://www.googleapis.com/auth/forms');
-    this.googleProvider.addScope('https://www.googleapis.com/auth/drive');
+    this.googleProvider.addScope('https://www.googleapis.com/auth/drive.file');
     this.googleProvider.setCustomParameters({
       prompt: 'select_account',
       access_type: 'offline'

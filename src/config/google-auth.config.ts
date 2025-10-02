@@ -126,7 +126,6 @@ export const DEFAULT_GOOGLE_AUTH_CONFIG: GoogleAuthConfig = {
     ],
     drive: [
       'https://www.googleapis.com/auth/drive.file',
-      'https://www.googleapis.com/auth/drive.readonly',
     ],
     additional: [
       'https://www.googleapis.com/auth/userinfo.email',

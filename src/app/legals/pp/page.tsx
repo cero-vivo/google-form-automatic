@@ -14,7 +14,7 @@ export default function PPPage() {
         <CardHeader>
           <Logo className="mb-2" />
           <CardTitle className="text-3xl font-bold mb-2">Privacy Policy</CardTitle>
-          <Badge variant="outline" className="mb-2">Last updated: September 26, 2025</Badge>
+          <Badge variant="outline" className="mb-2">Last updated: October 2, 2025</Badge>
           <p className="text-muted-foreground">
             This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.
           </p>
@@ -59,16 +59,14 @@ export default function PPPage() {
             <ul className="list-disc ml-6 mb-4">
               <li><strong>Google Account Information:</strong> Your email address, first name, last name, and profile photo from your Google account</li>
               <li><strong>Google Forms Data:</strong> Access to create, view, edit, and manage Google Forms in your Google account, including form structure, questions, responses, and settings</li>
-              <li><strong>Google Drive Data:</strong> Limited access to create and store Google Forms files in your Google Drive, and to read existing Google Forms you own</li>
+              <li><strong>Google Drive Data:</strong> Limited access ONLY to files created by FastForm in your Google Drive. We cannot access any other files in your Drive.</li>
               <li><strong>Form Responses:</strong> Access to view and analyze responses submitted to your Google Forms</li>
             </ul>
             <p className="mb-4"><strong>Specific Google API Scopes:</strong></p>
             <ul className="list-disc ml-6 mb-4">
               <li><code>https://www.googleapis.com/auth/forms</code> - Full access to Google Forms</li>
               <li><code>https://www.googleapis.com/auth/forms.body</code> - Access to form content and structure</li>
-              <li><code>https://www.googleapis.com/auth/drive</code> - Access to Google Drive for form storage</li>
               <li><code>https://www.googleapis.com/auth/drive.file</code> - Access to files created by the app in Google Drive</li>
-              <li><code>https://www.googleapis.com/auth/drive.readonly</code> - Read access to existing Google Forms in your Drive</li>
               <li><code>email</code> - Access to your email address</li>
               <li><code>profile</code> - Access to your basic profile information</li>
             </ul>

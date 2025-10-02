@@ -579,6 +579,8 @@ class GoogleFormsServiceImpl implements GoogleFormsService {
       console.log('📋 Obteniendo formularios del usuario...');
 
       // Buscar archivos de tipo Google Forms en Google Drive
+      // IMPORTANTE: Con drive.file scope, solo obtenemos formularios creados por FastForm
+      // Esto es correcto y esperado - no necesitamos acceso a formularios antiguos
       const driveResponse = await this.driveAPI.files.list({
         auth,
         q: "mimeType='application/vnd.google-apps.form' and trashed=false",
