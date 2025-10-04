@@ -18,9 +18,11 @@ function CheckoutSuccessContent() {
 
   // Efecto para redirigir si no hay usuario autenticado
   useEffect(() => {
-    const checkAuthAndRedirect = () => {
-      // Si no hay usuario y no estamos esperando el login
+    // Dar tiempo para que Firebase restaure la sesión (1 segundo)
+    const timeoutId = setTimeout(() => {
       if (!user && !sessionStorage.getItem('fastform_auth_check')) {
+        console.log('⚠️ Usuario no autenticado después de 1 segundo, redirigiendo a login...');
+        
         // Marcar que ya verificamos autenticación
         sessionStorage.setItem('fastform_auth_check', 'true');
         
@@ -29,20 +31,20 @@ function CheckoutSuccessContent() {
         
         // Redirigir al login
         window.location.href = '/auth/login';
-        return;
       }
-    };
+    }, 1000); // Esperar 1 segundo para que Firebase restaure la sesión
 
-    checkAuthAndRedirect();
+    return () => clearTimeout(timeoutId);
   }, [user]);
 
   // Efecto para procesar el pago
   useEffect(() => {
     let isMounted = true;
+    let pollingTimeout: NodeJS.Timeout;
     
     const processPayment = async () => {
       if (!user) {
-        setIsLoading(false);
+        // No hacer nada si no hay usuario, el otro useEffect manejará el redirect
         return;
       }
 
@@ -52,6 +54,7 @@ function CheckoutSuccessContent() {
 
         if (!paymentId) {
           setIsLoading(false);
+          setCreditsProcessed(true); // Mostrar página sin procesar pago
           return;
         }
 
@@ -59,16 +62,31 @@ function CheckoutSuccessContent() {
         const alreadyProcessed = sessionStorage.getItem('fastform_processed');
         if (alreadyProcessed) {
           setIsLoading(false);
+          setCreditsProcessed(true);
           return;
         }
 
         // Verificar si hay datos de compra
         const purchaseData = sessionStorage.getItem('fastform_purchase');
         if (!purchaseData) {
-          // Si no hay datos pero hay paymentId, podría ser una recarga
-          // Limpiar la marca de procesado para permitir reintento
-          sessionStorage.removeItem('fastform_processed');
+          // Si no hay datos pero hay paymentId, verificar directamente si ya se procesó
+          console.log('📋 No hay datos de compra en sessionStorage, verificando estado del pago...');
+          
+          try {
+            const checkResponse = await fetch(`/api/credits/check-payment?paymentId=${paymentId}&userId=${user.id}`);
+            const checkResult = await checkResponse.json();
+            
+            if (checkResult.processed) {
+              console.log('✅ El pago ya fue procesado anteriormente');
+              setCreditsProcessed(true);
+              sessionStorage.setItem('fastform_processed', 'true');
+            }
+          } catch (error) {
+            console.error('Error verificando estado del pago:', error);
+          }
+          
           setIsLoading(false);
+          setCreditsProcessed(true);
           return;
         }
 
@@ -102,7 +120,9 @@ function CheckoutSuccessContent() {
           }
           
           // Esperar 1 segundo antes del siguiente intento
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise(resolve => {
+            pollingTimeout = setTimeout(resolve, 1000);
+          });
           attempts++;
         }
 
@@ -140,12 +160,17 @@ function CheckoutSuccessContent() {
     // Solo procesar si tenemos usuario y no está procesando
     if (user && !sessionStorage.getItem('fastform_processing') && !sessionStorage.getItem('fastform_processed')) {
       processPayment();
-    } else if (user) {
+    } else if (user && sessionStorage.getItem('fastform_processed')) {
+      // Si ya fue procesado, solo mostrar la página
       setIsLoading(false);
+      setCreditsProcessed(true);
     }
 
     return () => {
       isMounted = false;
+      if (pollingTimeout) {
+        clearTimeout(pollingTimeout);
+      }
     };
   }, [searchParams, user]);
 

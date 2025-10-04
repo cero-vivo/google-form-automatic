@@ -6,7 +6,9 @@ import {
   deleteUser,
   User as FirebaseUser,
   UserCredential,
-  Auth
+  Auth,
+  setPersistence,
+  browserLocalPersistence
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { auth, db, COLLECTIONS } from './config';
@@ -43,8 +45,22 @@ class FirebaseAuthService implements AuthService {
       access_type: 'offline' // Necesario para obtener refresh token
     });
 
+    // Configurar persistencia LOCAL para mantener la sesión entre pestañas/recargas
+    this.setupPersistence();
+    
     // Verificar configuración básica
     this.validateFirebaseSetup();
+  }
+
+  private async setupPersistence() {
+    try {
+      // Usar browserLocalPersistence para que la sesión persista
+      // incluso cuando el usuario navega a MercadoPago y vuelve
+      await setPersistence(this.auth, browserLocalPersistence);
+      console.log('✅ Firebase persistence configurado: LOCAL');
+    } catch (error) {
+      console.error('❌ Error configurando persistencia:', error);
+    }
   }
 
   private validateFirebaseSetup() {

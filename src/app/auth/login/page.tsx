@@ -26,8 +26,27 @@ export default function LoginPage() {
     signInWithGoogle, 
     loading, 
     error,
-    clearError 
+    clearError,
+    user 
   } = useAuthContext();
+
+  // Redirigir automáticamente si ya está autenticado
+  React.useEffect(() => {
+    if (user) {
+      // Verificar si hay una URL guardada para redirigir
+      const redirectUrl = sessionStorage.getItem('fastform_redirect_after_login');
+      
+      if (redirectUrl) {
+        console.log('✅ Usuario autenticado, redirigiendo a:', redirectUrl);
+        sessionStorage.removeItem('fastform_redirect_after_login');
+        sessionStorage.removeItem('fastform_auth_check');
+        window.location.href = redirectUrl;
+      } else {
+        console.log('✅ Usuario autenticado, redirigiendo a dashboard');
+        router.push('/dashboard');
+      }
+    }
+  }, [user, router]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -38,10 +57,9 @@ export default function LoginPage() {
       }
 
       await signInWithGoogle();
-      router.push('/dashboard');
-      setTimeout(() => {
-        router.refresh();
-      }, 500);
+      
+      // La redirección se manejará en el useEffect cuando user cambie
+      // No hacer redirect aquí para evitar race conditions
     } catch {
       // Error ya manejado por useAuth - no necesitamos hacer nada aquí
     }
