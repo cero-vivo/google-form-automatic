@@ -170,6 +170,20 @@ export class UserEntity implements User {
     return this.googleTokenExpiry <= fiveMinutesFromNow;
   }
 
+  hasGoogleRefreshToken(): boolean {
+    return !!this.googleRefreshToken;
+  }
+
+  getTimeUntilTokenExpiry(): number {
+    if (!this.googleTokenExpiry) return 0;
+    return Math.max(0, this.googleTokenExpiry.getTime() - Date.now());
+  }
+
+  canRefreshGoogleToken(): boolean {
+    // Puede renovar si tiene refresh token y el access token está expirado o próximo a expirar
+    return this.hasGoogleRefreshToken() && (!this.isGoogleTokenValid() || this.needsGoogleTokenRefresh());
+  }
+
   // Métodos de plan y subscripción
   upgradePlan(newPlan: UserPlan, subscriptionId?: string, subscriptionExpiry?: Date): void {
     this.plan = newPlan;

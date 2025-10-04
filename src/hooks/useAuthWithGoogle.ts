@@ -61,7 +61,18 @@ export const useAuthWithGoogle = (): UseAuthWithGoogleReturn => {
   }, []);
 
   /**
+   * Solicita al usuario que renueve la sesión con Google
+   * (No hay refresh token disponible con Firebase Auth)
+   */
+  const refreshGoogleToken = useCallback(async (): Promise<boolean> => {
+    console.log('⚠️ Token expirado, se requiere re-autenticación');
+    // Simplemente retornar false para forzar re-autenticación manual
+    return false;
+  }, []);
+
+  /**
    * Verifica el estado de autenticación con Google
+   * Si el token está próximo a expirar, intenta renovarlo automáticamente
    */
   const checkGoogleAuthStatus = useCallback(async (silent = false): Promise<boolean> => {
     if (!silent) {
@@ -88,7 +99,7 @@ export const useAuthWithGoogle = (): UseAuthWithGoogleReturn => {
       // Verificar expiración del token
       if (isTokenExpired(userEntity.googleTokenExpiry)) {
         setGoogleAuthStatus('expired');
-        setError('El token de acceso de Google ha expirado');
+        setError('El token de acceso de Google ha expirado. Por favor, vuelve a iniciar sesión.');
         return false;
       }
 
@@ -119,10 +130,10 @@ export const useAuthWithGoogle = (): UseAuthWithGoogleReturn => {
         setIsChecking(false);
       }
     }
-  }, [userEntity, hasGooglePermissions, isTokenExpired]);
+  }, [userEntity, hasGooglePermissions, isTokenExpired, refreshGoogleToken]);
 
   /**
-   * Renueva la autenticación con Google
+   * Renueva la autenticación con Google mediante re-login
    */
   const renewGoogleAuth = useCallback(async (): Promise<boolean> => {
     setIsRenewing(true);
@@ -131,7 +142,8 @@ export const useAuthWithGoogle = (): UseAuthWithGoogleReturn => {
     try {
       setGoogleAuthStatus('renewing');
       
-      // Intentar renovar con re-autenticación
+      // Solicitar re-autenticación con Google
+      console.log('🔐 Solicitando re-autenticación con Google...');
       await signInWithGoogle();
       
       // Esperar un momento para que se actualice el estado

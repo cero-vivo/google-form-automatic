@@ -1,6 +1,6 @@
 export const CONFIG = {
   CREDITS: {
-    SIGNUP_BONUS: 5,
+    SIGNUP_BONUS: 25,
     CHAT: {
       FREE_MESSAGES: 10,
       COST_PER_10_QUESTIONS: 3,
@@ -29,18 +29,31 @@ export const CONFIG = {
     SCOPES: [
       'https://www.googleapis.com/auth/forms.body',
       'https://www.googleapis.com/auth/drive.file'
-    ]
+    ],
+    // Configuración de tokens OAuth
+    TOKEN: {
+      // Duración del access token de Google (1 hora en milisegundos)
+      ACCESS_TOKEN_EXPIRY_MS: 3600 * 1000,
+      // Renovar el token cuando falten X minutos para expirar (5 minutos)
+      REFRESH_THRESHOLD_MS: 5 * 60 * 1000,
+      // Tiempo de espera máximo para renovación de token (30 segundos)
+      REFRESH_TIMEOUT_MS: 30 * 1000,
+      // Reintentos permitidos si falla la renovación
+      MAX_REFRESH_RETRIES: 3,
+      // Intervalo de verificación automática de tokens (10 minutos)
+      AUTO_CHECK_INTERVAL_MS: 10 * 60 * 1000
+    }
   },
   MERCADOPAGO: {
     CURRENCY: 'ARS',
     BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'
   },
   PRICING: {
-    unitPrice: 500, // ARS por formulario individual
+    unitPrice: 1, // ARS por formulario individual
     additionalIncrementPercent: 3, // 3% por formulario adicional (solo para cantidad personalizada)
     packs: {
       pack20: {
-        size: 20,
+        size: 25,
         discountPercent: 10
       },
       pack50: {

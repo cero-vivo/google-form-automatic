@@ -34,11 +34,13 @@ class FirebaseAuthService implements AuthService {
     this.googleProvider.addScope('email');
     this.googleProvider.addScope('profile');
     // Agregar scopes específicos para Google Forms API
-    this.googleProvider.addScope('https://www.googleapis.com/auth/forms');
+    this.googleProvider.addScope('https://www.googleapis.com/auth/forms.body');
     this.googleProvider.addScope('https://www.googleapis.com/auth/drive.file');
+    
+    // IMPORTANTE: access_type: 'offline' y prompt: 'consent' son necesarios para obtener refresh token
     this.googleProvider.setCustomParameters({
-      prompt: 'select_account',
-      access_type: 'offline'
+      prompt: 'consent', // Forzar pantalla de consentimiento para obtener refresh token
+      access_type: 'offline' // Necesario para obtener refresh token
     });
 
     // Verificar configuración básica
@@ -201,7 +203,7 @@ class FirebaseAuthService implements AuthService {
     if (accessToken) {
       userEntity.updateGoogleTokens(
         accessToken,
-        undefined, // No tenemos refresh token desde Firebase Auth
+        undefined, // No tenemos refresh token disponible
         new Date(Date.now() + 3600 * 1000) // Expira en 1 hora
       );
     }
@@ -246,7 +248,7 @@ class FirebaseAuthService implements AuthService {
     // Crear documento de créditos con bonificación de registro
     await this.createUserCredits(user.uid);
 
-    console.log('✅ User document created in Firestore');
+    console.log('✅ User document created in Firestore with tokens');
   }
 
   private async createUserCredits(userId: string): Promise<void> {

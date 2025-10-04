@@ -90,8 +90,18 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     }
   }, [signInWithGoogle]);
 
-  // Función simple para obtener token actual
-  const getCurrentToken = useCallback((): string | null => {
+  // Función para renovar la sesión completa cuando el token expire
+  const refreshAccessToken = useCallback(async (): Promise<string | null> => {
+    console.log('🔄 Token expirado, solicitando renovación de sesión...');
+    
+    // Mostrar al usuario que necesita renovar la sesión
+    handleTokenError('Tu sesión con Google ha expirado. Por favor, vuelve a iniciar sesión.');
+    
+    return null;
+  }, [handleTokenError]);
+
+  // Función simplificada para obtener token actual
+  const getCurrentToken = useCallback(async (): Promise<string | null> => {
     console.log('🔍 Debug getCurrentToken:', {
       hasUserEntity: !!userEntity,
       hasGoogleAccessToken: !!userEntity?.googleAccessToken,
@@ -103,37 +113,40 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
 
     if (!userEntity?.googleAccessToken) {
       console.warn('⚠️ No userEntity or googleAccessToken');
+      handleTokenError('No hay token de acceso de Google disponible.');
       return null;
     }
 
     // Verificar si el token ha expirado
     if (userEntity.googleTokenExpiry && userEntity.googleTokenExpiry.getTime() <= new Date().getTime()) {
-      console.warn('⚠️ Token expirado:', {
-        expiryTime: userEntity.googleTokenExpiry.getTime(),
-        currentTime: new Date().getTime(),
-        difference: new Date().getTime() - userEntity.googleTokenExpiry.getTime()
-      });
+      console.warn('⚠️ Token expirado');
+      await refreshAccessToken(); // Esto mostrará el modal de renovación
       return null;
     }
 
     console.log('✅ Token válido encontrado');
     return userEntity.googleAccessToken;
-  }, [userEntity]);
+  }, [userEntity, refreshAccessToken, handleTokenError]);
 
   const hasGooglePermissions = useCallback((): boolean => {
-    return getCurrentToken() !== null;
-  }, [getCurrentToken]);
+    // Verificar sincrónicamente si hay token válido
+    if (!userEntity?.googleAccessToken) return false;
+    if (userEntity.isGoogleTokenValid) {
+      return userEntity.isGoogleTokenValid();
+    }
+    return true;
+  }, [userEntity]);
 
   const requestGooglePermissions = useCallback(async (): Promise<string | null> => {
     try {
-      const currentToken = getCurrentToken();
+      const currentToken = await getCurrentToken();
       if (currentToken) {
         return currentToken;
       }
       
       // Si no hay token válido, solicitar nueva autenticación
       await renewSession();
-      return getCurrentToken();
+      return await getCurrentToken();
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error obteniendo permisos';
@@ -154,7 +167,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
 
     try {
       // Verificar permisos y obtener token válido
-      const accessToken = getCurrentToken();
+      const accessToken = await getCurrentToken();
       if (!accessToken) {
         handleTokenError('Token no disponible');
         return null;
@@ -261,7 +274,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      const accessToken = getCurrentToken();
+      const accessToken = await getCurrentToken();
       if (!accessToken) {
         handleTokenError('Token no disponible');
         return;
@@ -297,7 +310,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      const accessToken = getCurrentToken();
+      const accessToken = await getCurrentToken();
       if (!accessToken) {
         handleTokenError('Token no disponible');
         return;
@@ -329,7 +342,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      const accessToken = getCurrentToken();
+      const accessToken = await getCurrentToken();
       if (!accessToken) {
         handleTokenError('Token no disponible');
         return [];
@@ -362,7 +375,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     setError(null);
 
     try {
-      const accessToken = getCurrentToken();
+      const accessToken = await getCurrentToken();
       if (!accessToken) {
         handleTokenError('Token no disponible');
         return;
@@ -403,7 +416,7 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
       console.log('🔍 Obteniendo formularios del usuario...');
       
       // Verificar si tenemos token válido
-      const accessToken = getCurrentToken();
+      const accessToken = await getCurrentToken();
       console.log('🔑 Token check result:', {
         hasToken: !!accessToken,
         tokenLength: accessToken ? accessToken.length : 0,

@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       nodeEnv: process.env.NODE_ENV,
       hasBaseUrl: !!process.env.NEXT_PUBLIC_BASE_URL,
       hasVercelUrl: !!process.env.VERCEL_URL,
-      isSandbox: process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith('TEST')
+      isSandbox: process.env.MERCADOPAGO_ACCESS_TOKEN?.startsWith('APP_USR')
     });
 
     const preferenceData = {
