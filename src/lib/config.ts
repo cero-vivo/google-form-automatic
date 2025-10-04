@@ -49,7 +49,7 @@ export const CONFIG = {
     BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000'
   },
   PRICING: {
-    unitPrice: 1, // ARS por formulario individual
+    unitPrice: 5, // ARS por formulario individual
     additionalIncrementPercent: 3, // 3% por formulario adicional (solo para cantidad personalizada)
     packs: {
       pack20: {
