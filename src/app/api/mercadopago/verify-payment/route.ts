@@ -16,6 +16,17 @@ const client = new MercadoPagoConfig({
 
 export async function POST(request: NextRequest) {
   try {
+    /**
+     * ⚠️ DEPRECADO - Este endpoint ya no agrega créditos
+     * 
+     * Los créditos ahora son agregados ÚNICAMENTE por el webhook de MercadoPago
+     * (/api/mercadopago/webhooks) para evitar duplicación.
+     * 
+     * Este endpoint ahora solo verifica el estado del pago sin agregar créditos.
+     * El frontend debe usar /api/credits/check-payment para verificar si el webhook
+     * ya procesó el pago.
+     */
+    
     // Verificar si Mercado Pago está configurado
     if (!accessToken) {
       return NextResponse.json(
@@ -30,7 +41,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { paymentId, userId, purchase } = body;
 
-    console.log('🔍 Verificando pago:', { paymentId, userId });
+    console.log('🔍 Verificando pago (no agrega créditos):', { paymentId, userId });
 
     // Validar datos requeridos
     if (!paymentId || !userId || !purchase) {
@@ -49,36 +60,17 @@ export async function POST(request: NextRequest) {
 
     console.log('📊 Estado del pago:', paymentData.status);
 
-    // Solo procesar si el pago está aprobado
+    // Solo verificar el estado, NO agregar créditos
     if (paymentData.status === 'approved') {
-      try {
-        // Agregar créditos al usuario
-        await CreditsService.addCreditsAfterPurchase(
-          userId, 
-          purchase as CreditPurchase, 
-          paymentId
-        );
+      console.log(`ℹ️ Pago aprobado. Los créditos serán agregados por el webhook.`);
 
-        console.log(`✅ Créditos agregados exitosamente para usuario ${userId}`);
+      return NextResponse.json({
+        success: true,
+        message: 'Pago aprobado - Los créditos serán agregados por el webhook',
+        paymentStatus: paymentData.status,
+        info: 'Los créditos son agregados por el webhook de MercadoPago'
+      });
 
-        return NextResponse.json({
-          success: true,
-          message: 'Créditos agregados exitosamente',
-          paymentStatus: paymentData.status,
-          creditsAdded: purchase.quantity
-        });
-
-      } catch (creditsError) {
-        console.error('❌ Error al agregar créditos:', creditsError);
-        return NextResponse.json(
-          { 
-            error: 'Error al agregar créditos',
-            details: creditsError instanceof Error ? creditsError.message : 'Error desconocido',
-            paymentStatus: paymentData.status
-          },
-          { status: 500 }
-        );
-      }
     } else {
       console.log(`⚠️ Pago no aprobado. Estado: ${paymentData.status}`);
       return NextResponse.json(

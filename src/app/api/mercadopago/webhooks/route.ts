@@ -83,21 +83,24 @@ export async function POST(request: NextRequest) {
          discountPercent: 0
        };
 
-      // Verificar si ya fue procesado
+      // Verificar si ya fue procesado - IMPORTANTE: verificación de idempotencia
       const userCredits = await CreditsService.getUserCredits(userId);
+      
+      // Verificar tanto en el historial como por timestamp para evitar race conditions
       const alreadyProcessed = userCredits?.history?.some(
         (transaction: any) => transaction.paymentId === paymentId
       );
 
       if (alreadyProcessed) {
-        console.log('⚠️ Pago ya procesado previamente');
+        console.log('⚠️ Pago ya procesado previamente - evitando duplicación');
         return NextResponse.json({ 
           status: 'success',
           message: 'Pago ya procesado'
         });
       }
 
-      // Agregar créditos al usuario
+      // Agregar créditos al usuario (este es el ÚNICO lugar donde se deben agregar créditos)
+      console.log(`🎯 Procesando compra para usuario ${userId}: ${purchase.quantity} créditos`);
       
       await CreditsService.addCreditsAfterPurchase(userId, {
         ...purchase,

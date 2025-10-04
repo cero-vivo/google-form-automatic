@@ -78,30 +78,49 @@ function CheckoutSuccessContent() {
 
         const purchase = JSON.parse(purchaseData);
         
-        // Verificar el pago y agregar créditos
-        const response = await fetch('/api/mercadopago/verify-payment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            paymentId,
-            userId: user.id,
-            purchase
-          }),
-        });
+        // El webhook de MercadoPago se encarga de agregar los créditos
+        // Aquí solo verificamos el estado del pago y esperamos a que el webhook procese
+        console.log('⏳ Esperando que el webhook de MercadoPago procese los créditos...');
+        
+        // Hacer polling para verificar si los créditos fueron agregados
+        let attempts = 0;
+        const maxAttempts = 15; // 15 segundos máximo
+        let creditsAdded = false;
+        
+        while (attempts < maxAttempts && !creditsAdded && isMounted) {
+          // Verificar si el pago ya fue procesado en el historial
+          try {
+            const checkResponse = await fetch(`/api/credits/check-payment?paymentId=${paymentId}&userId=${user.id}`);
+            const checkResult = await checkResponse.json();
+            
+            if (checkResult.processed) {
+              creditsAdded = true;
+              break;
+            }
+          } catch (error) {
+            console.log('Error al verificar créditos, reintentando...');
+          }
+          
+          // Esperar 1 segundo antes del siguiente intento
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          attempts++;
+        }
 
-        const result = await response.json();
-
-        if (result.success && isMounted) {
+        if (creditsAdded && isMounted) {
           setCreditsProcessed(true);
           sessionStorage.setItem('fastform_processed', 'true');
           sessionStorage.removeItem('fastform_purchase');
           sessionStorage.removeItem('fastform_processing');
           sessionStorage.removeItem('fastform_auth_check');
-          console.log('✅ Créditos procesados exitosamente');
+          console.log('✅ Créditos procesados exitosamente por el webhook');
         } else if (isMounted) {
-          throw new Error(result.message || 'Error al procesar créditos');
+          // Si después de intentos el webhook no procesó, mostrar mensaje pero no error
+          console.warn('⚠️ El webhook aún no ha procesado el pago. Los créditos se agregarán pronto.');
+          setCreditsProcessed(true); // Mostrar página de éxito de todos modos
+          sessionStorage.setItem('fastform_processed', 'true');
+          sessionStorage.removeItem('fastform_purchase');
+          sessionStorage.removeItem('fastform_processing');
+          sessionStorage.removeItem('fastform_auth_check');
         }
 
       } catch (err) {

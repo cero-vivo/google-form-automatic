@@ -93,6 +93,8 @@ export class CreditsService {
 
   /**
    * Agregar créditos después de una compra exitosa
+   * IMPORTANTE: Esta función debe ser llamada solo por el webhook de MercadoPago
+   * Incluye verificación de idempotencia para evitar duplicación de créditos
    */
   static async addCreditsAfterPurchase(
     userId: string, 
@@ -100,8 +102,23 @@ export class CreditsService {
     paymentId: string
   ): Promise<void> {
     try {
-      const batch = writeBatch(db);
       const userCreditsRef = doc(db, COLLECTION_NAME, userId);
+
+      // Verificar PRIMERO si el pago ya fue procesado (doble verificación de idempotencia)
+      const docSnap = await getDoc(userCreditsRef);
+      if (docSnap.exists()) {
+        const existingHistory = docSnap.data().history || [];
+        const alreadyProcessed = existingHistory.some(
+          (transaction: any) => transaction.paymentId === paymentId
+        );
+        
+        if (alreadyProcessed) {
+          console.warn(`⚠️ Pago ${paymentId} ya fue procesado - evitando duplicación`);
+          return; // Salir sin agregar créditos
+        }
+      }
+
+      const batch = writeBatch(db);
 
       // Crear transacción de compra
       const purchaseTransaction: CreditTransaction = {
@@ -114,20 +131,7 @@ export class CreditsService {
         status: 'completed'
       };
 
-      // Actualizar créditos y agregar al historial
-      batch.update(userCreditsRef, {
-        balance: increment(purchase.quantity),
-        totalEarned: increment(purchase.quantity),
-        totalPurchased: increment(purchase.quantity),
-        updatedAt: serverTimestamp(),
-        history: arrayUnion({
-          ...purchaseTransaction,
-          date: Timestamp.fromDate(purchaseTransaction.date)
-        })
-      });
-
       // Si el documento no existe, crearlo
-      const docSnap = await getDoc(userCreditsRef);
       if (!docSnap.exists()) {
         batch.set(userCreditsRef, {
           userId,
@@ -141,10 +145,22 @@ export class CreditsService {
             date: Timestamp.fromDate(purchaseTransaction.date)
           }]
         });
+      } else {
+        // Actualizar créditos y agregar al historial
+        batch.update(userCreditsRef, {
+          balance: increment(purchase.quantity),
+          totalEarned: increment(purchase.quantity),
+          totalPurchased: increment(purchase.quantity),
+          updatedAt: serverTimestamp(),
+          history: arrayUnion({
+            ...purchaseTransaction,
+            date: Timestamp.fromDate(purchaseTransaction.date)
+          })
+        });
       }
 
       await batch.commit();
-      console.log(`✅ Créditos agregados para usuario ${userId}: ${purchase.quantity}`);
+      console.log(`✅ Créditos agregados para usuario ${userId}: ${purchase.quantity} créditos (Payment ID: ${paymentId})`);
     } catch (error) {
       console.error('Error adding credits after purchase:', error);
       throw new Error('Error al agregar créditos después de la compra');
