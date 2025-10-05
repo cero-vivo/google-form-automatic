@@ -18,10 +18,27 @@ function CheckoutSuccessContent() {
 
   // Efecto para redirigir si no hay usuario autenticado
   useEffect(() => {
-    // Dar tiempo para que Firebase restaure la sesión (1 segundo)
+    // Prevenir loops: verificar cuántas veces hemos intentado redirigir
+    const redirectAttempts = parseInt(sessionStorage.getItem('fastform_redirect_attempts') || '0');
+    
+    // Si ya intentamos 3 veces, detener y mostrar error
+    if (redirectAttempts >= 3) {
+      console.error('❌ Demasiados intentos de redirección, deteniendo para evitar loop');
+      sessionStorage.removeItem('fastform_redirect_attempts');
+      sessionStorage.removeItem('fastform_auth_check');
+      sessionStorage.removeItem('fastform_redirect_after_login');
+      setError('Error de autenticación. Por favor, inicia sesión nuevamente.');
+      setIsLoading(false);
+      return;
+    }
+    
+    // Dar tiempo para que Firebase restaure la sesión (2 segundos)
     const timeoutId = setTimeout(() => {
       if (!user && !sessionStorage.getItem('fastform_auth_check')) {
-        console.log('⚠️ Usuario no autenticado después de 1 segundo, redirigiendo a login...');
+        console.log('⚠️ Usuario no autenticado después de 2 segundos, redirigiendo a login...');
+        
+        // Incrementar contador de intentos
+        sessionStorage.setItem('fastform_redirect_attempts', String(redirectAttempts + 1));
         
         // Marcar que ya verificamos autenticación
         sessionStorage.setItem('fastform_auth_check', 'true');
@@ -31,8 +48,12 @@ function CheckoutSuccessContent() {
         
         // Redirigir al login
         window.location.href = '/auth/login';
+      } else if (user) {
+        // Si hay usuario, limpiar contadores
+        sessionStorage.removeItem('fastform_redirect_attempts');
+        sessionStorage.removeItem('fastform_auth_check');
       }
-    }, 1000); // Esperar 1 segundo para que Firebase restaure la sesión
+    }, 2000); // Aumentado a 2 segundos para dar más tiempo
 
     return () => clearTimeout(timeoutId);
   }, [user]);

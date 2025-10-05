@@ -37,12 +37,32 @@ export default function LoginPage() {
       const redirectUrl = sessionStorage.getItem('fastform_redirect_after_login');
       
       if (redirectUrl) {
-        console.log('✅ Usuario autenticado, redirigiendo a:', redirectUrl);
+        // Prevenir loop: verificar que no estamos tratando de redirigir a login
+        if (redirectUrl.includes('/auth/login')) {
+          console.warn('⚠️ Prevenido loop: no redirigir a login desde login');
+          sessionStorage.removeItem('fastform_redirect_after_login');
+          sessionStorage.removeItem('fastform_auth_check');
+          sessionStorage.removeItem('fastform_redirect_attempts');
+          router.push('/dashboard');
+          return;
+        }
+        
+        console.log('✅ Usuario autenticado en login, redirigiendo a:', redirectUrl);
+        
+        // Limpiar TODOS los flags antes de redirigir
         sessionStorage.removeItem('fastform_redirect_after_login');
         sessionStorage.removeItem('fastform_auth_check');
-        window.location.href = redirectUrl;
+        sessionStorage.removeItem('fastform_redirect_attempts');
+        
+        // Pequeño delay para asegurar que los flags se limpiaron
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 100);
       } else {
         console.log('✅ Usuario autenticado, redirigiendo a dashboard');
+        // Limpiar flags por si acaso
+        sessionStorage.removeItem('fastform_auth_check');
+        sessionStorage.removeItem('fastform_redirect_attempts');
         router.push('/dashboard');
       }
     }
@@ -55,6 +75,10 @@ export default function LoginPage() {
         showError('Sin conexión a internet', 'Verifica tu red e inténtalo de nuevo.');
         return;
       }
+
+      // Limpiar flags de redirección antes de login
+      sessionStorage.removeItem('fastform_auth_check');
+      sessionStorage.removeItem('fastform_redirect_attempts');
 
       await signInWithGoogle();
       
