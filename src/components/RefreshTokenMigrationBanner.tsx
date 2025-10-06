@@ -23,9 +23,13 @@ export function RefreshTokenMigrationBanner() {
     if (userEntity) {
       const hasAccessToken = !!userEntity.googleAccessToken;
       const hasRefreshToken = userEntity.hasGoogleRefreshToken?.() || false;
+      const isTokenExpired = !userEntity.isGoogleTokenValid?.();
       
-      // Necesita re-auth si tiene access token pero NO tiene refresh token
-      if (hasAccessToken && !hasRefreshToken) {
+      // Solo mostrar si:
+      // 1. Tiene access token (está autenticado con Google)
+      // 2. NO tiene refresh token
+      // 3. Y el token YA EXPIRÓ (no preventivamente)
+      if (hasAccessToken && !hasRefreshToken && isTokenExpired) {
         setNeedsReauth(true);
       } else {
         setNeedsReauth(false);
