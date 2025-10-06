@@ -115,7 +115,6 @@ export default function PricingPage() {
 
   // Seleccionar pack predefinido
   const selectPack = (pack: PricingPack) => {
-    console.log("🚀 ~ selectPack ~ pack:", pack)
     setSelectedPack(pack);
     setQuantity(pack.packSize);
   };
@@ -124,7 +123,7 @@ export default function PricingPage() {
   const handlePurchase = async () => {
     // Si no está logueado, redirigir a registro
     if (!user) {
-      window.location.href = '/auth/register';
+      window.location.href = '/auth/login';
       return;
     }
 

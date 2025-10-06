@@ -27,14 +27,11 @@ export async function POST(request: NextRequest) {
     // Check and initialize credits if needed
     let userCredits = await CreditsService.getUserCredits(userId);
     let creditBalance = userCredits?.balance || 0;
-    console.log(`User ${userId} has ${creditBalance} credits`);
 
     // Initialize credits if user doesn't exist
     if (!userCredits) {
-      console.log(`Initializing credits for user ${userId}`);
       const initializedCredits = await CreditsService.initializeUserCredits(userId);
       creditBalance = initializedCredits.balance;
-      console.log(`After initialization, user ${userId} has ${creditBalance} credits`);
     }
 
     if (creditBalance < 2) {
@@ -84,7 +81,6 @@ export async function POST(request: NextRequest) {
           amount: chargeCredits,
           formTitle: formStructure.title || 'Formulario sin título'
         });
-        console.log(`✅ Consumidos ${chargeCredits} créditos del usuario ${userId} por generación de formulario`);
       } catch (creditError) {
         console.error('Error consumiendo créditos:', creditError);
         // Continuar aunque falle la deducción, pero loggear el error

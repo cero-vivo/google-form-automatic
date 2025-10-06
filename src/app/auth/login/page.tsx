@@ -47,8 +47,6 @@ export default function LoginPage() {
           return;
         }
         
-        console.log('✅ Usuario autenticado en login, redirigiendo a:', redirectUrl);
-        
         // Limpiar TODOS los flags antes de redirigir
         sessionStorage.removeItem('fastform_redirect_after_login');
         sessionStorage.removeItem('fastform_auth_check');
@@ -59,7 +57,6 @@ export default function LoginPage() {
           window.location.href = redirectUrl;
         }, 100);
       } else {
-        console.log('✅ Usuario autenticado, redirigiendo a dashboard');
         // Limpiar flags por si acaso
         sessionStorage.removeItem('fastform_auth_check');
         sessionStorage.removeItem('fastform_redirect_attempts');

@@ -121,6 +121,50 @@ export const useAuth = (): UseAuthReturn => {
     };
   }, [convertFirebaseUser, loadUserEntity]);
 
+  // Verificar y refrescar periódicamente el token de Google
+  useEffect(() => {
+    if (!user) return;
+
+    let intervalId: NodeJS.Timeout;
+    let isMounted = true;
+
+    const checkAndRefreshToken = async () => {
+      if (!isMounted || !user) return;
+
+      try {
+        const isValid = await firebaseAuthService.checkAndRefreshGoogleToken(user.id);
+        
+        if (!isValid && isMounted) {
+          console.log('⚠️ No se pudo refrescar el token, sesión puede expirar pronto');
+          // El servicio ya intentó refrescar o re-autenticar
+          // Si falló todo, cerró la sesión
+        } else if (isValid && isMounted) {
+          console.log('✅ Token verificado/refrescado exitosamente');
+          // Recargar la entidad del usuario para obtener el token actualizado
+          const entity = await loadUserEntity(user.id);
+          if (isMounted) {
+            setUserEntity(entity);
+          }
+        }
+      } catch (error) {
+        console.error('Error verificando/refrescando token:', error);
+      }
+    };
+
+    // Verificar inmediatamente al montar
+    checkAndRefreshToken();
+
+    // Verificar cada 5 minutos
+    intervalId = setInterval(checkAndRefreshToken, 5 * 60 * 1000);
+
+    return () => {
+      isMounted = false;
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [user, loadUserEntity]);
+
   const signInWithGoogle = useCallback(async () => {
     setLoading(true);
     setError(null);

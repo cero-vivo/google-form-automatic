@@ -8,7 +8,7 @@ import {
   UserCredential,
   Auth,
   setPersistence,
-  browserLocalPersistence
+  browserSessionPersistence
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { auth, db, COLLECTIONS } from './config';
@@ -54,10 +54,22 @@ class FirebaseAuthService implements AuthService {
 
   private async setupPersistence() {
     try {
-      // Usar browserLocalPersistence para que la sesión persista
-      // incluso cuando el usuario navega a MercadoPago y vuelve
-      await setPersistence(this.auth, browserLocalPersistence);
-      console.log('✅ Firebase persistence configurado: LOCAL');
+      // ESTRATEGIA HÍBRIDA:
+      // Usar browserSessionPersistence para que la sesión dure solo mientras la pestaña esté abierta
+      // Esto sincroniza la sesión de FastForm con la duración de los tokens de Google
+      // 
+      // NOTA: Los tokens de Google OAuth2 expiran típicamente en 1 hora
+      // Con sessionPersistence, la sesión se cierra cuando:
+      // 1. El usuario cierra la pestaña/navegador
+      // 2. El token de Google expira (verificación periódica en useAuth)
+      //
+      // IMPORTANTE: Al ir a MercadoPago, se abre en la misma pestaña, por lo que
+      // la sesión se mantiene. Si MercadoPago abre una nueva ventana, se perderá.
+      await setPersistence(this.auth, browserSessionPersistence);
+      console.log('✅ Firebase persistence: SESSION (sincronizado con tokens de Google)');
+      console.log('ℹ️ La sesión durará mientras:');
+      console.log('  - La pestaña esté abierta');
+      console.log('  - El token de Google sea válido (típicamente 1 hora)');
     } catch (error) {
       console.error('❌ Error configurando persistencia:', error);
     }
@@ -203,6 +215,133 @@ class FirebaseAuthService implements AuthService {
 
   onAuthStateChanged(callback: (user: FirebaseUser | null) => void): () => void {
     return this.auth.onAuthStateChanged(callback);
+  }
+
+  /**
+   * Verifica si el token de Google del usuario sigue siendo válido
+   * Si el token está próximo a expirar o ya expiró, intenta refrescarlo
+   * Si no se puede refrescar, cierra la sesión automáticamente
+   */
+  async checkAndRefreshGoogleToken(userId: string): Promise<boolean> {
+    try {
+      const userDoc = await getDoc(doc(db, COLLECTIONS.USERS, userId));
+      
+      if (!userDoc.exists()) {
+        console.warn('⚠️ Usuario no encontrado en Firestore');
+        return false;
+      }
+
+      const userData = userDoc.data();
+      const tokenExpiry = userData.googleTokenExpiry?.toDate?.() || userData.googleTokenExpiry;
+      
+      if (!tokenExpiry) {
+        console.warn('⚠️ No hay información de expiración del token');
+        return false;
+      }
+
+      const now = new Date();
+      const isValid = tokenExpiry > now;
+      
+      // Verificar si el token está próximo a expirar (menos de 10 minutos)
+      const tenMinutesFromNow = new Date(now.getTime() + 10 * 60 * 1000);
+      const needsRefresh = tokenExpiry <= tenMinutesFromNow;
+      
+      if (needsRefresh) {
+        console.log('🔄 Token próximo a expirar o expirado, intentando refrescar...');
+        
+        try {
+          // Intentar refrescar el token usando el endpoint
+          const refreshResponse = await fetch('/api/auth/refresh-google-token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId }),
+          });
+
+          if (refreshResponse.ok) {
+            const data = await refreshResponse.json();
+            console.log('✅ Token refrescado exitosamente');
+            return true;
+          } else {
+            const errorData = await refreshResponse.json();
+            
+            if (errorData.requiresReauth) {
+              console.warn('⚠️ Refresh token inválido, requiere re-autenticación');
+              // En lugar de cerrar sesión, intentar re-autenticar silenciosamente
+              return await this.silentReauth();
+            } else {
+              console.error('❌ Error refrescando token:', errorData.error);
+              return false;
+            }
+          }
+        } catch (refreshError) {
+          console.error('❌ Error en refresh de token:', refreshError);
+          
+          // Si falla el refresh, intentar re-autenticación silenciosa
+          return await this.silentReauth();
+        }
+      }
+      
+      return isValid;
+    } catch (error) {
+      console.error('❌ Error verificando validez del token:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Intenta re-autenticar al usuario silenciosamente para obtener un nuevo token
+   * Esto abre un popup de Google pero pre-selecciona la cuenta del usuario
+   */
+  async silentReauth(): Promise<boolean> {
+    try {
+      console.log('🔄 Intentando re-autenticación silenciosa...');
+      
+      // Configurar provider para pre-seleccionar cuenta (menos intrusivo)
+      const provider = new GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
+      provider.addScope('https://www.googleapis.com/auth/forms.body');
+      provider.addScope('https://www.googleapis.com/auth/drive.file');
+      
+      // Usar 'select_account' en lugar de 'consent' para experiencia más suave
+      provider.setCustomParameters({
+        prompt: 'none', // Intentar sin mostrar pantalla
+      });
+
+      const userCredential = await signInWithPopup(this.auth, provider);
+      const user = userCredential.user;
+      const credential = GoogleAuthProvider.credentialFromResult(userCredential);
+      const accessToken = credential?.accessToken;
+
+      if (accessToken) {
+        // Actualizar token en Firestore
+        await this.updateUserDocument(user.uid, {
+          googleAccessToken: accessToken,
+          googleTokenExpiry: new Date(Date.now() + 3600 * 1000),
+          lastLoginAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        console.log('✅ Re-autenticación silenciosa exitosa');
+        return true;
+      }
+
+      return false;
+    } catch (error: any) {
+      console.error('❌ Error en re-autenticación silenciosa:', error);
+      
+      // Si falla la re-autenticación silenciosa, cerrar sesión
+      if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+        console.warn('⚠️ Usuario canceló la re-autenticación');
+        return false;
+      }
+      
+      console.warn('⚠️ Re-autenticación falló, cerrando sesión...');
+      await this.signOut();
+      return false;
+    }
   }
 
   // Métodos privados

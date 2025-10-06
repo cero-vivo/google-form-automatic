@@ -90,15 +90,50 @@ export const useGoogleFormsIntegration = (): UseGoogleFormsIntegrationReturn => 
     }
   }, [signInWithGoogle]);
 
-  // Función para renovar la sesión completa cuando el token expire
+  // Función para renovar el token automáticamente
   const refreshAccessToken = useCallback(async (): Promise<string | null> => {
-    console.log('🔄 Token expirado, solicitando renovación de sesión...');
+    console.log('🔄 Token expirado o próximo a expirar, intentando refrescar...');
     
-    // Mostrar al usuario que necesita renovar la sesión
-    handleTokenError('Tu sesión con Google ha expirado. Por favor, vuelve a iniciar sesión.');
-    
-    return null;
-  }, [handleTokenError]);
+    if (!userEntity?.id) {
+      handleTokenError('No hay usuario autenticado.');
+      return null;
+    }
+
+    try {
+      // Intentar refrescar el token usando el endpoint
+      const response = await fetch('/api/auth/refresh-google-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: userEntity.id }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Token refrescado exitosamente');
+        
+        // Recargar la entidad del usuario con el nuevo token
+        // Esto se hará automáticamente en el próximo render
+        return data.accessToken;
+      } else {
+        const errorData = await response.json();
+        
+        if (errorData.requiresReauth) {
+          console.warn('⚠️ Requiere re-autenticación');
+          handleTokenError('Tu sesión con Google ha expirado. Por favor, vuelve a iniciar sesión.');
+        } else {
+          handleTokenError('No se pudo refrescar el token. Intenta cerrar sesión y volver a entrar.');
+        }
+        
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ Error refrescando token:', error);
+      handleTokenError('Error al refrescar la sesión. Por favor, vuelve a iniciar sesión.');
+      return null;
+    }
+  }, [userEntity, handleTokenError]);
 
   // Función simplificada para obtener token actual
   const getCurrentToken = useCallback(async (): Promise<string | null> => {

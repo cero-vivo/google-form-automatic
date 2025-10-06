@@ -13,6 +13,7 @@ import { FormsListModal } from '@/components/dashboard/FormsListModal';
 import { DashboardWelcome } from '@/components/dashboard/DashboardWelcome';
 import CreditsAlert from '@/components/molecules/CreditsAlert';
 import { useGoogleAuthCheckContext } from '@/providers/GoogleAuthCheckProvider';
+import { RefreshTokenMigrationBanner } from '@/components/RefreshTokenMigrationBanner';
 
 
 /**
@@ -92,6 +93,7 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen">
+      <RefreshTokenMigrationBanner />
       <DashboardHeader
         user={user}
         currentCredits={currentCredits}

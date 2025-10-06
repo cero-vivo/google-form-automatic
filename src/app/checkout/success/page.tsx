@@ -27,15 +27,15 @@ function CheckoutSuccessContent() {
       sessionStorage.removeItem('fastform_redirect_attempts');
       sessionStorage.removeItem('fastform_auth_check');
       sessionStorage.removeItem('fastform_redirect_after_login');
-      setError('Error de autenticación. Por favor, inicia sesión nuevamente.');
+      setError('Tu sesión ha expirado. Por favor, inicia sesión nuevamente para ver tus créditos.');
       setIsLoading(false);
       return;
     }
     
-    // Dar tiempo para que Firebase restaure la sesión (2 segundos)
+    // NOTA: Ahora usamos sessionPersistence, así que es normal que al volver
+    // de MercadoPago la sesión no esté presente. Dar tiempo para restaurar (1 segundo)
     const timeoutId = setTimeout(() => {
       if (!user && !sessionStorage.getItem('fastform_auth_check')) {
-        console.log('⚠️ Usuario no autenticado después de 2 segundos, redirigiendo a login...');
         
         // Incrementar contador de intentos
         sessionStorage.setItem('fastform_redirect_attempts', String(redirectAttempts + 1));
@@ -53,7 +53,7 @@ function CheckoutSuccessContent() {
         sessionStorage.removeItem('fastform_redirect_attempts');
         sessionStorage.removeItem('fastform_auth_check');
       }
-    }, 2000); // Aumentado a 2 segundos para dar más tiempo
+    }, 1000); // 1 segundo es suficiente con sessionPersistence
 
     return () => clearTimeout(timeoutId);
   }, [user]);
@@ -91,14 +91,12 @@ function CheckoutSuccessContent() {
         const purchaseData = sessionStorage.getItem('fastform_purchase');
         if (!purchaseData) {
           // Si no hay datos pero hay paymentId, verificar directamente si ya se procesó
-          console.log('📋 No hay datos de compra en sessionStorage, verificando estado del pago...');
           
           try {
             const checkResponse = await fetch(`/api/credits/check-payment?paymentId=${paymentId}&userId=${user.id}`);
             const checkResult = await checkResponse.json();
             
             if (checkResult.processed) {
-              console.log('✅ El pago ya fue procesado anteriormente');
               setCreditsProcessed(true);
               sessionStorage.setItem('fastform_processed', 'true');
             }
@@ -119,7 +117,6 @@ function CheckoutSuccessContent() {
         
         // El webhook de MercadoPago se encarga de agregar los créditos
         // Aquí solo verificamos el estado del pago y esperamos a que el webhook procese
-        console.log('⏳ Esperando que el webhook de MercadoPago procese los créditos...');
         
         // Hacer polling para verificar si los créditos fueron agregados
         let attempts = 0;
@@ -153,7 +150,6 @@ function CheckoutSuccessContent() {
           sessionStorage.removeItem('fastform_purchase');
           sessionStorage.removeItem('fastform_processing');
           sessionStorage.removeItem('fastform_auth_check');
-          console.log('✅ Créditos procesados exitosamente por el webhook');
         } else if (isMounted) {
           // Si después de intentos el webhook no procesó, mostrar mensaje pero no error
           console.warn('⚠️ El webhook aún no ha procesado el pago. Los créditos se agregarán pronto.');
