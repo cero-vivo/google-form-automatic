@@ -82,7 +82,6 @@ export default function CreditsPage() {
             <Button variant="ghost" size="sm" asChild>
               <Link href="/dashboard">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver al Dashboard
               </Link>
             </Button>
             <div className="flex items-center space-x-2">

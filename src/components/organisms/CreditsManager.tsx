@@ -68,8 +68,10 @@ export default function CreditsManager({
     }
   };
 
-  // Filtrar transacciones para mostrar solo las completadas
-  const completedTransactions = transactions.filter(t => t.status === 'completed');
+  // Filtrar transacciones para mostrar solo las completadas y ordenarlas por fecha descendente
+  const completedTransactions = transactions
+    .filter(t => t.status === 'completed')
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   // Obtener color del badge según el estado
   const getStatusColor = (status: string) => {
@@ -160,29 +162,6 @@ export default function CreditsManager({
           </CardContent>
         </Card>
       </div>
-
-      {/* Barra de progreso de uso */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Uso de Créditos</CardTitle>
-          <CardDescription>
-            Progreso de utilización de tus créditos comprados
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Progreso de uso</span>
-            <span className="font-medium">{Math.round(usagePercentage)}%</span>
-          </div>
-          
-          <Progress value={usagePercentage} className="h-3" />
-          
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>0 créditos</span>
-            <span>{totalCreditsPurchased} créditos</span>
-          </div>
-        </CardContent>
-      </Card>
 
 {/* Historial de transacciones */}
       <Card>
