@@ -992,7 +992,15 @@ export const ReusableFormBuilder = forwardRef(function ReusableFormBuilder({
               <div className="text-center py-12 text-neutral-500">
                 <LayoutGrid className="w-16 h-16 mx-auto mb-4 text-neutral-400" />
                 <p className="text-base font-medium font-inter mb-2">No hay preguntas aún</p>
-                <p className="text-sm font-inter">Haz clic en "Agregar pregunta" para comenzar</p>
+                <p className="text-sm font-inter mb-6">Comienza agregando tu primera pregunta</p>
+                <Button
+                  onClick={addQuestion}
+                  className="bg-forms-500 hover:bg-forms-600 text-white font-medium"
+                  size="lg"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Agregar primera pregunta
+                </Button>
               </div>
             ) : (
               <>
