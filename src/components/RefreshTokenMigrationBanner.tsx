@@ -19,22 +19,30 @@ export function RefreshTokenMigrationBanner() {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    // Verificar si el usuario necesita re-autenticación
-    if (userEntity) {
-      const hasAccessToken = !!userEntity.googleAccessToken;
-      const hasRefreshToken = userEntity.hasGoogleRefreshToken?.() || false;
-      const isTokenExpired = !userEntity.isGoogleTokenValid?.();
-      
-      // Solo mostrar si:
-      // 1. Tiene access token (está autenticado con Google)
-      // 2. NO tiene refresh token
-      // 3. Y el token YA EXPIRÓ (no preventivamente)
-      if (hasAccessToken && !hasRefreshToken && isTokenExpired) {
-        setNeedsReauth(true);
-      } else {
-        setNeedsReauth(false);
+    // Esperar un poco antes de verificar para evitar falsos positivos después del login
+    const timer = setTimeout(() => {
+      // Verificar si el usuario necesita re-autenticación
+      if (userEntity) {
+        const hasAccessToken = !!userEntity.googleAccessToken;
+        const hasRefreshToken = userEntity.hasGoogleRefreshToken?.() || false;
+        const isTokenExpired = !userEntity.isGoogleTokenValid?.();
+        
+        // LÓGICA CORREGIDA:
+        // Solo mostrar si:
+        // 1. Tiene access token (está autenticado con Google)
+        // 2. NO tiene refresh token (no puede renovar automáticamente)
+        // 3. Y el token YA EXPIRÓ (no preventivamente)
+        // 
+        // Si tiene refresh token, NUNCA mostrar el banner (puede auto-renovar)
+        if (hasAccessToken && !hasRefreshToken && isTokenExpired) {
+          setNeedsReauth(true);
+        } else {
+          setNeedsReauth(false);
+        }
       }
-    }
+    }, 2000); // Esperar 2 segundos después del login para verificar
+
+    return () => clearTimeout(timer);
   }, [userEntity]);
 
   const handleReauthenticate = async () => {
@@ -119,17 +127,23 @@ export function RefreshTokenMigrationModal() {
   const [isReauthenticating, setIsReauthenticating] = useState(false);
 
   useEffect(() => {
-    // Verificar si el usuario necesita re-autenticación
-    if (userEntity) {
-      const hasAccessToken = !!userEntity.googleAccessToken;
-      const hasRefreshToken = userEntity.hasGoogleRefreshToken?.() || false;
-      const isTokenExpired = !userEntity.isGoogleTokenValid?.() || false;
-      
-      // Mostrar modal si intenta usar funcionalidades y no puede renovar
-      if (hasAccessToken && !hasRefreshToken && isTokenExpired) {
-        setIsOpen(true);
+    // Esperar un poco antes de verificar para evitar falsos positivos
+    const timer = setTimeout(() => {
+      // Verificar si el usuario necesita re-autenticación
+      if (userEntity) {
+        const hasAccessToken = !!userEntity.googleAccessToken;
+        const hasRefreshToken = userEntity.hasGoogleRefreshToken?.() || false;
+        const isTokenExpired = !userEntity.isGoogleTokenValid?.() || false;
+        
+        // Solo mostrar modal si NO tiene refresh token y el token está expirado
+        // Si tiene refresh token, puede renovar automáticamente
+        if (hasAccessToken && !hasRefreshToken && isTokenExpired) {
+          setIsOpen(true);
+        }
       }
-    }
+    }, 2000); // Esperar 2 segundos para evitar mostrar justo después del login
+
+    return () => clearTimeout(timer);
   }, [userEntity]);
 
   const handleReauthenticate = async () => {
