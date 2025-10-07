@@ -19,28 +19,45 @@ export function RefreshTokenMigrationBanner() {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    // Esperar un poco antes de verificar para evitar falsos positivos después del login
+    // Esperar antes de verificar para evitar falsos positivos después del login
     const timer = setTimeout(() => {
-      // Verificar si el usuario necesita re-autenticación
       if (userEntity) {
         const hasAccessToken = !!userEntity.googleAccessToken;
-        const hasRefreshToken = userEntity.hasGoogleRefreshToken?.() || false;
-        const isTokenExpired = !userEntity.isGoogleTokenValid?.();
+        const tokenExpiry = userEntity.googleTokenExpiry;
         
-        // LÓGICA CORREGIDA:
-        // Solo mostrar si:
-        // 1. Tiene access token (está autenticado con Google)
-        // 2. NO tiene refresh token (no puede renovar automáticamente)
-        // 3. Y el token YA EXPIRÓ (no preventivamente)
-        // 
-        // Si tiene refresh token, NUNCA mostrar el banner (puede auto-renovar)
-        if (hasAccessToken && !hasRefreshToken && isTokenExpired) {
+        // Verificar si hay información de token
+        if (!hasAccessToken || !tokenExpiry) {
+          // Sin token o sin expiry, no mostrar banner
+          setNeedsReauth(false);
+          return;
+        }
+        
+        // Verificar si el usuario inició sesión recientemente (últimos 5 minutos)
+        const lastLoginAt = userEntity.lastLoginAt;
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        const isRecentLogin = lastLoginAt && lastLoginAt > fiveMinutesAgo;
+        
+        // Si es login reciente, no mostrar banner
+        if (isRecentLogin) {
+          console.log('✅ Login reciente detectado, no mostrar banner');
+          setNeedsReauth(false);
+          return;
+        }
+        
+        // Verificar si el token está realmente expirado
+        const isTokenExpired = tokenExpiry <= new Date();
+        
+        // Solo mostrar banner si el token realmente expiró Y no es login reciente
+        if (isTokenExpired) {
+          console.log('⚠️ Token de Google expirado, mostrando banner de re-autenticación');
           setNeedsReauth(true);
         } else {
           setNeedsReauth(false);
         }
+      } else {
+        setNeedsReauth(false);
       }
-    }, 2000); // Esperar 2 segundos después del login para verificar
+    }, 5000); // Aumentar a 5 segundos para dar más margen
 
     return () => clearTimeout(timer);
   }, [userEntity]);
@@ -127,21 +144,38 @@ export function RefreshTokenMigrationModal() {
   const [isReauthenticating, setIsReauthenticating] = useState(false);
 
   useEffect(() => {
-    // Esperar un poco antes de verificar para evitar falsos positivos
+    // Esperar antes de verificar para evitar falsos positivos
     const timer = setTimeout(() => {
-      // Verificar si el usuario necesita re-autenticación
       if (userEntity) {
         const hasAccessToken = !!userEntity.googleAccessToken;
-        const hasRefreshToken = userEntity.hasGoogleRefreshToken?.() || false;
-        const isTokenExpired = !userEntity.isGoogleTokenValid?.() || false;
+        const tokenExpiry = userEntity.googleTokenExpiry;
         
-        // Solo mostrar modal si NO tiene refresh token y el token está expirado
-        // Si tiene refresh token, puede renovar automáticamente
-        if (hasAccessToken && !hasRefreshToken && isTokenExpired) {
+        // Sin token o sin expiry, no mostrar modal
+        if (!hasAccessToken || !tokenExpiry) {
+          return;
+        }
+        
+        // Verificar si el usuario inició sesión recientemente (últimos 5 minutos)
+        const lastLoginAt = userEntity.lastLoginAt;
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        const isRecentLogin = lastLoginAt && lastLoginAt > fiveMinutesAgo;
+        
+        // Si es login reciente, no mostrar modal
+        if (isRecentLogin) {
+          console.log('✅ Login reciente detectado, no mostrar modal');
+          return;
+        }
+        
+        // Verificar si el token está realmente expirado
+        const isTokenExpired = tokenExpiry <= new Date();
+        
+        // Solo mostrar modal si el token realmente expiró Y no es login reciente
+        if (isTokenExpired) {
+          console.log('⚠️ Token de Google expirado, mostrando modal crítico');
           setIsOpen(true);
         }
       }
-    }, 2000); // Esperar 2 segundos para evitar mostrar justo después del login
+    }, 5000); // Aumentar a 5 segundos
 
     return () => clearTimeout(timer);
   }, [userEntity]);
@@ -224,9 +258,28 @@ export function useRefreshTokenMigration() {
   useEffect(() => {
     if (userEntity) {
       const hasAccessToken = !!userEntity.googleAccessToken;
-      const hasRefreshToken = userEntity.hasGoogleRefreshToken?.() || false;
+      const tokenExpiry = userEntity.googleTokenExpiry;
       
-      setNeedsReauth(hasAccessToken && !hasRefreshToken);
+      // Sin token, no necesita reauth
+      if (!hasAccessToken || !tokenExpiry) {
+        setNeedsReauth(false);
+        return;
+      }
+      
+      // Verificar si es login reciente (últimos 5 minutos)
+      const lastLoginAt = userEntity.lastLoginAt;
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      const isRecentLogin = lastLoginAt && lastLoginAt > fiveMinutesAgo;
+      
+      // Si es login reciente, no necesita reauth
+      if (isRecentLogin) {
+        setNeedsReauth(false);
+        return;
+      }
+      
+      // Verificar si el token está expirado
+      const isTokenExpired = tokenExpiry <= new Date();
+      setNeedsReauth(isTokenExpired);
     } else {
       setNeedsReauth(false);
     }
@@ -236,5 +289,6 @@ export function useRefreshTokenMigration() {
     needsReauth,
     hasRefreshToken: userEntity?.hasGoogleRefreshToken?.() || false,
     canAutoRenew: userEntity?.canRefreshGoogleToken?.() || false,
+    isTokenValid: userEntity?.isGoogleTokenValid?.() || false,
   };
 }
