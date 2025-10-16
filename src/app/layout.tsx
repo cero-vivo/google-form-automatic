@@ -14,9 +14,19 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "FastForm | Crea Google Forms en Segundos - Plataforma #1",
-  description: "Crea Google Forms con inteligencia artificial en segundos. Plataforma ultrarrápida y gratuita que automatiza formularios desde CSV, Excel o con IA. Sin código, máxima velocidad.",
+  title: "FastForm (Fast Form) | Crea Google Forms en Segundos - Plataforma #1",
+  description: "FastForm (fast form): Crea Google Forms con inteligencia artificial en segundos. Plataforma ultrarrápida y gratuita que automatiza formularios desde CSV, Excel o con IA. Sin código, máxima velocidad.",
   keywords: [
+    // Marca y variantes
+    "fastform",
+    "fast form",
+    "fastform app",
+    "fast form app",
+    "fastform ia",
+    "fast form ia",
+    "fastform gratis",
+    "fast form gratis",
+    // Google Forms IA
     "crear google forms con ia",
     "google forms inteligencia artificial",
     "generador formularios ia",
@@ -25,14 +35,19 @@ export const metadata: Metadata = {
     "google forms en segundos",
     "formularios con ai",
     "crear forms automatico",
+    // Conversión archivos
     "csv a google forms",
     "excel a google forms",
+    "convertir excel a formulario",
+    "convertir csv a formulario",
+    // Herramientas
     "generador google forms",
     "herramienta google forms",
     "formularios sin codigo",
-    "fastform ia",
     "google forms velocidad",
-    "formularios inteligentes"
+    "formularios inteligentes",
+    "creador de formularios online",
+    "plataforma formularios ia"
   ],
   authors: [{ name: "FastForm Team", url: "https://fastform.pro" }],
   creator: "FastForm Team",
@@ -64,10 +79,10 @@ export const metadata: Metadata = {
     ]
   },
   openGraph: {
-    title: "FastForm - Crea Google Forms con IA en Segundos | #1 Plataforma Inteligente",
-    description: "🤖 Crea Google Forms con IA ultrarrápida. ⚡ En segundos, no minutos ✅ Gratuito ✅ Sin código ✅ Desde CSV/Excel o con inteligencia artificial. +10,000 formularios creados.",
+    title: "FastForm (Fast Form) - Crea Google Forms con IA en Segundos | #1 Plataforma Inteligente",
+    description: "🤖 FastForm (fast form): Crea Google Forms con IA ultrarrápida. ⚡ En segundos, no minutos ✅ Gratuito ✅ Sin código ✅ Desde CSV/Excel o con inteligencia artificial. +10,000 formularios creados.",
     url: "https://fastform.pro",
-    siteName: "FastForm",
+    siteName: "FastForm - Fast Form",
     type: "website",
     locale: "es_ES",
     images: [
@@ -89,8 +104,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "🤖 FastForm - Google Forms con IA en Segundos | Velocidad Extrema",
-    description: "Crea Google Forms con inteligencia artificial ultrarrápida. ⚡ Segundos, no horas ✅ Gratuito ✅ Sin código ✅ IA + CSV/Excel. ¡Pruébalo!",
+    title: "🤖 FastForm (Fast Form) - Google Forms con IA en Segundos | Velocidad Extrema",
+    description: "FastForm (fast form): Crea Google Forms con inteligencia artificial ultrarrápida. ⚡ Segundos, no horas ✅ Gratuito ✅ Sin código ✅ IA + CSV/Excel. ¡Pruébalo!",
     images: ["https://fastform.pro/images/heroimage1.png"],
     creator: "@fastform_app",
     site: "@fastform_app"
@@ -142,6 +157,7 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "Organization",
                 "name": "FastForm",
+                "alternateName": ["Fast Form", "FastForm App", "Fast Form App"],
                 "url": "https://fastform.pro",
                 "logo": "https://fastform.pro/icons/logo.svg",
                 "sameAs": [
@@ -152,14 +168,17 @@ export default function RootLayout({
                   "email": "hola@fastform.pro",
                   "contactType": "customer service",
                   "availableLanguage": ["Spanish", "English"]
-                }
+                },
+                "slogan": "Fast Form - Crea formularios en segundos con IA",
+                "description": "FastForm (fast form) es la plataforma líder para crear Google Forms con inteligencia artificial en segundos. Convierte CSV y Excel a formularios automáticamente."
               },
               // Aplicación Web
               {
                 "@context": "https://schema.org",
                 "@type": "WebApplication",
                 "name": "FastForm - Crea Google Forms con IA en Segundos",
-                "description": "Crea Google Forms con inteligencia artificial ultrarrápida. Plataforma gratuita que automatiza formularios en segundos desde CSV, Excel o con IA generativa.",
+                "alternateName": ["Fast Form", "FastForm IA", "Fast Form IA", "Fast Form App"],
+                "description": "FastForm (fast form): Crea Google Forms con inteligencia artificial ultrarrápida. Plataforma gratuita que automatiza formularios en segundos desde CSV, Excel o con IA generativa.",
                 "url": "https://fastform.pro",
                 "applicationCategory": "BusinessApplication",
                 "operatingSystem": "Web Browser", 
@@ -188,7 +207,7 @@ export default function RootLayout({
                   "name": "FastForm Team",
                   "url": "https://fastform.pro"
                 },
-                "keywords": "crear google forms con ia, google forms inteligencia artificial, formularios con ai, generador formularios ia, crear formularios rapido, automatizar google forms",
+                "keywords": "fastform, fast form, fastform ia, fast form ia, crear google forms con ia, google forms inteligencia artificial, formularios con ai, generador formularios ia, crear formularios rapido, automatizar google forms, csv a google forms, excel a google forms",
                 "featureList": [
                   "Inteligencia Artificial para formularios",
                   "Creación en segundos, no minutos",
@@ -210,7 +229,9 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "WebSite",
                 "name": "FastForm",
+                "alternateName": "Fast Form",
                 "url": "https://fastform.pro",
+                "description": "FastForm (fast form) - Plataforma para crear Google Forms con inteligencia artificial en segundos",
                 "potentialAction": {
                   "@type": "SearchAction",
                   "target": "https://fastform.pro/search?q={search_term_string}",
@@ -221,6 +242,31 @@ export default function RootLayout({
                   "@type": "Organization",
                   "name": "FastForm Team"
                 }
+              },
+              // BreadcrumbList para mejor navegación
+              {
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "FastForm",
+                    "item": "https://fastform.pro"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Fast Form IA",
+                    "item": "https://fastform.pro/create/ai"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": "Fast Form CSV/Excel",
+                    "item": "https://fastform.pro/create/file"
+                  }
+                ]
               }
             ])
           }}

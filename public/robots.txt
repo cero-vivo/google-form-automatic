@@ -1,0 +1,58 @@
+# FastForm (Fast Form) - Robots.txt
+# https://fastform.pro
+
+# Permitir a todos los bots principales
+User-agent: *
+Allow: /
+
+# Áreas específicas permitidas
+Allow: /create/
+Allow: /blog/
+Allow: /docs/
+Allow: /pricing/
+Allow: /about/
+Allow: /faq/
+
+# Bloquear áreas privadas
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /checkout/
+Disallow: /_next/
+Disallow: /admin/
+
+# Permitir recursos estáticos importantes
+Allow: /images/
+Allow: /icons/
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.css$
+Allow: /*.js$
+
+# Configuración específica para bots principales
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /icons/
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Sitemap
+Sitemap: https://fastform.pro/sitemap.xml
+Sitemap: https://fastform.pro/sitemap-pages.xml
+Sitemap: https://fastform.pro/sitemap-blog.xml
+
+# Host preferido
+Host: https://fastform.pro

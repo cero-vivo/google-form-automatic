@@ -12,7 +12,9 @@
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "seo:verify": "node scripts/verify-seo-fastform.js",
+    "seo:check": "node scripts/seo-check.js"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",

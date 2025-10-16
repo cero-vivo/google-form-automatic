@@ -2,9 +2,17 @@ import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: 'FAQ FastForm - Respuestas sobre Formularios Inteligentes con IA | Ayuda',
-  description: 'Respuestas a las preguntas más comunes sobre formularios inteligentes, IA conversacional, integraciones y automatización con FastForm. Guía completa de nuestra plataforma.',
+  title: 'FAQ FastForm (Fast Form) - Respuestas sobre Formularios con IA | Ayuda',
+  description: 'Respuestas a las preguntas más comunes sobre FastForm (fast form): formularios con IA, conversión CSV/Excel, integraciones y automatización. Guía completa de fast form.',
   keywords: [
+    // Marca
+    'faq fastform',
+    'faq fast form',
+    'ayuda fastform',
+    'ayuda fast form',
+    'preguntas fastform',
+    'preguntas fast form',
+    // Funcionalidades
     'faq csv google forms',
     'preguntas frecuentes excel google forms',
     'ayuda convertir csv google forms',
@@ -13,6 +21,8 @@ export const metadata: Metadata = {
     'guía rápida excel google forms',
     'chat ia google forms',
     'ayuda chat ia google forms',
+    'fastform como funciona',
+    'fast form tutorial'
   ],
   openGraph: {
     title: 'FAQ - Convertir CSV, Excel, Chat IA a Google Forms | FastForm',

@@ -1,7 +1,7 @@
 {
-  "name": "FastForm - Plataforma Inteligente de Formularios",
+  "name": "FastForm (Fast Form) - Plataforma Inteligente de Formularios",
   "short_name": "FastForm",
-  "description": "Crea Google Forms inteligentes con IA, importa datos y automatiza tu flujo de trabajo",
+  "description": "FastForm (fast form): Crea Google Forms inteligentes con IA en segundos. Importa CSV/Excel y automatiza tu flujo de trabajo sin código.",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

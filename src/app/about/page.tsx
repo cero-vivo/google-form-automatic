@@ -2,19 +2,28 @@ import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: "Sobre FastForm - Equipo, Misión y Visión para Google Forms",
-  description: "Conoce al equipo de FastForm detrás de la herramienta líder para convertir CSV y Excel a Google Forms. Nuestra misión es simplificar la creación de formularios.",
+  title: "Sobre FastForm (Fast Form) - Equipo, Misión y Visión para Google Forms con IA",
+  description: "Conoce al equipo de FastForm (fast form) detrás de la herramienta #1 para crear Google Forms con IA. Convertimos CSV y Excel a formularios en segundos. Nuestra misión es simplificar la creación de formularios.",
   keywords: [
+    // Marca
     "sobre fastform",
+    "sobre fast form",
     "equipo fastform",
+    "equipo fast form",
     "misión fastform",
     "historia fastform",
+    "quiénes somos fastform",
+    // Características
     "empresa conversión csv google forms",
-    "quiénes somos fastform"
+    "plataforma google forms ia",
+    "herramienta formularios inteligente",
+    "fast form app equipo",
+    "fastform creadores",
+    "empresa automatización formularios"
   ],
   openGraph: {
-    title: "Sobre FastForm - Equipo y Misión",
-    description: "Conoce la historia detrás de FastForm, la herramienta líder para convertir CSV y Excel a Google Forms automáticamente.",
+    title: "Sobre FastForm (Fast Form) - Equipo y Misión",
+    description: "Conoce la historia detrás de FastForm (fast form), la herramienta líder para crear Google Forms con IA y convertir CSV/Excel a formularios automáticamente.",
     type: "website",
   }
 };
@@ -88,12 +97,12 @@ export default function AboutPage() {
           {/* Hero Section */}
           <section className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            La forma más inteligente de crear Google Forms
+            FastForm (Fast Form): La forma más inteligente de crear Google Forms
           </h2>
           <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-            FastForm es tu intermediario inteligente para crear Google Forms de manera rápida y eficiente. 
-            Ya sea que necesites convertir datos, crear desde cero con IA, o usar nuestro builder manual avanzado, 
-            eliminamos las barreras técnicas y te damos el control total sobre tus formularios.
+            <strong>FastForm</strong> (también conocido como <strong>fast form</strong>) es tu plataforma inteligente para crear Google Forms de manera rápida y eficiente con inteligencia artificial. 
+            Ya sea que necesites convertir CSV o Excel a formularios, crear desde cero con IA, o usar nuestro builder manual avanzado, 
+            <strong> fast form</strong> elimina las barreras técnicas y te da el control total sobre tus formularios en segundos.
           </p>
           </section>
 
@@ -105,10 +114,10 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-lg text-gray-700 leading-relaxed">
-                  Democratizar la creación de formularios profesionales al proporcionar múltiples vías 
-                  de creación: conversión inteligente de datos, asistencia por IA, y construcción manual avanzada. 
-                  Cualquier persona, independientemente de sus habilidades técnicas, puede crear formularios 
-                  funcionales en minutos, no horas.
+                  Con <strong>FastForm</strong> (fast form), democratizamos la creación de formularios profesionales al proporcionar múltiples vías 
+                  de creación: conversión inteligente de CSV/Excel, asistencia por inteligencia artificial, y construcción manual avanzada. 
+                  Cualquier persona, independientemente de sus habilidades técnicas, puede crear Google Forms 
+                  funcionales en segundos con <strong>fast form</strong>, no en horas.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -119,8 +128,9 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-lg text-gray-700 leading-relaxed">
-                  Ser la herramienta preferida globalmente para la conversión de datos a formularios, 
-                  integrándonos perfectamente con el ecosistema de Google Workspace y más allá.
+                  Hacer de <strong>FastForm</strong> (fast form) la herramienta #1 globalmente para crear Google Forms con IA 
+                  y para la conversión automática de datos a formularios, integrándonos perfectamente con el ecosistema 
+                  de Google Workspace y más allá. Fast form para todos, en todos lados.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -216,7 +226,8 @@ export default function AboutPage() {
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "FastForm",
-            "description": "Herramienta líder para convertir CSV y Excel a Google Forms automáticamente",
+            "alternateName": ["Fast Form", "FastForm App", "Fast Form App"],
+            "description": "FastForm (fast form) - Herramienta líder para crear Google Forms con IA y convertir CSV y Excel a formularios automáticamente en segundos",
             "url": "https://fastform.pro",
             "logo": "https://fastform.pro/logo.svg",
             "founder": {
